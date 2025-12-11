@@ -129,10 +129,8 @@ namespace Dnn.PersonaBar.ConfigConsole.Components
         {
             var xsd = LoadResource(schemaRelPath);
 
-            using (var reader = new StringReader(xsd))
-            {
-                return XmlSchema.Read(reader, (_, e) => { });
-            }
+            using var reader = new StringReader(xsd);
+            return XmlSchema.Read(XmlReader.Create(reader), (_, e) => { });
         }
 
         private static string LoadResource(string relativePath)
