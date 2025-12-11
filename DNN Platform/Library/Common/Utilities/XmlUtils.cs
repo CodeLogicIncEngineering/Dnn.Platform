@@ -105,7 +105,7 @@ namespace DotNetNuke.Common.Utilities
 
             var serializer = new XmlSerializer(type);
             using var tr = new StreamReader(objStream);
-            obj = serializer.Deserialize(tr);
+            obj = serializer.Deserialize(XmlReader.Create(tr));
             tr.Close();
             return obj;
         }

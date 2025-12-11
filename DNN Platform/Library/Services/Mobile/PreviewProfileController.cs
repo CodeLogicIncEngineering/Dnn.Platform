@@ -8,6 +8,7 @@ namespace DotNetNuke.Services.Mobile
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Xml;
     using System.Xml.Serialization;
 
     using DotNetNuke.Application;
@@ -140,7 +141,7 @@ namespace DotNetNuke.Services.Mobile
                         if (!string.IsNullOrEmpty(dataPath) && File.Exists(dataPath))
                         {
                             var serializer = new XmlSerializer(typeof(List<PreviewProfile>));
-                            profiles = (List<PreviewProfile>)serializer.Deserialize(File.OpenRead(dataPath));
+                            profiles = (List<PreviewProfile>)serializer.Deserialize(XmlReader.Create(File.OpenRead(dataPath)));
 
                             profiles?.ForEach(p =>
                             {
