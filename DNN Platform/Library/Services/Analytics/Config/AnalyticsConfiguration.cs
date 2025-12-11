@@ -59,7 +59,6 @@ namespace DotNetNuke.Services.Analytics.Config
             config.Rules = new AnalyticsRuleCollection();
             config.Settings = new AnalyticsSettingCollection();
 
-            FileStream fileReader = null;
             string filePath = string.Empty;
             try
             {
@@ -74,9 +73,13 @@ namespace DotNetNuke.Services.Analytics.Config
                     }
 
                     // Create a FileStream for the Config file
-                    fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    XPathDocument doc;
+                    using (var fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var xmlReader = XmlReader.Create(fileReader))
+                    {
+                        doc = new XPathDocument(xmlReader);
+                    }
 
-                    var doc = new XPathDocument(XmlReader.Create(fileReader));
                     config = new AnalyticsConfiguration();
                     config.Rules = new AnalyticsRuleCollection();
                     config.Settings = new AnalyticsSettingCollection();
@@ -121,14 +124,6 @@ namespace DotNetNuke.Services.Analytics.Config
                 log.AddProperty("ExceptionMessage", ex.Message);
                 LogController.Instance.AddLog(log);
                 Logger.Error(ex);
-            }
-            finally
-            {
-                if (fileReader != null)
-                {
-                    // Close the Reader
-                    fileReader.Close();
-                }
             }
 
             return config;

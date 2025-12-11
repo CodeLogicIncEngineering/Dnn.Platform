@@ -168,7 +168,10 @@ namespace Dnn.Modules.ResourceManager.Components
                         FileAccess.Read))
                 {
                     var document = new XmlDocument { XmlResolver = null };
-                    document.Load(stream);
+                    using (var xmlReader = XmlReader.Create(stream, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        document.Load(xmlReader);
+                    }
 
                     var headers = document.SelectNodes(@"/root/resheader").Cast<XmlNode>().ToArray();
                     AssertHeaderValue(headers, "resmimetype", "text/microsoft-resx");

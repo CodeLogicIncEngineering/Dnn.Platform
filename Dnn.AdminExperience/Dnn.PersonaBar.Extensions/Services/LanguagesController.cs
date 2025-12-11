@@ -699,7 +699,8 @@ namespace Dnn.PersonaBar.SiteSettings.Services
             bool xmlLoaded;
             try
             {
-                d.Load(filepath);
+                using var xmlReader = XmlReader.Create(filepath, new XmlReaderSettings { XmlResolver = null, });
+                d.Load(xmlReader);
                 xmlLoaded = true;
             }
             catch (Exception ex)
@@ -849,11 +850,16 @@ namespace Dnn.PersonaBar.SiteSettings.Services
             var defDoc = new XmlDocument { XmlResolver = null };
 
             var filename = this.ResourceFile(portalId, locale, mode);
-            resDoc.Load(File.Exists(filename)
-                ? filename :
-                this.ResourceFile(portalId, Localization.SystemLocale, LanguageResourceMode.System));
+            var resourceFile = File.Exists(filename) ? filename : this.ResourceFile(portalId, Localization.SystemLocale, LanguageResourceMode.System);
+            using (var resourceReader = XmlReader.Create(resourceFile, new XmlReaderSettings { XmlResolver = null, }))
+            {
+                resDoc.Load(resourceReader);
+            }
 
-            defDoc.Load(this.ResourceFile(portalId, Localization.SystemLocale, LanguageResourceMode.System));
+            using (var defaultResourceReader = XmlReader.Create(this.ResourceFile(portalId, Localization.SystemLocale, LanguageResourceMode.System), new XmlReaderSettings { XmlResolver = null, }))
+            {
+                defDoc.Load(defaultResourceReader);
+            }
 
             // store all changed resources
             var changedResources = new Dictionary<string, string>();

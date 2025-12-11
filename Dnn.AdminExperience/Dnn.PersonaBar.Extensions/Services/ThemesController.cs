@@ -219,7 +219,11 @@ namespace Dnn.PersonaBar.Themes.Services
                 if (File.Exists(strFile))
                 {
                     var xmlDoc = new XmlDocument { XmlResolver = null };
-                    xmlDoc.Load(strFile);
+                    using (var xmlReader = XmlReader.Create(strFile, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        xmlDoc.Load(xmlReader);
+                    }
+
                     foreach (XmlNode xmlSetting in xmlDoc.SelectNodes("//Settings/Setting"))
                     {
                         settings.Add(new ListItemInfo(xmlSetting.SelectSingleNode("Name").InnerText, xmlSetting.SelectSingleNode("Name").InnerText));
@@ -245,7 +249,11 @@ namespace Dnn.PersonaBar.Themes.Services
                 if (File.Exists(strFile))
                 {
                     var xmlDoc = new XmlDocument { XmlResolver = null };
-                    xmlDoc.Load(strFile);
+                    using (var xmlReader = XmlReader.Create(strFile, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        xmlDoc.Load(xmlReader);
+                    }
+
                     foreach (XmlNode xmlSetting in xmlDoc.SelectNodes("//Settings/Setting"))
                     {
                         if (xmlSetting.SelectSingleNode("Name").InnerText == setting)

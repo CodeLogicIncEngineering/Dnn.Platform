@@ -5,6 +5,7 @@
 namespace DotNetNuke.Services.Journal
 {
     using System.Globalization;
+    using System.IO;
     using System.Xml;
 
     using DotNetNuke.Services.Tokens;
@@ -23,7 +24,11 @@ namespace DotNetNuke.Services.Journal
             if (!string.IsNullOrEmpty(entityXML))
             {
                 var xDoc = new XmlDocument { XmlResolver = null, };
-                xDoc.LoadXml(entityXML);
+                using (var entityReader = XmlReader.Create(new StringReader(entityXML), new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    xDoc.Load(entityReader);
+                }
+
                 if (xDoc != null)
                 {
                     XmlNode xRoot = xDoc.DocumentElement;

@@ -613,14 +613,18 @@ namespace DotNetNuke.Common.Utilities
                 throw new SecurityException($"Unable to load config for \"{filename}\"");
             }
 
-            xmlDoc.Load(configPath);
+            using (var configReader = XmlReader.Create(configPath, new XmlReaderSettings { XmlResolver = null, }))
+            {
+                xmlDoc.Load(configReader);
+            }
 
             // test for namespace added by Web Admin Tool
             if (!string.IsNullOrEmpty(xmlDoc.DocumentElement.GetAttribute("xmlns")))
             {
                 // remove namespace
                 var strDoc = xmlDoc.InnerXml.Replace("xmlns=\"http://schemas.microsoft.com/.NetConfiguration/v2.0\"", string.Empty);
-                xmlDoc.LoadXml(strDoc);
+                using var xmlReader = XmlReader.Create(new StringReader(strDoc), new XmlReaderSettings { XmlResolver = null, });
+                xmlDoc.Load(xmlReader);
             }
 
             return xmlDoc;
@@ -738,13 +742,11 @@ namespace DotNetNuke.Common.Utilities
                     try
                     {
                         // save the config file
-                        var settings = new XmlWriterSettings { CloseOutput = true, Indent = true };
-                        using (var writer = XmlWriter.Create(strFilePath, settings))
-                        {
-                            xmlDoc.WriteTo(writer);
-                            writer.Flush();
-                            writer.Close();
-                        }
+                        var settings = new XmlWriterSettings { CloseOutput = true, Indent = true, };
+                        using var writer = XmlWriter.Create(strFilePath, settings);
+                        xmlDoc.WriteTo(writer);
+                        writer.Flush();
+                        writer.Close();
 
                         break;
                     }

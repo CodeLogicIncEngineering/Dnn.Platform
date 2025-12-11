@@ -88,7 +88,11 @@ namespace DotNetNuke.UI.Skins
             {
                 try
                 {
-                    this.SkinAttributes.Load(fileName);
+                    using (var xmlReader = XmlReader.Create(fileName, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        this.SkinAttributes.Load(xmlReader);
+                    }
+
                     this.Message += SkinController.FormatMessage(this.pACKAGELOAD, Path.GetFileName(fileName), 2, false);
                 }
                 catch (Exception ex)
@@ -868,7 +872,11 @@ namespace DotNetNuke.UI.Skins
                         {
                             try
                             {
-                                this.fileAttributes.Load(fileName.Replace(this.FileExtension, ".xml"));
+                                using (var xmlReader = XmlReader.Create(fileName.Replace(this.FileExtension, ".xml"), new XmlReaderSettings { XmlResolver = null, }))
+                                {
+                                    this.fileAttributes.Load(xmlReader);
+                                }
+
                                 this.messages += SkinController.FormatMessage(this.fileLoad, fileName, 2, false);
                             }
                             catch (Exception exc)

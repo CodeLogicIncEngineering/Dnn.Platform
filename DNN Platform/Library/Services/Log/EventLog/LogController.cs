@@ -133,12 +133,14 @@ namespace DotNetNuke.Services.Log.EventLog
             var xmlDoc = new XmlDocument { XmlResolver = null };
             try
             {
-                xmlDoc.Load(configFile);
+                using var xmlReader = XmlReader.Create(configFile, new XmlReaderSettings { XmlResolver = null, });
+                xmlDoc.Load(xmlReader);
             }
             catch (FileNotFoundException exc)
             {
                 Logger.Debug(exc);
-                xmlDoc.Load(fallbackConfigFile);
+                using var xmlReader = XmlReader.Create(fallbackConfigFile, new XmlReaderSettings { XmlResolver = null, });
+                xmlDoc.Load(xmlReader);
             }
 
             var logType = xmlDoc.SelectNodes("/LogConfig/LogTypes/LogType");

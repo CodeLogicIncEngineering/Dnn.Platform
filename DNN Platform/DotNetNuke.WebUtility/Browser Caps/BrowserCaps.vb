@@ -77,20 +77,23 @@ Namespace DotNetNuke.UI.Utilities
                 End Try
 
                 Dim objDoc As XPathDocument = Nothing
-                Dim objReader As FileStream = Nothing
-                Dim tr As StreamReader = Nothing
                 Dim fileExists As Boolean = File.Exists(strPath)
-                Try
                     objCaps = New BrowserCaps()
                     objCaps.Functionality = New FunctionalityCollection()
                     If fileExists Then
 
                         'Create a FileStream for the Config file
-                        objReader = New FileStream(strPath, FileMode.Open, FileAccess.Read, FileShare.Read)
-                        objDoc = New XPathDocument(XmlReader.Create(objReader))
+                        Using objReader = New FileStream(strPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                            Using xmlReader As XmlReader = XmlReader.Create(objReader)
+                                objDoc = New XPathDocument(xmlReader)
+                            End Using
+                        End Using
                     Else
-                        tr = New StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ClientAPICaps.config"))
-                        objDoc = New XPathDocument(XmlReader.Create(tr))
+                        Using tr = New StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ClientAPICaps.config"))
+                            Using xmlReader As XmlReader = XmlReader.Create(tr)
+                                objDoc = New XPathDocument(xmlReader)
+                            End Using
+                        End Using 
                     End If
 
                     If Not objDoc Is Nothing Then
@@ -112,16 +115,6 @@ Namespace DotNetNuke.UI.Utilities
                             objCaps.Functionality.Add(objFunc)
                         Next
                     End If
-                Catch ex As Exception
-                    Throw
-                Finally
-                    If Not objReader Is Nothing Then
-                        objReader.Close()
-                    End If
-                    If Not tr Is Nothing Then
-                        tr.Close()
-                    End If
-                End Try
 
                 ' Set back into Cache
                 If fileExists Then

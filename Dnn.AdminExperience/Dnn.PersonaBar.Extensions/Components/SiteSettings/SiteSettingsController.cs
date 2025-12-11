@@ -39,16 +39,22 @@ namespace Dnn.PersonaBar.SiteSettings.Components
             var defaultResources = new XmlDocument { XmlResolver = null };
             XmlNode parent;
 
-            defaultResources.Load(this.GetResourceFile(string.Empty, Localization.SystemLocale, portalId));
+            using (var defaultResourcesReader = XmlReader.Create(this.GetResourceFile(string.Empty, Localization.SystemLocale, portalId), new XmlReaderSettings { XmlResolver = null, }))
+            {
+                defaultResources.Load(defaultResourcesReader);
+            }
+
             string filename = this.GetResourceFile("Portal", cultureCode, portalId);
 
             if (File.Exists(filename))
             {
-                portalResources.Load(filename);
+                using var portalResourcesReader = XmlReader.Create(filename, new XmlReaderSettings { XmlResolver = null, });
+                portalResources.Load(portalResourcesReader);
             }
             else
             {
-                portalResources.Load(this.GetResourceFile(string.Empty, Localization.SystemLocale, portalId));
+                using var portalResourcesReader = XmlReader.Create(this.GetResourceFile(string.Empty, Localization.SystemLocale, portalId), new XmlReaderSettings { XmlResolver = null, });
+                portalResources.Load(portalResourcesReader);
             }
 
             UpdateResourceFileNode(portalResources, "ProfileProperties_" + propertyName + ".Text", propertyNameString);

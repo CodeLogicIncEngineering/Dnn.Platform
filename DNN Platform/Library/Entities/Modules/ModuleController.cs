@@ -73,8 +73,12 @@ namespace DotNetNuke.Entities.Modules
             var moduleDefinition = GetModuleDefinition(nodeModule);
 
             // Create pane node for private DeserializeModule method
+            var paneXml = $"<pane><name>{module.PaneName}</name></pane>";
             var docPane = new XmlDocument { XmlResolver = null };
-            docPane.LoadXml($"<pane><name>{module.PaneName}</name></pane>");
+            using (var paneReader = XmlReader.Create(new StringReader(paneXml), new XmlReaderSettings { XmlResolver = null, }))
+            {
+                docPane.Load(paneReader);
+            }
 
             // Create ModuleInfo of Xml
             ModuleInfo sourceModule = DeserializeModule(nodeModule, docPane.DocumentElement, portalId, tabId, moduleDefinition.ModuleDefID);
@@ -232,7 +236,11 @@ namespace DotNetNuke.Entities.Modules
             var serializer = new XmlSerializer(typeof(ModuleInfo));
             var sw = new StringWriter();
             serializer.Serialize(sw, module);
-            xmlModule.LoadXml(sw.GetStringBuilder().ToString());
+            using (var xmlReader = XmlReader.Create(new StringReader(sw.GetStringBuilder().ToString()), new XmlReaderSettings { XmlResolver = null, }))
+            {
+                xmlModule.Load(xmlReader);
+            }
+
             XmlNode moduleNode = xmlModule.SelectSingleNode("module");
             if (moduleNode != null)
             {

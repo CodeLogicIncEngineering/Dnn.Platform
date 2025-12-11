@@ -202,7 +202,11 @@ namespace DotNetNuke.Services.Installer.Installers
         protected override void UnInstallFile(InstallFile unInstallFile)
         {
             this.manifest = unInstallFile.Name + ".manifest";
-            var doc = new XPathDocument(XmlReader.Create(Path.Combine(this.PhysicalBasePath, this.Manifest)));
+            XPathDocument doc;
+            using (var xmlReader = XmlReader.Create(Path.Combine(this.PhysicalBasePath, this.Manifest)))
+            {
+                doc = new XPathDocument(xmlReader);
+            }
 
             foreach (XPathNavigator fileNavigator in doc.CreateNavigator().Select("dotnetnuke/files/file"))
             {

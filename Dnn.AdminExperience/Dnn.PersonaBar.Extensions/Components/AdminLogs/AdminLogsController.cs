@@ -277,7 +277,11 @@ namespace Dnn.PersonaBar.AdminLogs.Components
         private static XmlDocument GetExceptions(IEnumerable<string> logIds)
         {
             var objXml = new XmlDocument { XmlResolver = null };
-            objXml.LoadXml("<LogEntries></LogEntries>");
+            using (var logEntriesReader = XmlReader.Create(new StringReader("<LogEntries></LogEntries>"), new XmlReaderSettings { XmlResolver = null, }))
+            {
+                objXml.Load(logEntriesReader);
+            }
+
             foreach (var logId in logIds)
             {
                 var log = LogController.Instance.GetLog(logId);
@@ -285,7 +289,8 @@ namespace Dnn.PersonaBar.AdminLogs.Components
 
                 if (log is LogInfo logInfo)
                 {
-                    xmlDoc.LoadXml(logInfo.Serialize());
+                    using var logReader = XmlReader.Create(new StringReader(logInfo.Serialize()), new XmlReaderSettings { XmlResolver = null, });
+                    xmlDoc.Load(logReader);
                 }
 
                 var objNode = objXml.ImportNode(xmlDoc.DocumentElement, true);

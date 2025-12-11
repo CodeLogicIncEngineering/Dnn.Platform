@@ -125,7 +125,11 @@ namespace DotNetNuke.Services.Syndication
                 byte[] feed = new WebClient().DownloadData(uri.AbsoluteUri);
 
                 var opmlDoc = new XmlDocument { XmlResolver = null };
-                opmlDoc.Load(new MemoryStream(feed));
+                using (var opmlReader = XmlReader.Create(new MemoryStream(feed), new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    opmlDoc.Load(opmlReader);
+                }
+
                 opmlFeed = Opml.LoadFromXml(opmlDoc);
 
                 opmlFeed.UtcExpiry = DateTime.UtcNow.AddMinutes(this.defaultTtlMinutes);
@@ -164,7 +168,10 @@ namespace DotNetNuke.Services.Syndication
                 try
                 {
                     opmlDoc = new XmlDocument { XmlResolver = null };
-                    opmlDoc.Load(opmlFilename);
+                    using (var opmlReader = XmlReader.Create(opmlFilename, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        opmlDoc.Load(opmlReader);
+                    }
 
                     // look for special XML comment (before the root tag)'
                     // containing expiration and url

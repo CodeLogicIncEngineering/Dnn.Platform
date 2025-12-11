@@ -45,7 +45,6 @@ namespace DotNetNuke.HttpModules.Config
         public static AnalyticsEngineConfiguration GetConfig(IApplicationStatusInfo appStatus, IEventLogger eventLogger)
         {
             var config = new AnalyticsEngineConfiguration { AnalyticsEngines = new AnalyticsEngineCollection() };
-            FileStream fileReader = null;
             string filePath = null;
             try
             {
@@ -55,8 +54,13 @@ namespace DotNetNuke.HttpModules.Config
                     filePath = Config.GetPathToFile(appStatus, Config.ConfigFileType.SiteAnalytics);
 
                     // Create a FileStream for the Config file
-                    fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    var doc = new XPathDocument(XmlReader.Create(fileReader));
+                    XPathDocument doc;
+                    using (var fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var xmlReader = XmlReader.Create(fileReader))
+                    {
+                        doc = new XPathDocument(xmlReader);
+                    }
+
                     config = new AnalyticsEngineConfiguration { AnalyticsEngines = new AnalyticsEngineCollection() };
                     foreach (XPathNavigator nav in
                         doc.CreateNavigator().Select("AnalyticsEngineConfig/Engines/AnalyticsEngine"))
@@ -91,11 +95,6 @@ namespace DotNetNuke.HttpModules.Config
                 log.AddProperty("ExceptionMessage", ex.Message);
                 eventLogger.AddLog(log);
                 Logger.Error(log);
-            }
-            finally
-            {
-                // Close the Reader
-                fileReader?.Close();
             }
 
             return config;

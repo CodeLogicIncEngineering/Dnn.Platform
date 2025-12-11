@@ -644,7 +644,8 @@ namespace DotNetNuke.Services.Upgrade
             string installTemplate = Config.GetSetting("InstallTemplate");
             try
             {
-                xmlDoc.Load($@"{Globals.ApplicationMapPath}\Install\{installTemplate}");
+                using var xmlReader = XmlReader.Create($@"{Globals.ApplicationMapPath}\Install\{installTemplate}", new XmlReaderSettings { XmlResolver = null, });
+                xmlDoc.Load(xmlReader);
             }
             catch
             {
@@ -656,7 +657,7 @@ namespace DotNetNuke.Services.Upgrade
         }
 
         /// <summary>SetInstallTemplate saves the XmlDocument back to Installation Template specified in web.config.</summary>
-        /// <param name="xmlDoc">The Xml Document to save.</param>
+        /// <param name="xmlDoc">The XML Document to save.</param>
         /// <returns>A string which contains the error message - if appropriate.</returns>
         public static string SetInstallTemplate(XmlDocument xmlDoc)
         {
@@ -2718,7 +2719,10 @@ namespace DotNetNuke.Services.Upgrade
                 }
 
                 var xmlDocument = new XmlDocument { XmlResolver = null };
-                xmlDocument.Load(languageFilePath);
+                using (var xmlReader = XmlReader.Create(languageFilePath, new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    xmlDocument.Load(xmlReader);
+                }
 
                 resourcesDict.Add(cultureCode, xmlDocument);
 

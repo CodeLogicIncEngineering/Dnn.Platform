@@ -454,7 +454,12 @@ namespace DotNetNuke.Web.UI
                 try
                 {
                     var templateFile = FileManager.Instance.GetFile(Convert.ToInt32(templateFileId, CultureInfo.InvariantCulture));
-                    xmlDoc.Load(FileManager.Instance.GetFileContent(templateFile));
+                    using (var fileContent = FileManager.Instance.GetFileContent(templateFile))
+                    using (var xmlReader = XmlReader.Create(fileContent, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        xmlDoc.Load(xmlReader);
+                    }
+
                     TabController.DeserializePanes(businessControllerProvider, xmlDoc.SelectSingleNode("//portal/tabs/tab/panes"), tab.PortalID, tab.TabID, PortalTemplateModuleAction.Ignore, new Hashtable());
 
                     // save tab permissions

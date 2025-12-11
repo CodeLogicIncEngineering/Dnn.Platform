@@ -129,7 +129,9 @@ namespace Dnn.PersonaBar.Pages.Components
                     // open the XML file
                     var fileId = Convert.ToInt32(templateId);
                     var templateFile = FileManager.Instance.GetFile(fileId);
-                    xmlDoc.Load(FileManager.Instance.GetFileContent(templateFile));
+                    using var templateStream = FileManager.Instance.GetFileContent(templateFile);
+                    using var templateReader = XmlReader.Create(templateStream, new XmlReaderSettings { XmlResolver = null, });
+                    xmlDoc.Load(templateReader);
                 }
                 catch (Exception ex)
                 {

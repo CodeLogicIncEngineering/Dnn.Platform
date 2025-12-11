@@ -33,7 +33,8 @@ namespace DotNetNuke.Services.Installer
             this.Version = version;
             this.Sender = sender;
             this.SourceConfig = new XmlDocument { XmlResolver = null };
-            this.SourceConfig.Load(sourceFileName);
+            using var configReader = XmlReader.Create(sourceFileName, new XmlReaderSettings { XmlResolver = null, });
+            this.SourceConfig.Load(configReader);
         }
 
         /// <summary>Initializes a new instance of the <see cref="XmlMerge"/> class.</summary>
@@ -45,7 +46,8 @@ namespace DotNetNuke.Services.Installer
             this.Version = version;
             this.Sender = sender;
             this.SourceConfig = new XmlDocument { XmlResolver = null };
-            this.SourceConfig.Load(sourceStream);
+            using var configReader = XmlReader.Create(sourceStream, new XmlReaderSettings { XmlResolver = null, });
+            this.SourceConfig.Load(configReader);
         }
 
         /// <summary>Initializes a new instance of the <see cref="XmlMerge"/> class.</summary>
@@ -57,7 +59,8 @@ namespace DotNetNuke.Services.Installer
             this.Version = version;
             this.Sender = sender;
             this.SourceConfig = new XmlDocument { XmlResolver = null };
-            this.SourceConfig.Load(sourceReader);
+            using var configReader = XmlReader.Create(sourceReader, new XmlReaderSettings { XmlResolver = null, });
+            this.SourceConfig.Load(configReader);
         }
 
         /// <summary>Initializes a new instance of the <see cref="XmlMerge"/> class.</summary>

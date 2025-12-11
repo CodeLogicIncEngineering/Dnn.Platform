@@ -110,7 +110,10 @@ namespace DotNetNuke.Services.Syndication
 
             // parse it as XML
             var doc = new XmlDocument { XmlResolver = null };
-            doc.Load(new MemoryStream(feed));
+            using (var feedReader = XmlReader.Create(new MemoryStream(feed), new XmlReaderSettings { XmlResolver = null, }))
+            {
+                doc.Load(feedReader);
+            }
 
             // parse into DOM
             dom = RssXmlHelper.ParseChannelXml(doc);
@@ -151,7 +154,10 @@ namespace DotNetNuke.Services.Syndication
                 try
                 {
                     rssDoc = new XmlDocument { XmlResolver = null };
-                    rssDoc.Load(rssFilename);
+                    using (var rssReader = XmlReader.Create(rssFilename, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        rssDoc.Load(rssReader);
+                    }
 
                     // look for special XML comment (before the root tag)'
                     // containing expiration and url

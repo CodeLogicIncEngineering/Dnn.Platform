@@ -151,15 +151,13 @@ namespace DotNetNuke.Services.Log.EventLog
 
         public void Deserialize(string content)
         {
-            using (XmlReader reader = XmlReader.Create(new StringReader(content)))
+            using XmlReader reader = XmlReader.Create(new StringReader(content));
+            if (reader.Read())
             {
-                if (reader.Read())
-                {
-                    this.ReadXml(reader);
-                }
-
-                reader.Close();
+                this.ReadXml(reader);
             }
+
+            reader.Close();
         }
 
         public void ReadXml(XmlReader reader)

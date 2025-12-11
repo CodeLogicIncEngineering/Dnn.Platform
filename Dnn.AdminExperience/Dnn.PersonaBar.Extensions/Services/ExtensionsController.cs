@@ -1187,7 +1187,12 @@ namespace Dnn.PersonaBar.Extensions.Services
                 // Save package manifest
                 if (packageManifestDto.Manifests.Any())
                 {
-                    var doc = new XPathDocument(XmlReader.Create(new StringReader(packageManifestDto.Manifests.Values.FirstOrDefault())));
+                    XPathDocument doc;
+                    using (var manifestReader = XmlReader.Create(new StringReader(packageManifestDto.Manifests.Values.FirstOrDefault())))
+                    {
+                        doc = new XPathDocument(manifestReader);
+                    }
+
                     XPathNavigator nav = doc.CreateNavigator();
                     XPathNavigator packageNav = nav.SelectSingleNode("dotnetnuke/packages");
                     package.Manifest = packageNav.InnerXml;

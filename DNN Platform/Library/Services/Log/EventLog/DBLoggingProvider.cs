@@ -10,6 +10,7 @@ namespace DotNetNuke.Services.Log.EventLog
     using System.Data.SqlClient;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
+    using System.IO;
     using System.Threading;
     using System.Web;
     using System.Web.Caching;
@@ -206,7 +207,8 @@ namespace DotNetNuke.Services.Log.EventLog
             var xmlDoc = new XmlDocument { XmlResolver = null };
             if (log != null)
             {
-                xmlDoc.LoadXml(log.Serialize());
+                using var logReader = XmlReader.Create(new StringReader(log.Serialize()), new XmlReaderSettings { XmlResolver = null, });
+                xmlDoc.Load(logReader);
             }
 
             return xmlDoc.DocumentElement;

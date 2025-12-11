@@ -606,15 +606,16 @@ namespace Dnn.PersonaBar.Themes.Components
                     strFile = strFile.Replace(Path.GetFileName(strFile), "skin.xml");
                 }
 
-                XmlDocument xmlDoc = null;
+                var xmlDoc = new XmlDocument { XmlResolver = null };
                 try
                 {
-                    xmlDoc = new XmlDocument { XmlResolver = null };
-                    xmlDoc.Load(strFile);
+                    using var manifestReader = XmlReader.Create(strFile, new XmlReaderSettings { XmlResolver = null, });
+                    xmlDoc.Load(manifestReader);
                 }
                 catch
                 {
-                    xmlDoc.InnerXml = "<Objects></Objects>";
+                    using var objectsReader = XmlReader.Create(new StringReader("<Objects></Objects>"), new XmlReaderSettings { XmlResolver = null, });
+                    xmlDoc.Load(objectsReader);
                 }
 
                 var xmlToken = xmlDoc.DocumentElement.SelectSingleNode($"descendant::Object[Token='[{updateTheme.Token}]']");

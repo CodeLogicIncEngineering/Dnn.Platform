@@ -44,7 +44,7 @@ namespace DotNetNuke.Common
 
             // Set the validation event handler.
             settings.ValidationEventHandler += this.ValidationCallBack;
-            XmlReader vreader = XmlReader.Create(this.reader, settings);
+            using var vreader = XmlReader.Create(this.reader, settings);
 
             // Read and validate the XML data.
             while (vreader.Read())

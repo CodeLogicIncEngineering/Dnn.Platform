@@ -105,7 +105,8 @@ namespace DotNetNuke.Common.Utilities
 
             var serializer = new XmlSerializer(type);
             using var tr = new StreamReader(objStream);
-            obj = serializer.Deserialize(XmlReader.Create(tr));
+            using var xmlReader = XmlReader.Create(tr);
+            obj = serializer.Deserialize(xmlReader);
             tr.Close();
             return obj;
         }
@@ -113,7 +114,10 @@ namespace DotNetNuke.Common.Utilities
         public static Dictionary<int, TValue> DeSerializeDictionary<TValue>(Stream objStream, string rootname)
         {
             var xmlDoc = new XmlDocument { XmlResolver = null };
-            xmlDoc.Load(objStream);
+            using (var xmlReader = XmlReader.Create(objStream, new XmlReaderSettings { XmlResolver = null, }))
+            {
+                xmlDoc.Load(xmlReader);
+            }
 
             var objDictionary = new Dictionary<int, TValue>();
 
@@ -150,7 +154,10 @@ namespace DotNetNuke.Common.Utilities
                 try
                 {
                     var xmlDoc = new XmlDocument { XmlResolver = null };
-                    xmlDoc.LoadXml(xmlSource);
+                    using (var xmlReader = XmlReader.Create(new StringReader(xmlSource), new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        xmlDoc.Load(xmlReader);
+                    }
 
                     foreach (XmlElement xmlItem in xmlDoc.SelectNodes(rootname + "/item"))
                     {
@@ -158,7 +165,7 @@ namespace DotNetNuke.Common.Utilities
                         string typeName = xmlItem.GetAttribute("type");
 
                         // Create the XmlSerializer
-                        var xser = new XmlSerializer(Type.GetType(typeName));
+                        var serializer = new XmlSerializer(Type.GetType(typeName));
 
                         // A reader is needed to read the XML document.
                         var reader = new XmlTextReader(new StringReader(xmlItem.InnerXml))
@@ -169,7 +176,7 @@ namespace DotNetNuke.Common.Utilities
 
                         // Use the Deserialize method to restore the object's state, and store it
                         // in the Hashtable
-                        hashTable.Add(key, xser.Deserialize(reader));
+                        hashTable.Add(key, serializer.Deserialize(reader));
                     }
                 }
                 catch (Exception)
@@ -577,7 +584,10 @@ namespace DotNetNuke.Common.Utilities
                     var xmlSerializer = new XmlSerializer(source[key].GetType());
                     var sw = new StringWriter();
                     xmlSerializer.Serialize(sw, source[key]);
-                    xmlObject.LoadXml(sw.ToString());
+                    using (var xmlReader = XmlReader.Create(new StringReader(sw.ToString()), new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        xmlObject.Load(xmlReader);
+                    }
 
                     // import and append the node to the root
                     xmlItem.AppendChild(xmlDoc.ImportNode(xmlObject.DocumentElement, true));
@@ -678,7 +688,11 @@ namespace DotNetNuke.Common.Utilities
 
                 serializer.Serialize(sw, obj);
 
-                xmlDoc.LoadXml(sw.GetStringBuilder().ToString());
+                using (var xmlReader = XmlReader.Create(new StringReader(sw.GetStringBuilder().ToString()), new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    xmlDoc.Load(xmlReader);
+                }
+
                 var xmlDocEl = xmlDoc.DocumentElement;
                 xmlDocEl.Attributes.Remove(xmlDocEl.Attributes["xmlns:xsd"]);
                 xmlDocEl.Attributes.Remove(xmlDocEl.Attributes["xmlns:xsi"]);
@@ -760,7 +774,7 @@ namespace DotNetNuke.Common.Utilities
         [DnnDeprecated(7, 0, 0, "Use XmlDocument.Load instead", RemovalVersion = 11)]
         public static partial XmlDocument GetXMLContent(string contentUrl)
         {
-            // This function reads an Xml document via a Url and returns it as an XmlDocument object
+            // This function reads an XML document via a URL and returns it as an XmlDocument object
             var functionReturnValue = new XmlDocument { XmlResolver = null };
             var req = WebRequest.Create(contentUrl);
             var result = req.GetResponse();

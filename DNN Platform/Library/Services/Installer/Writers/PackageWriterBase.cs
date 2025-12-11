@@ -535,8 +535,14 @@ namespace DotNetNuke.Services.Installer.Writers
         {
             string fileName = string.Empty;
 
-            // Create an XPathDocument from the Xml
-            var doc = new XPathDocument(XmlReader.Create(new FileStream(projFile.FullName, FileMode.Open, FileAccess.Read)));
+            // Create an XPathDocument from the XML
+            XPathDocument doc;
+            using (var fileStream = new FileStream(projFile.FullName, FileMode.Open, FileAccess.Read))
+            using (var projectFileReader = XmlReader.Create(fileStream))
+            {
+                doc = new XPathDocument(projectFileReader);
+            }
+
             XPathNavigator rootNav = doc.CreateNavigator();
             var manager = new XmlNamespaceManager(rootNav.NameTable);
             manager.AddNamespace("proj", "http://schemas.microsoft.com/developer/msbuild/2003");

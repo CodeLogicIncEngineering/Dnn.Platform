@@ -114,7 +114,9 @@ namespace DotNetNuke.Services.Installer
             this.InstallerInfo = new InstallerInfo(physicalSitePath, InstallMode.ManifestOnly);
             if (loadManifest)
             {
-                this.ReadManifest(XmlReader.Create(new FileStream(manifest, FileMode.Open, FileAccess.Read)));
+                using var fileStream = new FileStream(manifest, FileMode.Open, FileAccess.Read);
+                using var xmlReader = XmlReader.Create(fileStream);
+                this.ReadManifest(xmlReader);
             }
         }
 
@@ -166,6 +168,7 @@ namespace DotNetNuke.Services.Installer
 
             XPathDocument legacyDoc;
             string legacyManifest;
+            XmlReader legacyManifestReader;
             switch (packageType.ToLowerInvariant())
             {
                 case "module":
@@ -190,7 +193,10 @@ namespace DotNetNuke.Services.Installer
                     }
 
                     // Load manifest into XPathDocument for processing
-                    legacyDoc = new XPathDocument(XmlReader.Create(new StringReader(sb.ToString())));
+                    using (legacyManifestReader = XmlReader.Create(new StringReader(sb.ToString())))
+                    {
+                        legacyDoc = new XPathDocument(legacyManifestReader);
+                    }
 
                     // Parse the package nodes
                     nav = legacyDoc.CreateNavigator().SelectSingleNode("dotnetnuke");
@@ -202,7 +208,10 @@ namespace DotNetNuke.Services.Installer
                     if (string.IsNullOrEmpty(info.LegacyError))
                     {
                         legacyManifest = languageWriter.WriteManifest(false);
-                        legacyDoc = new XPathDocument(XmlReader.Create(new StringReader(legacyManifest)));
+                        using (legacyManifestReader = XmlReader.Create(new StringReader(legacyManifest)))
+                        {
+                            legacyDoc = new XPathDocument(legacyManifestReader);
+                        }
 
                         // Parse the package nodes
                         nav = legacyDoc.CreateNavigator().SelectSingleNode("dotnetnuke");
@@ -213,7 +222,10 @@ namespace DotNetNuke.Services.Installer
                     // Legacy Skin Object
                     var skinControlwriter = new SkinControlPackageWriter(rootNav, info);
                     legacyManifest = skinControlwriter.WriteManifest(false);
-                    legacyDoc = new XPathDocument(XmlReader.Create(new StringReader(legacyManifest)));
+                    using (legacyManifestReader = XmlReader.Create(new StringReader(legacyManifest)))
+                    {
+                        legacyDoc = new XPathDocument(legacyManifestReader);
+                    }
 
                     // Parse the package nodes
                     nav = legacyDoc.CreateNavigator().SelectSingleNode("dotnetnuke");
@@ -313,7 +325,9 @@ namespace DotNetNuke.Services.Installer
             this.InstallerInfo.Log.StartJob(Util.DNN_Reading);
             if (this.InstallerInfo.ManifestFile != null)
             {
-                this.ReadManifest(XmlReader.Create(new FileStream(this.InstallerInfo.ManifestFile.TempFileName, FileMode.Open, FileAccess.Read)));
+                using var fileStream = new FileStream(this.InstallerInfo.ManifestFile.TempFileName, FileMode.Open, FileAccess.Read);
+                using var xmlReader = XmlReader.Create(fileStream);
+                this.ReadManifest(xmlReader);
             }
 
             if (this.InstallerInfo.Log.Valid)

@@ -75,7 +75,8 @@ namespace DotNetNuke.Entities.Portals.Templates
 
             this.TemplatePath = Path.GetDirectoryName(templateToLoad.TemplateFilePath);
             this.Template = new XmlDocument { XmlResolver = null };
-            this.Template.LoadXml(buffer.ToString());
+            using var templateReader = XmlReader.Create(new StringReader(buffer.ToString()), new XmlReaderSettings { XmlResolver = null, });
+            this.Template.Load(templateReader);
         }
 
         internal PortalTemplateImporter(string templatePath, string templateFile)
@@ -84,7 +85,8 @@ namespace DotNetNuke.Entities.Portals.Templates
 
             this.TemplatePath = templatePath;
             this.Template = new XmlDocument { XmlResolver = null };
-            this.Template.LoadXml(buffer.ToString());
+            using var templateReader = XmlReader.Create(new StringReader(buffer.ToString()), new XmlReaderSettings { XmlResolver = null, });
+            this.Template.Load(templateReader);
         }
 
         public string TemplatePath { get; set; }
@@ -225,12 +227,15 @@ namespace DotNetNuke.Entities.Portals.Templates
                         string path = Path.Combine(this.TemplatePath, "admin.template");
                         if (!File.Exists(path))
                         {
-                            // if the template is a merged copy of a localized templte the
+                            // if the template is a merged copy of a localized template the
                             // admin.template may be one director up
                             path = Path.Combine(this.TemplatePath, "..\admin.template");
                         }
 
-                        xmlAdmin.Load(path);
+                        using (var templateReader = XmlReader.Create(path, new XmlReaderSettings { XmlResolver = null, }))
+                        {
+                            xmlAdmin.Load(templateReader);
+                        }
 
                         XmlNode adminNode = xmlAdmin.SelectSingleNode("//portal/tabs");
                         foreach (XmlNode adminTabNode in adminNode.ChildNodes)

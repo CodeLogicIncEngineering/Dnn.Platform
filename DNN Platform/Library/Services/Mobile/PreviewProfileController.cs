@@ -141,7 +141,11 @@ namespace DotNetNuke.Services.Mobile
                         if (!string.IsNullOrEmpty(dataPath) && File.Exists(dataPath))
                         {
                             var serializer = new XmlSerializer(typeof(List<PreviewProfile>));
-                            profiles = (List<PreviewProfile>)serializer.Deserialize(XmlReader.Create(File.OpenRead(dataPath)));
+                            using (var fileStream = File.OpenRead(dataPath))
+                            using (var xmlReader = XmlReader.Create(fileStream))
+                            {
+                                profiles = (List<PreviewProfile>)serializer.Deserialize(xmlReader);
+                            }
 
                             profiles?.ForEach(p =>
                             {

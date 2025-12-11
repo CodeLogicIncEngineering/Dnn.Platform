@@ -1230,7 +1230,11 @@ namespace DotNetNuke.Services.Install
 
                 // Loading into XML doc
                 var xmlDoc = new XmlDocument { XmlResolver = null };
-                xmlDoc.Load(myResponseReader);
+                using (var xmlReader = XmlReader.Create(myResponseReader, new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    xmlDoc.Load(xmlReader);
+                }
+
                 var languages = xmlDoc.SelectNodes("available/language");
                 var packages = new List<PackageInfo>();
 

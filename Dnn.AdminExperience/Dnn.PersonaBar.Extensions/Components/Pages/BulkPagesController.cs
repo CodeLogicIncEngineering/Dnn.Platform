@@ -409,7 +409,11 @@ namespace Dnn.PersonaBar.Pages.Components
             var xmlDoc = new XmlDocument { XmlResolver = null };
             try
             {
-                xmlDoc.Load(templateFile);
+                using (var xmlReader = XmlReader.Create(templateFile, new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    xmlDoc.Load(xmlReader);
+                }
+
                 TabController.DeserializePanes(this.businessControllerProvider, xmlDoc.SelectSingleNode("//portal/tabs/tab/panes"), tab.PortalID, tab.TabID, PortalTemplateModuleAction.Ignore, new Hashtable());
             }
             catch (Exception ex)

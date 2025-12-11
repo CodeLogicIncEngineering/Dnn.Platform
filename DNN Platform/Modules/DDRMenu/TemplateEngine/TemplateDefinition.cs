@@ -134,7 +134,10 @@ namespace DotNetNuke.Web.DDRMenu.TemplateEngine
                 baseDef = new TemplateDefinition { Folder = Path.GetDirectoryName(manifestUrl) };
 
                 var xml = new XmlDocument { XmlResolver = null };
-                xml.Load(manifestPath);
+                using (var manifestReader = XmlReader.Create(manifestPath, new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    xml.Load(manifestReader);
+                }
 
                 var resolver = new PathResolver(baseDef.Folder);
 

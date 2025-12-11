@@ -82,7 +82,10 @@ namespace DotNetNuke.Services.Syndication
             try
             {
                 var opmlDoc = new XmlDocument { XmlResolver = null };
-                opmlDoc.Load(path);
+                using (var opmlReader = XmlReader.Create(path, new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    opmlDoc.Load(opmlReader);
+                }
 
                 return LoadFromXml(opmlDoc);
             }

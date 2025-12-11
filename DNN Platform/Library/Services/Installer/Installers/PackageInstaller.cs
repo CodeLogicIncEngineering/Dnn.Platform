@@ -37,8 +37,13 @@ namespace DotNetNuke.Services.Installer.Installers
             this.Package = package;
             if (!string.IsNullOrEmpty(package.Manifest))
             {
-                // Create an XPathDocument from the Xml
-                var doc = new XPathDocument(XmlReader.Create(new StringReader(package.Manifest)));
+                // Create an XPathDocument from the XML
+                XPathDocument doc;
+                using (var manifestReader = XmlReader.Create(new StringReader(package.Manifest)))
+                {
+                    doc = new XPathDocument(manifestReader);
+                }
+
                 XPathNavigator nav = doc.CreateNavigator().SelectSingleNode("package");
                 this.ReadComponents(nav);
             }
@@ -71,8 +76,13 @@ namespace DotNetNuke.Services.Installer.Installers
 
             if (!string.IsNullOrEmpty(packageManifest))
             {
-                // Create an XPathDocument from the Xml
-                var doc = new XPathDocument(XmlReader.Create(new StringReader(packageManifest)));
+                // Create an XPathDocument from the XML
+                XPathDocument doc;
+                using (var xmlReader = XmlReader.Create(new StringReader(packageManifest)))
+                {
+                    doc = new XPathDocument(xmlReader);
+                }
+
                 XPathNavigator nav = doc.CreateNavigator().SelectSingleNode("package");
                 this.ReadManifest(nav);
             }

@@ -3092,7 +3092,11 @@ namespace DotNetNuke.Common
         public static XmlNode GetContent(string content, string contentType)
         {
             var xmlDoc = new XmlDocument { XmlResolver = null };
-            xmlDoc.LoadXml(content);
+            using (var xmlReader = XmlReader.Create(new StringReader(content), new XmlReaderSettings { XmlResolver = null, }))
+            {
+                xmlDoc.Load(xmlReader);
+            }
+
             if (string.IsNullOrEmpty(contentType))
             {
                 return xmlDoc.DocumentElement;

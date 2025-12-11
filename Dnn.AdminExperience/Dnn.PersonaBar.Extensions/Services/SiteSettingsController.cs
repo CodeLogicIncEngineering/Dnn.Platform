@@ -2781,7 +2781,8 @@ namespace Dnn.PersonaBar.SiteSettings.Services
 
                             try
                             {
-                                dsDef.ReadXml(XmlReader.Create(file.Key.ToString()));
+                                using var xmlReader = XmlReader.Create(file.Key.ToString());
+                                dsDef.ReadXml(xmlReader);
                             }
                             catch
                             {
@@ -2791,7 +2792,8 @@ namespace Dnn.PersonaBar.SiteSettings.Services
 
                             try
                             {
-                                dsRes.ReadXml(XmlReader.Create(ResourceFile(file.Key.ToString(), locale.Code)));
+                                using var xmlReader = XmlReader.Create(ResourceFile(file.Key.ToString(), locale.Code));
+                                dsRes.ReadXml(xmlReader);
                             }
                             catch
                             {

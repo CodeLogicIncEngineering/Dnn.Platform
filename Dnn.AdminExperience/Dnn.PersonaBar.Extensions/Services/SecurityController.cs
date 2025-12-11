@@ -710,7 +710,10 @@ namespace Dnn.PersonaBar.Security.Services
                 // load XML document
                 StreamReader oReader = new StreamReader(oStream);
                 XmlDocument oDoc = new XmlDocument { XmlResolver = null, };
-                oDoc.LoadXml(oReader.ReadToEnd());
+                using (var xmlReader = XmlReader.Create(new StringReader(oReader.ReadToEnd()), new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    oDoc.Load(xmlReader);
+                }
 
                 List<object> items = [];
                 foreach (XmlNode selectNode in oDoc.SelectNodes(BULLETINXMLNODEPATH))

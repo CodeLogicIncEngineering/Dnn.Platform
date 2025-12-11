@@ -129,7 +129,8 @@ namespace DotNetNuke.Services.Localization
                 if (File.Exists(filePath))
                 {
                     doc = new XmlDocument { XmlResolver = null };
-                    doc.Load(filePath);
+                    using var xmlReader = XmlReader.Create(filePath, new XmlReaderSettings { XmlResolver = null, });
+                    doc.Load(xmlReader);
                 }
                 else
                 {
@@ -317,7 +318,12 @@ namespace DotNetNuke.Services.Localization
                     {
                         if (filePath != null)
                         {
-                            var doc = new XPathDocument(XmlReader.Create(filePath));
+                            XPathDocument doc;
+                            using (var xmlReader = XmlReader.Create(filePath))
+                            {
+                                doc = new XPathDocument(xmlReader);
+                            }
+
                             resources = new Dictionary<string, string>();
                             foreach (XPathNavigator nav in doc.CreateNavigator().Select("root/data"))
                             {

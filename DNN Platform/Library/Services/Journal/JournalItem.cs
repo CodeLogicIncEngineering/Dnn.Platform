@@ -5,6 +5,7 @@ namespace DotNetNuke.Services.Journal
 {
     using System;
     using System.Data;
+    using System.IO;
     using System.Xml;
     using System.Xml.Serialization;
 
@@ -110,7 +111,11 @@ namespace DotNetNuke.Services.Journal
             if (!string.IsNullOrEmpty(Null.SetNullString(dr["JournalXML"])))
             {
                 this.JournalXML = new XmlDocument { XmlResolver = null };
-                this.JournalXML.LoadXml(dr["JournalXML"].ToString());
+                using (var journalReader = XmlReader.Create(new StringReader(dr["JournalXML"].ToString()), new XmlReaderSettings { XmlResolver = null, }))
+                {
+                    this.JournalXML.Load(journalReader);
+                }
+
                 XmlNode xRoot = this.JournalXML.DocumentElement;
                 XmlNode xNode = xRoot.SelectSingleNode("//items/item/body");
                 if (xNode != null)

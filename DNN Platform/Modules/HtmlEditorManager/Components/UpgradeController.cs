@@ -138,7 +138,11 @@ namespace DotNetNuke.Modules.HtmlEditorManager.Components
                 try
                 {
                     var doc = new XmlDocument { XmlResolver = null };
-                    doc.Load(fileName);
+                    using (var xmlReader = XmlReader.Create(fileName, new XmlReaderSettings { XmlResolver = null, }))
+                    {
+                        doc.Load(xmlReader);
+                    }
+
                     var root = doc.DocumentElement;
                     var docFilters = root?.SelectNodes("/configuration/property[@name='DocumentsFilters']");
                     if (docFilters != null)

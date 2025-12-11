@@ -131,22 +131,27 @@ namespace DotNetNuke.Common.Utilities
 
         public static TObject DeserializeObject<TObject>(string fileName)
         {
-            return DeserializeObject<TObject>(XmlReader.Create(new FileStream(fileName, FileMode.Open, FileAccess.Read)));
+            using var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            using var xmlReader = XmlReader.Create(fileStream);
+            return DeserializeObject<TObject>(xmlReader);
         }
 
         public static TObject DeserializeObject<TObject>(XmlDocument document)
         {
-            return DeserializeObject<TObject>(XmlReader.Create(new StringReader(document.OuterXml)));
+            using var xmlReader = XmlReader.Create(new StringReader(document.OuterXml));
+            return DeserializeObject<TObject>(xmlReader);
         }
 
         public static TObject DeserializeObject<TObject>(Stream stream)
         {
-            return DeserializeObject<TObject>(XmlReader.Create(stream));
+            using var xmlReader = XmlReader.Create(stream);
+            return DeserializeObject<TObject>(xmlReader);
         }
 
         public static TObject DeserializeObject<TObject>(TextReader reader)
         {
-            return DeserializeObject<TObject>(XmlReader.Create(reader));
+            using var xmlReader = XmlReader.Create(reader);
+            return DeserializeObject<TObject>(xmlReader);
         }
 
         public static TObject DeserializeObject<TObject>(XmlReader reader)
@@ -511,44 +516,39 @@ namespace DotNetNuke.Common.Utilities
         }
 
         /// <summary>SerializeObject serializes an Object.</summary>
-        /// <param name="objObject">The object to Initialise.</param>
-        /// <param name="fileName">A filename for the resulting serialized xml.</param>
+        /// <param name="objObject">The object to initialize.</param>
+        /// <param name="fileName">A filename for the resulting serialized XML.</param>
         public static void SerializeObject(object objObject, string fileName)
         {
-            using (
-                XmlWriter writer = XmlWriter.Create(fileName, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Fragment)))
-            {
-                SerializeObject(objObject, writer);
-                writer.Flush();
-            }
+            using var writer = XmlWriter.Create(fileName, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Fragment));
+            SerializeObject(objObject, writer);
+            writer.Flush();
         }
 
         /// <summary>SerializeObject serializes an Object.</summary>
-        /// <param name="objObject">The object to Initialise.</param>
+        /// <param name="objObject">The object to initialize.</param>
         /// <param name="document">An XmlDocument to serialize to.</param>
         public static void SerializeObject(object objObject, XmlDocument document)
         {
             var sb = new StringBuilder();
-            using (var writer = XmlWriter.Create(sb, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Document)))
-            {
-                // Serialize the object
-                SerializeObject(objObject, writer);
+            using var writer = XmlWriter.Create(sb, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Document));
 
-                // Load XmlDocument
-                document.LoadXml(sb.ToString());
-            }
+            // Serialize the object
+            SerializeObject(objObject, writer);
+
+            // Load XmlDocument
+            using var xmlReader = XmlReader.Create(new StringReader(sb.ToString()), new XmlReaderSettings { XmlResolver = null, });
+            document.Load(xmlReader);
         }
 
         /// <summary>SerializeObject serializes an Object.</summary>
-        /// <param name="objObject">The object to Initialise.</param>
+        /// <param name="objObject">The object to initialize.</param>
         /// <param name="stream">A Stream to serialize to.</param>
         public static void SerializeObject(object objObject, Stream stream)
         {
-            using (XmlWriter writer = XmlWriter.Create(stream, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Fragment)))
-            {
-                SerializeObject(objObject, writer);
-                writer.Flush();
-            }
+            using var writer = XmlWriter.Create(stream, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Fragment));
+            SerializeObject(objObject, writer);
+            writer.Flush();
         }
 
         /// <summary>SerializeObject serializes an Object.</summary>
@@ -556,12 +556,9 @@ namespace DotNetNuke.Common.Utilities
         /// <param name="textWriter">A TextWriter to serialize to.</param>
         public static void SerializeObject(object objObject, TextWriter textWriter)
         {
-            using (
-                XmlWriter writer = XmlWriter.Create(textWriter, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Fragment)))
-            {
-                SerializeObject(objObject, writer);
-                writer.Flush();
-            }
+            using var writer = XmlWriter.Create(textWriter, XmlUtils.GetXmlWriterSettings(ConformanceLevel.Fragment));
+            SerializeObject(objObject, writer);
+            writer.Flush();
         }
 
         /// <summary>SerializeObject serializes an Object.</summary>

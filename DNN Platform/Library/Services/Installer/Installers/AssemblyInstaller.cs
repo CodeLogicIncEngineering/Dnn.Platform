@@ -166,7 +166,10 @@ namespace DotNetNuke.Services.Installer.Installers
         private static XmlDocument GetXmlMergeDoc(string xmlMergePath, string name, string publicKeyToken, string oldVersion, string newVersion)
         {
             var xmlMergeDoc = new XmlDocument { XmlResolver = null };
-            xmlMergeDoc.Load(xmlMergePath);
+            using (var xmlMergeReader = XmlReader.Create(xmlMergePath, new XmlReaderSettings { XmlResolver = null, }))
+            {
+                xmlMergeDoc.Load(xmlMergeReader);
+            }
 
             var namespaceManager = new XmlNamespaceManager(xmlMergeDoc.NameTable);
             namespaceManager.AddNamespace("ab", "urn:schemas-microsoft-com:asm.v1");

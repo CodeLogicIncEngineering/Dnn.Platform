@@ -1077,7 +1077,8 @@ namespace DotNetNuke.Entities.Tabs
             var skinFileName = HttpContext.Current.Server.MapPath(this.SkinSrc.Replace(".ascx", ".doctype.xml"));
             if (File.Exists(skinFileName))
             {
-                xmlSkinDocType.Load(skinFileName);
+                using var doctypeReader = XmlReader.Create(skinFileName, new XmlReaderSettings { XmlResolver = null, });
+                xmlSkinDocType.Load(doctypeReader);
                 return xmlSkinDocType;
             }
 
@@ -1085,7 +1086,8 @@ namespace DotNetNuke.Entities.Tabs
             var packageFileName = HttpContext.Current.Server.MapPath(SkinSrcRegex.Replace(this.SkinSrc, "skin.doctype.xml"));
             if (File.Exists(packageFileName))
             {
-                xmlSkinDocType.Load(packageFileName);
+                using var doctypeReader = XmlReader.Create(packageFileName, new XmlReaderSettings { XmlResolver = null, });
+                xmlSkinDocType.Load(doctypeReader);
                 return xmlSkinDocType;
             }
 
