@@ -68,7 +68,7 @@ namespace DotNetNuke.HttpModules.RequestFilter
                 // Create a FileStream for the Config file
                 using (var fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    var doc = new XPathDocument(fileReader);
+                    var doc = new XPathDocument(XmlReader.Create(fileReader));
                     XPathNodeIterator ruleList = doc.CreateNavigator().Select("/configuration/blockrequests/rule");
                     while (ruleList.MoveNext())
                     {

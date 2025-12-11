@@ -317,7 +317,7 @@ namespace DotNetNuke.Services.Localization
                     {
                         if (filePath != null)
                         {
-                            var doc = new XPathDocument(filePath);
+                            var doc = new XPathDocument(XmlReader.Create(filePath));
                             resources = new Dictionary<string, string>();
                             foreach (XPathNavigator nav in doc.CreateNavigator().Select("root/data"))
                             {

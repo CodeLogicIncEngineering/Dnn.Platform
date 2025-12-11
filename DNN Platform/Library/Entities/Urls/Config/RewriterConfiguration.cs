@@ -5,9 +5,11 @@ namespace DotNetNuke.Entities.Urls.Config
 {
     using System;
     using System.IO;
+    using System.Xml;
     using System.Xml.Serialization;
     using System.Xml.XPath;
 
+    using DotNetNuke.Abstractions.Logging;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Instrumentation;
     using DotNetNuke.Services.Cache;
@@ -53,7 +55,7 @@ namespace DotNetNuke.Entities.Urls.Config
 
                             // Create a FileStream for the Config file
                             fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                            var doc = new XPathDocument(fileReader);
+                            var doc = new XPathDocument(XmlReader.Create(fileReader));
                             config = new RewriterConfiguration { Rules = new RewriterRuleCollection() };
                             foreach (XPathNavigator nav in doc.CreateNavigator().Select("RewriterConfig/Rules/RewriterRule"))
                             {
@@ -77,7 +79,7 @@ namespace DotNetNuke.Entities.Urls.Config
             catch (Exception ex)
             {
                 // log it
-                var log = new LogInfo { LogTypeKey = EventLogController.EventLogType.HOST_ALERT.ToString() };
+                var log = new LogInfo { LogTypeKey = nameof(EventLogType.HOST_ALERT) };
                 log.AddProperty("UrlRewriter.RewriterConfiguration", "GetConfig Failed");
                 log.AddProperty("FilePath", filePath);
                 log.AddProperty("ExceptionMessage", ex.Message);
@@ -86,11 +88,8 @@ namespace DotNetNuke.Entities.Urls.Config
             }
             finally
             {
-                if (fileReader != null)
-                {
-                    // Close the Reader
-                    fileReader.Close();
-                }
+                // Close the Reader
+                fileReader?.Close();
             }
 
             return config;

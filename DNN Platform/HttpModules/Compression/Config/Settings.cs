@@ -7,6 +7,7 @@ namespace DotNetNuke.HttpModules.Compression
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Xml;
     using System.Xml.XPath;
 
     using DotNetNuke.Abstractions.Application;
@@ -68,7 +69,7 @@ namespace DotNetNuke.HttpModules.Compression
             // Create a FileStream for the Config file
             using (var fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                var doc = new XPathDocument(fileReader);
+                var doc = new XPathDocument(XmlReader.Create(fileReader));
                 foreach (XPathNavigator nav in doc.CreateNavigator().Select("compression/excludedPaths/path"))
                 {
                     settings.excludedPaths.Add(nav.Value.ToLowerInvariant());

@@ -7,6 +7,7 @@ namespace DotNetNuke.Services.Installer.Installers
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Xml;
     using System.Xml.XPath;
 
     using DotNetNuke.Common;
@@ -37,7 +38,7 @@ namespace DotNetNuke.Services.Installer.Installers
             if (!string.IsNullOrEmpty(package.Manifest))
             {
                 // Create an XPathDocument from the Xml
-                var doc = new XPathDocument(new StringReader(package.Manifest));
+                var doc = new XPathDocument(XmlReader.Create(new StringReader(package.Manifest)));
                 XPathNavigator nav = doc.CreateNavigator().SelectSingleNode("package");
                 this.ReadComponents(nav);
             }
@@ -71,7 +72,7 @@ namespace DotNetNuke.Services.Installer.Installers
             if (!string.IsNullOrEmpty(packageManifest))
             {
                 // Create an XPathDocument from the Xml
-                var doc = new XPathDocument(new StringReader(packageManifest));
+                var doc = new XPathDocument(XmlReader.Create(new StringReader(packageManifest)));
                 XPathNavigator nav = doc.CreateNavigator().SelectSingleNode("package");
                 this.ReadManifest(nav);
             }

@@ -7,6 +7,7 @@ namespace DotNetNuke.Services.Analytics.Config
     using System.Collections;
     using System.Globalization;
     using System.IO;
+    using System.Xml;
     using System.Xml.Serialization;
     using System.Xml.XPath;
 
@@ -75,7 +76,7 @@ namespace DotNetNuke.Services.Analytics.Config
                     // Create a FileStream for the Config file
                     fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                    var doc = new XPathDocument(fileReader);
+                    var doc = new XPathDocument(XmlReader.Create(fileReader));
                     config = new AnalyticsConfiguration();
                     config.Rules = new AnalyticsRuleCollection();
                     config.Settings = new AnalyticsSettingCollection();

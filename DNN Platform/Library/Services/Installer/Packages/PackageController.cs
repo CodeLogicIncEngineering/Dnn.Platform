@@ -129,7 +129,7 @@ namespace DotNetNuke.Services.Installer.Packages
                         var package = new PackageInfo { Manifest = manifest };
                         if (!string.IsNullOrEmpty(manifest))
                         {
-                            var doc = new XPathDocument(new StringReader(manifest));
+                            var doc = new XPathDocument(XmlReader.Create(new StringReader(manifest)));
                             XPathNavigator rootNav = doc.CreateNavigator().SelectSingleNode("dotnetnuke");
                             string packageType = string.Empty;
                             if (rootNav.Name == "dotnetnuke")

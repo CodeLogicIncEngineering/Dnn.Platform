@@ -5,6 +5,7 @@ namespace DotNetNuke.HttpModules.Config
 {
     using System;
     using System.IO;
+    using System.Xml;
     using System.Xml.Serialization;
     using System.Xml.XPath;
 
@@ -55,7 +56,7 @@ namespace DotNetNuke.HttpModules.Config
 
                     // Create a FileStream for the Config file
                     fileReader = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    var doc = new XPathDocument(fileReader);
+                    var doc = new XPathDocument(XmlReader.Create(fileReader));
                     config = new AnalyticsEngineConfiguration { AnalyticsEngines = new AnalyticsEngineCollection() };
                     foreach (XPathNavigator nav in
                         doc.CreateNavigator().Select("AnalyticsEngineConfig/Engines/AnalyticsEngine"))

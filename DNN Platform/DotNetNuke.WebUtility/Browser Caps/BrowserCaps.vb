@@ -5,6 +5,7 @@ Imports System
 Imports System.Globalization
 Imports System.IO
 Imports System.Web.Caching
+Imports System.Xml
 Imports System.Xml.Serialization
 Imports System.Xml.XPath
 
@@ -86,10 +87,10 @@ Namespace DotNetNuke.UI.Utilities
 
                         'Create a FileStream for the Config file
                         objReader = New FileStream(strPath, FileMode.Open, FileAccess.Read, FileShare.Read)
-                        objDoc = New XPathDocument(objReader)
+                        objDoc = New XPathDocument(XmlReader.Create(objReader))
                     Else
                         tr = New StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ClientAPICaps.config"))
-                        objDoc = New XPathDocument(tr)
+                        objDoc = New XPathDocument(XmlReader.Create(tr))
                     End If
 
                     If Not objDoc Is Nothing Then
