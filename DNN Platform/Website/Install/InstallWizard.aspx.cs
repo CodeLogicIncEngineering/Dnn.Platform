@@ -26,6 +26,7 @@ namespace DotNetNuke.Services.Install
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Data;
     using DotNetNuke.Entities.Portals;
+    using DotNetNuke.Entities.Users;
     using DotNetNuke.Framework;
     using DotNetNuke.Instrumentation;
     using DotNetNuke.Services.Installer.Blocker;
@@ -98,6 +99,7 @@ namespace DotNetNuke.Services.Install
         private XmlDocument installTemplate;
 
         /// <summary>Initializes a new instance of the <see cref="InstallWizard"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.1. Please use overload with IUserController. Scheduled removal in v12.0.0.")]
         public InstallWizard()
             : this(null, null, null, null)
         {
@@ -108,8 +110,20 @@ namespace DotNetNuke.Services.Install
         /// <param name="appStatus">The application status.</param>
         /// <param name="hostSettings">The host settings.</param>
         /// <param name="portalTemplateController">The portal template controller.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.1. Please use overload with IUserController. Scheduled removal in v12.0.0.")]
         public InstallWizard(IPortalController portalController, IApplicationStatusInfo appStatus, IHostSettings hostSettings, IPortalTemplateController portalTemplateController)
-            : base(portalController, appStatus, hostSettings)
+            : this(portalController, appStatus, hostSettings, null, portalTemplateController)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="InstallWizard"/> class.</summary>
+        /// <param name="portalController">The portal controller.</param>
+        /// <param name="appStatus">The application status.</param>
+        /// <param name="hostSettings">The host settings.</param>
+        /// <param name="userController">The user controller.</param>
+        /// <param name="portalTemplateController">The portal template controller.</param>
+        public InstallWizard(IPortalController portalController, IApplicationStatusInfo appStatus, IHostSettings hostSettings, IUserController userController, IPortalTemplateController portalTemplateController)
+            : base(portalController, appStatus, hostSettings, userController)
         {
             this.appStatus = appStatus ?? Globals.GetCurrentServiceProvider().GetRequiredService<IApplicationStatusInfo>();
             this.portalTemplateController = portalTemplateController ?? Globals.GetCurrentServiceProvider().GetRequiredService<IPortalTemplateController>();
