@@ -17,6 +17,7 @@ namespace Dnn.PersonaBar.SiteSettings.Services
     using System.Threading;
     using System.Web;
     using System.Web.Http;
+    using System.Xml;
 
     using Dnn.PersonaBar.Library;
     using Dnn.PersonaBar.Library.Attributes;
@@ -2780,7 +2781,7 @@ namespace Dnn.PersonaBar.SiteSettings.Services
 
                             try
                             {
-                                dsDef.ReadXml(file.Key.ToString());
+                                dsDef.ReadXml(XmlReader.Create(file.Key.ToString()));
                             }
                             catch
                             {
@@ -2790,7 +2791,7 @@ namespace Dnn.PersonaBar.SiteSettings.Services
 
                             try
                             {
-                                dsRes.ReadXml(ResourceFile(file.Key.ToString(), locale.Code));
+                                dsRes.ReadXml(XmlReader.Create(ResourceFile(file.Key.ToString(), locale.Code)));
                             }
                             catch
                             {
