@@ -4,7 +4,6 @@
 
 namespace DotNetNuke.Web.Api
 {
-    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Net.Http;
@@ -15,6 +14,7 @@ namespace DotNetNuke.Web.Api
     using DotNetNuke.Entities.Tabs;
     using DotNetNuke.Instrumentation;
 
+    /// <summary>The standard <see cref="ITabAndModuleInfoProvider"/> implementation.</summary>
     public sealed class StandardTabAndModuleInfoProvider : ITabAndModuleInfoProvider
     {
         private const string ModuleIdKey = "ModuleId";
@@ -40,11 +40,10 @@ namespace DotNetNuke.Web.Api
         /// <inheritdoc/>
         public bool TryFindModuleInfo(HttpRequestMessage request, out ModuleInfo moduleInfo)
         {
-            int tabId, moduleId;
-            if (TryFindTabId(request, out tabId, false) && TryFindModuleId(request, out moduleId, false))
+            if (TryFindTabId(request, out var tabId, false) && TryFindModuleId(request, out var moduleId, false))
             {
                 moduleInfo = ModuleController.Instance.GetModule(moduleId, tabId, false);
-                if (moduleInfo != null && moduleInfo.IsDeleted)
+                if (moduleInfo is { IsDeleted: true, })
                 {
                     moduleInfo = null;
                 }
@@ -65,8 +64,7 @@ namespace DotNetNuke.Web.Api
 
             if (tryMoniker)
             {
-                ModuleInfo moduleInfo;
-                if (TryFindByMoniker(request, out moduleInfo))
+                if (TryFindByMoniker(request, out var moduleInfo))
                 {
                     tabId = moduleInfo.TabID;
                     return true;
@@ -86,8 +84,7 @@ namespace DotNetNuke.Web.Api
 
             if (tryMoniker)
             {
-                ModuleInfo moduleInfo;
-                if (TryFindByMoniker(request, out moduleInfo))
+                if (TryFindByMoniker(request, out var moduleInfo))
                 {
                     moduleId = moduleInfo.ModuleID;
                     return true;
@@ -100,8 +97,7 @@ namespace DotNetNuke.Web.Api
         private static int FindInt(HttpRequestMessage requestMessage, string key)
         {
             string value = null;
-            IEnumerable<string> values;
-            if (requestMessage != null && requestMessage.Headers.TryGetValues(key, out values))
+            if (requestMessage != null && requestMessage.Headers.TryGetValues(key, out var values))
             {
                 value = values.FirstOrDefault();
             }
@@ -112,8 +108,7 @@ namespace DotNetNuke.Web.Api
                 value = queryString[key];
             }
 
-            int id;
-            return int.TryParse(value, out id) ? id : Null.NullInteger;
+            return int.TryParse(value, out var id) ? id : Null.NullInteger;
         }
 
         private static bool TryFindByMoniker(HttpRequestMessage requestMessage, out ModuleInfo moduleInfo)
@@ -125,7 +120,7 @@ namespace DotNetNuke.Web.Api
             }
 
             moduleInfo = id > Null.NullInteger ? ModuleController.Instance.GetTabModule(id) : null;
-            if (moduleInfo != null && moduleInfo.IsDeleted)
+            if (moduleInfo is { IsDeleted: true, })
             {
                 moduleInfo = null;
             }
@@ -135,9 +130,8 @@ namespace DotNetNuke.Web.Api
 
         private static int FindIntInHeader(HttpRequestMessage requestMessage, string key)
         {
-            IEnumerable<string> values;
             string value = null;
-            if (requestMessage != null && requestMessage.Headers.TryGetValues(key, out values))
+            if (requestMessage != null && requestMessage.Headers.TryGetValues(key, out var values))
             {
                 value = values.FirstOrDefault();
             }

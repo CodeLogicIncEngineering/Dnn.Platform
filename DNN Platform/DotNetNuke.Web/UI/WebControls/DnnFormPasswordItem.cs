@@ -13,10 +13,12 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Web.Client;
     using DotNetNuke.Web.Client.ClientResourceManagement;
 
+    /// <summary>A password control.</summary>
     public class DnnFormPasswordItem : DnnFormItemBase
     {
         private TextBox password;
 
+        /// <summary>Gets or sets the CSS class for the text box.</summary>
         public string TextBoxCssClass
         {
             get
@@ -30,6 +32,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the CSS class for the container.</summary>
         public string ContainerCssClass
         {
             get

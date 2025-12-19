@@ -23,6 +23,7 @@ namespace DotNetNuke.Web.UI.WebControls
         private object dataSource;
         private int itemCount;
 
+        /// <summary>Initializes a new instance of the <see cref="DnnFormEditor"/> class.</summary>
         public DnnFormEditor()
         {
             this.Items = new List<DnnFormItemBase>();
@@ -33,6 +34,7 @@ namespace DotNetNuke.Web.UI.WebControls
             this.ViewStateMode = ViewStateMode.Disabled;
         }
 
+        /// <summary>Gets a value indicating whether the editor is valid.</summary>
         public bool IsValid
         {
             get
@@ -52,6 +54,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the data source.</summary>
         public object DataSource
         {
             get
@@ -72,25 +75,31 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the form mode.</summary>
         public DnnFormMode FormMode { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether to encrypt IDs.</summary>
         public bool EncryptIds { get; set; }
 
+        /// <summary>Gets the items.</summary>
         [Category("Behavior")]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public List<DnnFormItemBase> Items { get; private set; }
 
+        /// <summary>Gets the sections.</summary>
         [Category("Behavior")]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public List<DnnFormSection> Sections { get; private set; }
 
+        /// <summary>Gets the tabs.</summary>
         [Category("Behavior")]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public List<DnnFormTab> Tabs { get; private set; }
 
+        /// <summary>Gets the local resource file path.</summary>
         protected string LocalResourceFile
         {
             get
@@ -119,6 +128,11 @@ namespace DotNetNuke.Web.UI.WebControls
             this.ChildControlsCreated = true;
         }
 
+        /// <summary>Sets the items up.</summary>
+        /// <param name="items">The items.</param>
+        /// <param name="parentControl">The parent control.</param>
+        /// <param name="localResourceFile">The local resource file.</param>
+        /// <param name="encryptIds">Whether to encrypt the IDs.</param>
         internal static void SetUpItems(IEnumerable<DnnFormItemBase> items, WebControl parentControl, string localResourceFile, bool encryptIds)
         {
             foreach (DnnFormItemBase item in items)
@@ -148,6 +162,8 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Creates the control hierarchy.</summary>
+        /// <param name="useDataSource">Whether to use the data source.</param>
         protected virtual void CreateControlHierarchy(bool useDataSource)
         {
             this.CssClass = string.IsNullOrEmpty(this.CssClass)

@@ -6,6 +6,7 @@ namespace DotNetNuke.Web.UI.WebControls;
 
 using System.Diagnostics.CodeAnalysis;
 
+/// <summary>A form mode.</summary>
 public enum DnnFormMode
 {
     /// <summary>Inherit.</summary>

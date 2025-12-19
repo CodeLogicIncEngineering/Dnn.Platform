@@ -10,6 +10,7 @@ namespace DotNetNuke.Web.UI.WebControls
 
     using DotNetNuke.Services.Localization;
 
+    /// <summary>A text link control.</summary>
     public class DnnTextLink : WebControl, ILocalizable
     {
         private bool localize = true;
@@ -23,6 +24,7 @@ namespace DotNetNuke.Web.UI.WebControls
             this.DisabledCssClass = "dnnTextLink disabled";
         }
 
+        /// <summary>Gets or sets the text.</summary>
         [Bindable(true)]
         [Category("Appearance")]
         [DefaultValue("")]
@@ -58,6 +60,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the URL.</summary>
         [Bindable(true)]
         [Category("Behavior")]
         [DefaultValue("")]
@@ -75,6 +78,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <inheritdoc cref="HyperLink.Target" />
         [Bindable(true)]
         [Category("Behavior")]
         [DefaultValue("")]
@@ -92,6 +96,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the CSS class to apply when the control is disabled.</summary>
         [Bindable(true)]
         [Category("Appearance")]
         [DefaultValue("")]

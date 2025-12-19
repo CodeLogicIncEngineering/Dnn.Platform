@@ -198,6 +198,7 @@ namespace DotNetNuke.Web.UI.WebControls.Internal.PropertyEditorControls
             this.Controls.Add(this.DateControl);
         }
 
+        /// <summary>Loads the date controls.</summary>
         protected virtual void LoadDateControls()
         {
             if (this.DateValue != Null.NullDate)

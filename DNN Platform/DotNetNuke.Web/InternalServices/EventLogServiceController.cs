@@ -17,11 +17,15 @@ namespace DotNetNuke.Web.InternalServices
     using DotNetNuke.Services.Log.EventLog;
     using DotNetNuke.Web.Api;
 
+    /// <summary>A web API which gets event log details.</summary>
     [DnnAuthorize]
     public class EventLogServiceController : DnnApiController
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(EventLogServiceController));
 
+        /// <summary>Gets event log details.</summary>
+        /// <param name="guid">The event log GUID.</param>
+        /// <returns>A response with an object with <c>Title</c> and <c>Content</c> fields.</returns>
         [HttpGet]
         [DnnAuthorize(StaticRoles = "Administrators")]
         [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", Justification = "Breaking change")]

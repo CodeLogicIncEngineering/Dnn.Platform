@@ -22,21 +22,30 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.UI.UserControls;
     using DotNetNuke.Web.Common;
 
+    /// <summary>A file picker uploader control.</summary>
     public class DnnFilePickerUploader : UserControl, IFilePickerUploader
     {
         // ReSharper disable InconsistentNaming
+
+        /// <summary>Gets or sets the files combo box.</summary>
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1306:FieldNamesMustBeginWithLowerCaseLetter", Justification = "Breaking Change")]
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Breaking change")]
         [SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields", Justification = "Breaking change")]
         protected DnnFileDropDownList FilesComboBox;
+
+        /// <summary>Gets or sets the folders combo box.</summary>
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1306:FieldNamesMustBeginWithLowerCaseLetter", Justification = "Breaking Change")]
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Breaking change")]
         [SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields", Justification = "Breaking change")]
         protected DnnFolderDropDownList FoldersComboBox;
+
+        /// <summary>Gets or sets the folders label.</summary>
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1306:FieldNamesMustBeginWithLowerCaseLetter", Justification = "Breaking Change")]
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Breaking change")]
         [SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields", Justification = "Breaking change")]
         protected Label FoldersLabel;
+
+        /// <summary>Gets or sets the file upload control.</summary>
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1306:FieldNamesMustBeginWithLowerCaseLetter", Justification = "Breaking Change")]
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Breaking change")]
         [SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields", Justification = "Breaking change")]
@@ -49,6 +58,7 @@ namespace DotNetNuke.Web.UI.WebControls
         private string folderPath = string.Empty;
         private bool folderPathSet;
 
+        /// <summary>Gets or sets a value indicating whether to use the user's personal folder.</summary>
         public bool UsePersonalFolder { get; set; }
 
         /// <inheritdoc/>
@@ -111,6 +121,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the folder path.</summary>
         public string FolderPath
         {
             get
@@ -151,10 +162,13 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets a value indicating whether the file is required.</summary>
         public bool Required { get; set; }
 
+        /// <summary>Gets or sets the user.</summary>
         public UserInfo User { get; set; }
 
+        /// <summary>Gets or sets the portal ID.</summary>
         public int PortalId
         {
             get
@@ -168,12 +182,14 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets a value indicating whether the control support the host file system.</summary>
         public bool SupportHost
         {
             get { return this.FileUploadControl.SupportHost; }
             set { this.FileUploadControl.SupportHost = value; }
         }
 
+        /// <summary>Gets the folder label.</summary>
         protected string FolderLabel
         {
             get
@@ -182,6 +198,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets the file label.</summary>
         protected string FileLabel
         {
             get
@@ -190,6 +207,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets upload file label.</summary>
         protected string UploadFileLabel
         {
             get
@@ -198,6 +216,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets the drop file label.</summary>
         protected string DropFileLabel
         {
             get

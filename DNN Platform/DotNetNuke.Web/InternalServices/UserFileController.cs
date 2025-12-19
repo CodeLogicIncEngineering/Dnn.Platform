@@ -17,6 +17,7 @@ namespace DotNetNuke.Web.InternalServices
     using DotNetNuke.Services.Localization;
     using DotNetNuke.Web.Api;
 
+    /// <summary>A web API controller for user files.</summary>
     public class UserFileController : DnnApiController
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(UserFileController));
@@ -24,6 +25,8 @@ namespace DotNetNuke.Web.InternalServices
         private static readonly HashSet<string> ImageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "jpg", "png", "gif", "jpe", "jpeg", "tiff", };
         private readonly IFolderManager folderManager = FolderManager.Instance;
 
+        /// <summary>Gets the items in the user's folder.</summary>
+        /// <returns>A response with a list of objects (containing the following fields: <c>id</c>, <c>name</c>, <c>folder</c>, <c>parentId</c>, <c>thumb_url</c>, <c>type</c>, <c>size</c>, <c>modified</c>, and <c>children</c>).</returns>
         [DnnAuthorize]
         [HttpGet]
         public HttpResponseMessage GetItems()
@@ -31,6 +34,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.GetItems(null);
         }
 
+        /// <summary>Gets the items in the user's folder.</summary>
+        /// <param name="fileExtensions">A comma-delimited list of file extensions.</param>
+        /// <returns>A response with a list of objects (containing the following fields: <c>id</c>, <c>name</c>, <c>folder</c>, <c>parentId</c>, <c>thumb_url</c>, <c>type</c>, <c>size</c>, <c>modified</c>, and <c>children</c>).</returns>
         [DnnAuthorize]
         [HttpGet]
         public HttpResponseMessage GetItems(string fileExtensions)

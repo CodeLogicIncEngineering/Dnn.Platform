@@ -10,6 +10,7 @@ namespace DotNetNuke.Web.UI.WebControls
 
     using DotNetNuke.UI.WebControls;
 
+    /// <summary>A file edit control.</summary>
     public class DnnFileEditControl : IntegerEditControl
     {
         private DnnFilePickerUploader fileControl;

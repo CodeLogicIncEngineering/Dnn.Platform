@@ -28,8 +28,10 @@ namespace DotNetNuke.Web.Mvp
             this.TabModuleSettings = new Dictionary<string, string>();
         }
 
+        /// <summary>Gets or sets the module settings.</summary>
         public Dictionary<string, string> ModuleSettings { get; set; }
 
+        /// <summary>Gets or sets the tab-module settings.</summary>
         public Dictionary<string, string> TabModuleSettings { get; set; }
 
         /// <inheritdoc/>
@@ -48,10 +50,12 @@ namespace DotNetNuke.Web.Mvp
             }
         }
 
+        /// <summary>A method which is called when the settings view is loaded.</summary>
         protected virtual void LoadSettings()
         {
         }
 
+        /// <summary>A method which is called when the settings are saved.</summary>
         protected virtual void SaveSettings()
         {
         }

@@ -8,8 +8,10 @@ namespace DotNetNuke.Web.UI.WebControls
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
+    /// <summary>A literal control.</summary>
     public class DnnFormLiteralItem : DnnFormItemBase
     {
+        /// <summary>Initializes a new instance of the <see cref="DnnFormLiteralItem"/> class.</summary>
         public DnnFormLiteralItem()
             : base()
         {
