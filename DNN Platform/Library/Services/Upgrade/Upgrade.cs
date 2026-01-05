@@ -2324,8 +2324,8 @@ namespace DotNetNuke.Services.Upgrade
         private static void AddPagePermission(TabPermissionCollection permissions, string key, int roleId)
         {
             DnnInstallLogger.InstallLogInfo(Localization.GetString("LogStart", Localization.GlobalResourceFile) + "AddPagePermission:" + key);
-            var permissionController = new PermissionController();
-            var permission = (IPermissionInfo)permissionController.GetPermissionByCodeAndKey("SYSTEM_TAB", key)[0];
+            IPermissionDefinitionService permissionController = new PermissionController();
+            var permission = permissionController.GetDefinitionsByCodeAndKey("SYSTEM_TAB", key).First();
 
             var tabPermission = new TabPermissionInfo();
             ((IPermissionInfo)tabPermission).PermissionId = permission.PermissionId;
