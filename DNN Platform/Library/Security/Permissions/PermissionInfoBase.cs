@@ -160,7 +160,7 @@ namespace DotNetNuke.Security.Permissions
             // Call the base classes fill method to populate base class properties
             base.FillInternal(dr);
 
-            var @this = (IPermissionInfo)this;
+            IPermissionInfo @this = this;
             @this.UserId = Null.SetNullInteger(dr["UserID"]);
             @this.Username = Null.SetNullString(dr["Username"]);
             @this.DisplayName = Null.SetNullString(dr["DisplayName"]);
