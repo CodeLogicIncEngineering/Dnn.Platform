@@ -84,12 +84,17 @@ namespace Dnn.ExportImport.Components.Services
         /// <inheritdoc/>
         public override uint Priority => 20;
 
+        /// <summary>Gets or sets a value indicating whether to include system pages.</summary>
         public virtual bool IncludeSystem { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether to ignore parent matches.</summary>
         public virtual bool IgnoreParentMatch { get; set; }
 
+        /// <summary>Gets the import info.</summary>
         protected ImportDto ImportDto { get; private set; }
 
+        /// <summary>Reset contents flag.</summary>
+        /// <param name="repository">The repository.</param>
         public static void ResetContentsFlag(ExportImportRepository repository)
         {
             // reset restored flag; if it same extracted db is reused, then content will be restored
@@ -175,6 +180,9 @@ namespace Dnn.ExportImport.Components.Services
             return this.Repository.GetCount<ExportTab>(x => x.IsSystem == this.IncludeSystem);
         }
 
+        /// <summary>Restore a tab.</summary>
+        /// <param name="tab">The tab.</param>
+        /// <param name="portalSettings">The portal settings.</param>
         public void RestoreTab(TabInfo tab, PortalSettings portalSettings)
         {
             var changeControlStateForTab = TabChangeSettings.Instance.GetChangeControlState(tab.PortalID, tab.TabID);
@@ -193,6 +201,12 @@ namespace Dnn.ExportImport.Components.Services
             }
         }
 
+        /// <summary>Imports a page.</summary>
+        /// <param name="otherTab">The other tab.</param>
+        /// <param name="exportedTabs">The exported tabs.</param>
+        /// <param name="localTabs">The local tabs.</param>
+        /// <param name="referenceTabs">A list of tab IDs to add references to.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="ImportDto"/> has an invalid <see cref="CollisionResolution"/>.</exception>
         protected virtual void ProcessImportPage(ExportTab otherTab, IList<ExportTab> exportedTabs, IList<TabInfo> localTabs, IList<int> referenceTabs)
         {
             var portalId = this.exportImportJob.PortalId;

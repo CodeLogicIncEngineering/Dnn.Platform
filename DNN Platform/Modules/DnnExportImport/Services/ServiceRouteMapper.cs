@@ -8,6 +8,7 @@ namespace Dnn.ExportImport.Services
 
     using DotNetNuke.Web.Api;
 
+    /// <summary>The mapper for web API routes for the Import/Export extension.</summary>
     public class ServiceRouteMapper : IServiceRouteMapper
     {
         private static readonly string[] Namespaces = [typeof(ServiceRouteMapper).Namespace,];

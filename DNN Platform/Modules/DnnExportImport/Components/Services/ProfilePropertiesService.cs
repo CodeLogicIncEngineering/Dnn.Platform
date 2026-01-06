@@ -15,6 +15,7 @@ namespace Dnn.ExportImport.Components.Services
 
     using DataProvider = Dnn.ExportImport.Components.Providers.DataProvider;
 
+    /// <summary>An export service for profile properties.</summary>
     public class ProfilePropertiesService : BasePortableService
     {
         /// <inheritdoc/>

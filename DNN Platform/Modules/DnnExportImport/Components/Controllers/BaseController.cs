@@ -34,6 +34,7 @@ namespace Dnn.ExportImport.Components.Controllers
     /// <summary>The import/export controller.</summary>
     public class BaseController
     {
+        /// <summary>The full path to the folder used for import/export.</summary>
         public static readonly string ExportFolder;
 
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(BaseController));
@@ -61,6 +62,7 @@ namespace Dnn.ExportImport.Components.Controllers
             this.PortableServices = portableServices ?? Globals.GetCurrentServiceProvider().GetServices<BasePortableService>();
         }
 
+        /// <summary>Gets the portable services.</summary>
         protected IEnumerable<BasePortableService> PortableServices { get; }
 
         /// <summary>Cancels the job.</summary>

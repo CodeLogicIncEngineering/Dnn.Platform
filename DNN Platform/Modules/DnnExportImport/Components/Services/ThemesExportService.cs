@@ -20,6 +20,7 @@ namespace Dnn.ExportImport.Components.Services
     using DotNetNuke.Instrumentation;
     using DotNetNuke.UI.Skins;
 
+    /// <summary>An export service for themes.</summary>
     public class ThemesExportService : BasePortableService
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(ThemesExportService));

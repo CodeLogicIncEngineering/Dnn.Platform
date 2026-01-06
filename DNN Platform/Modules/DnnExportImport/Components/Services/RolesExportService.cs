@@ -17,6 +17,7 @@ namespace Dnn.ExportImport.Components.Services
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Security.Roles;
 
+    /// <summary>An export service for roles.</summary>
     public class RolesExportService : BasePortableService
     {
         /// <inheritdoc/>
