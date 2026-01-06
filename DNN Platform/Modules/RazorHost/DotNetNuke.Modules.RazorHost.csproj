@@ -40,8 +40,6 @@
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\DotNetNuke.Modules.RazorHost.XML</DocumentationFile>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>
-    </NoWarn>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -51,8 +49,6 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\DotNetNuke.Modules.RazorHost.XML</DocumentationFile>
-    <NoWarn>
-    </NoWarn>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
