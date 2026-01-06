@@ -123,7 +123,7 @@ Namespace DotNetNuke.UI.Utilities
             ''' <inheritdoc />
             Public ReadOnly Property Generic_Current As Browser Implements IEnumerator(Of Browser).Current
                 Get
-                    Return Me.enumerator.Current
+                    Return CType(Me.enumerator.Current, Browser)
                 End Get
             End Property
 

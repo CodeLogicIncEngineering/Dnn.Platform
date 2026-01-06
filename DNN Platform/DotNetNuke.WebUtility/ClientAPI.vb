@@ -850,7 +850,7 @@ Namespace DotNetNuke.UI.Utilities
         ''' -----------------------------------------------------------------------------
         Public Shared Sub RegisterPostBackEventHandler(ByVal objParent As Control, ByVal strEventName As String, ByVal objDelegate As ClientAPIPostBackControl.PostBackEvent, ByVal blnMultipleHandlers As Boolean)
             Const CLIENTAPI_POSTBACKCTL_ID As String = "ClientAPIPostBackCtl"
-            Dim objCtl As ClientAPIPostBackControl = Globals.FindControlRecursive(objParent.Page, CLIENTAPI_POSTBACKCTL_ID)           'DotNetNuke.Globals.FindControlRecursive(objParent, CLIENTAPI_POSTBACKCTL_ID)
+            Dim objCtl As ClientAPIPostBackControl = CType(Globals.FindControlRecursive(objParent.Page, CLIENTAPI_POSTBACKCTL_ID), ClientAPIPostBackControl)
             If objCtl Is Nothing Then
                 objCtl = New ClientAPIPostBackControl(objParent.Page, strEventName, objDelegate)
                 objCtl.ID = CLIENTAPI_POSTBACKCTL_ID
@@ -965,7 +965,7 @@ Namespace DotNetNuke.UI.Utilities
         End Sub
 
         Public Shared Function RegisterControlMethods(ByVal CallbackControl As Control) As Boolean
-            RegisterControlMethods(CallbackControl, String.Empty)
+            Return RegisterControlMethods(CallbackControl, String.Empty)
         End Function
 
         Public Shared Function RegisterControlMethods(ByVal CallbackControl As Control, ByVal FriendlyID As String) As Boolean

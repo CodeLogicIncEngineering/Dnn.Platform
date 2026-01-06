@@ -149,7 +149,7 @@ Namespace DotNetNuke.UI.Utilities
             ''' <inheritdoc />
             Public ReadOnly Property Generic_Current As FunctionalityInfo Implements IEnumerator(Of FunctionalityInfo).Current
                 Get
-                    Return Me.enumerator.Current
+                    Return CType(Me.enumerator.Current, FunctionalityInfo)
                 End Get
             End Property
 
