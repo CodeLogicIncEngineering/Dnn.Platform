@@ -639,5 +639,17 @@ namespace DotNetNuke.Abstractions.Logging
         /// <summary>API Token Revoked.</summary>
         [SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Breaking change")]
         APITOKEN_REVOKED = 157,
+
+        /// <summary>Portal permission deleted.</summary>
+        [SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Breaking change")]
+        PORTALPERMISSION_DELETED = 158,
+
+        /// <summary>Portal permission created.</summary>
+        [SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Breaking change")]
+        PORTALPERMISSION_CREATED = 159,
+
+        /// <summary>Portal permission updated.</summary>
+        [SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Breaking change")]
+        PORTALPERMISSION_UPDATED = 160,
     }
 }
