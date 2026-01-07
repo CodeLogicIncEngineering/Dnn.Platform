@@ -8,7 +8,7 @@ namespace DotNetNuke.Entities.Modules.Actions
 
     /// <summary>Represents a collection of <see cref="ModuleAction" /> objects.</summary>
     /// <remarks>The ModuleActionCollection is a custom collection of ModuleActions.
-    /// Each ModuleAction in the collection has its own <see cref="DotNetNuke.ModuleAction.Actions" />
+    /// Each ModuleAction in the collection has its own <see cref="ModuleAction.Actions" />
     ///  collection which provides the ability to create a hierarchy of ModuleActions.</remarks>
     public class ModuleActionCollection : GenericCollectionBase<ModuleAction>
     {

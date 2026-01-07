@@ -105,6 +105,7 @@ namespace DotNetNuke.Entities.Modules.Settings
         /// <summary>Deserializes the property.</summary>
         /// <param name="settings">The settings.</param>
         /// <param name="property">The property.</param>
+        /// <param name="attribute">The attribute.</param>
         /// <param name="propertyValue">The property value.</param>
         /// <exception cref="InvalidCastException">Thrown if string value cannot be deserialized to desired type.</exception>
         private static void DeserializeProperty(T settings, PropertyInfo property, ParameterAttributeBase attribute, string propertyValue)

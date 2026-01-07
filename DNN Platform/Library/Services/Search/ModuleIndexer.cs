@@ -185,7 +185,7 @@ namespace DotNetNuke.Services.Search
             return searchDocuments;
         }
 
-        /// <summary>Gets a list of modules that are listed as "Searchable" from the module definition and check if they implement <see cref="ModuleSearchBase"/> -- which is a newer implementation of search that replaces <see cref="ISearchable"/>.</summary>
+        /// <summary>Gets a list of modules that are listed as "Searchable" from the module definition and check if they implement <see cref="ModuleSearchBase"/>.</summary>
         /// <param name="portalId">The portal ID.</param>
         /// <returns>A sequence of <see cref="ModuleInfo"/> instances.</returns>
         protected IEnumerable<ModuleInfo> GetSearchModules(int portalId)

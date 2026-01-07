@@ -188,6 +188,7 @@ namespace DotNetNuke.Services.Social.Messaging.Scheduler
         }
 
         /// <summary>Gets the email body item template.</summary>
+        /// <param name="portalSettings">The portal settings.</param>
         /// <param name="language">The language.</param>
         /// <returns>The email body template item from the Global Resource File: EMAIL_MESSAGING_DISPATCH_ITEM.</returns>
         private static string GetEmailBodyItemTemplate(PortalSettings portalSettings, string language)
@@ -196,6 +197,7 @@ namespace DotNetNuke.Services.Social.Messaging.Scheduler
         }
 
         /// <summary>Gets the email body template.</summary>
+        /// <param name="portalSettings">The portal settings.</param>
         /// <param name="language">The language.</param>
         /// <returns>The email body template from the Global Resource File: EMAIL_MESSAGING_DISPATCH_BODY.</returns>
         private static string GetEmailBodyTemplate(PortalSettings portalSettings, string language)
@@ -204,6 +206,7 @@ namespace DotNetNuke.Services.Social.Messaging.Scheduler
         }
 
         /// <summary>Gets the email subject template.</summary>
+        /// <param name="portalSettings">The portal settings.</param>
         /// <param name="language">The language.</param>
         /// <returns>The email subject template from the Global Resource File: EMAIL_SUBJECT_FORMAT.</returns>
         private static string GetEmailSubjectTemplate(PortalSettings portalSettings, string language)
@@ -212,6 +215,7 @@ namespace DotNetNuke.Services.Social.Messaging.Scheduler
         }
 
         /// <summary>Gets the friend request actions template.</summary>
+        /// <param name="portalSettings">The portal settings.</param>
         /// <param name="language">The language.</param>
         /// <returns>The friend request actions defined in the Global Resource File: EMAIL_SOCIAL_FRIENDREQUESTACTIONS.</returns>
         private static string GetFriendRequestActionsTemplate(PortalSettings portalSettings, string language)
@@ -220,6 +224,7 @@ namespace DotNetNuke.Services.Social.Messaging.Scheduler
         }
 
         /// <summary>Gets the follow request actions template.</summary>
+        /// <param name="portalSettings">The portal settings.</param>
         /// <param name="language">The language.</param>
         /// <returns>The follow request actions defined in the Global Resource File: EMAIL_SOCIAL_FOLLOWREQUESTACTIONS.</returns>
         private static string GetFollowRequestActionsTemplate(PortalSettings portalSettings, string language)

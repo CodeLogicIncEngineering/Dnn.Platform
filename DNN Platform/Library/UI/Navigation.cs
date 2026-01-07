@@ -336,6 +336,7 @@ namespace DotNetNuke.UI
         /// <param name="objBreadCrumbs">Hashtable of breadcrumb IDs to efficiently determine node's BreadCrumb property.</param>
         /// <param name="objPortalSettings">Portal settings object to determine if node is selected.</param>
         /// <param name="eToolTips">The tool-tip source.</param>
+        /// <param name="nodesLookup">A dictionary of nodes indexed by ID.</param>
         /// <remarks>Logic moved to separate sub to make GetNavigationNodes cleaner.</remarks>
         private static void AddNode(TabInfo objTab, DNNNodeCollection objNodes, Hashtable objBreadCrumbs, PortalSettings objPortalSettings, ToolTipSource eToolTips, Dictionary<string, DNNNode> nodesLookup)
         {

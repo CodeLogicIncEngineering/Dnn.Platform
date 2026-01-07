@@ -410,7 +410,6 @@ namespace DotNetNuke.Common
         }
 
         /// <summary>Gets the status of application.</summary>
-        /// <seealso cref="GetStatus"/>
         [Obsolete("Deprecated in DotNetNuke 9.7.1. Use Dependency Injection to resolve 'DotNetNuke.Abstractions.IApplicationStatusInfo' instead. Scheduled removal in v11.0.0.")]
         public static UpgradeStatus Status { get => (UpgradeStatus)applicationStatusInfo.Status; }
 

@@ -22,6 +22,7 @@ namespace DotNetNuke.Services.Localization
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Tabs;
     using DotNetNuke.Entities.Users;
+    using DotNetNuke.Framework;
     using DotNetNuke.Instrumentation;
     using DotNetNuke.Internal.SourceGenerators;
     using DotNetNuke.Security.Roles;
@@ -1474,7 +1475,7 @@ namespace DotNetNuke.Services.Localization
         /// <param name="portalSettings">The current portal settings.</param>
         /// <remarks>
         ///   This method will configure the Thread culture codes.  Any page which does not derive from <see cref="PageBase" /> should
-        ///   be sure to call this method in <see cref="Control.OnInit" /> to ensure localization works correctly.  See the <see cref="TelerikDialogHandler" /> for an example.
+        ///   be sure to call this method in <see cref="Control.OnInit" /> to ensure localization works correctly.
         /// </remarks>
         [DnnDeprecated(9, 8, 0, "Use overload taking IPortalSettings instead")]
         public static partial void SetThreadCultures(CultureInfo cultureInfo, PortalSettings portalSettings)
@@ -1487,7 +1488,7 @@ namespace DotNetNuke.Services.Localization
         /// <param name="portalSettings">The current portal settings.</param>
         /// <remarks>
         ///   This method will configure the Thread culture codes.  Any page which does not derive from <see cref="PageBase" /> should
-        ///   be sure to call this method in <see cref="Control.OnInit" /> to ensure localization works correctly.  See the <see cref="TelerikDialogHandler" /> for an example.
+        ///   be sure to call this method in <see cref="Control.OnInit" /> to ensure localization works correctly.
         /// </remarks>
         public static void SetThreadCultures(CultureInfo cultureInfo, IPortalSettings portalSettings)
         {

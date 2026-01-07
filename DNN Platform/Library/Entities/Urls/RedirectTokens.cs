@@ -491,6 +491,7 @@ namespace DotNetNuke.Entities.Urls
 
         /// <summary>Returns the list of tokens found in a rewrite path as a key/value dictionary.</summary>
         /// <param name="rewritePath">Rewritten URL path.</param>
+        /// <param name="hasDupes">Whether there are duplicates.</param>
         /// <returns>A <see cref="Dictionary{TKey,TValue}"/> of token names and values.</returns>
         private static Dictionary<string, string> GetRedirectTokensAndValuesFromRewritePath(string rewritePath, out bool hasDupes)
         {

@@ -12,7 +12,7 @@ namespace DotNetNuke.Entities.Portals
     using DotNetNuke.Common;
     using DotNetNuke.Internal.SourceGenerators;
 
-    /// <summary>A collection of <see cref="PortalAliasInfo"/> instances, indexed by <see cref="PortalAliasInfo.HttpAlias"/>.</summary>
+    /// <summary>A collection of <see cref="PortalAliasInfo"/> instances, indexed by <see cref="PortalAliasInfo.HTTPAlias"/>.</summary>
     [Serializable]
     [DnnDeprecated(9, 7, 2, "use IDictionary<string, IPortalAliasInfo> instead")]
     public partial class PortalAliasCollection : DictionaryBase, IDictionary<string, PortalAliasInfo>

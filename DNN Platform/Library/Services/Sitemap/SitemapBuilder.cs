@@ -232,6 +232,7 @@ namespace DotNetNuke.Services.Sitemap
 
         /// <summary>  Adds a new url to the sitemap.</summary>
         /// <param name="sitemapUrl">The url to be included in the sitemap.</param>
+        /// <param name="writer">The writer.</param>
         private static void AddUrl(SitemapUrl sitemapUrl, XmlWriter writer)
         {
             writer.WriteStartElement("url");

@@ -157,6 +157,7 @@ namespace DotNetNuke.Services.Sitemap
         /// <summary>Return the sitemap url node for the page.</summary>
         /// <param name="objTab">The page being indexed.</param>
         /// <param name="language">Culture code to use in the URL.</param>
+        /// <param name="ps">The portal settings.</param>
         /// <returns>A SitemapUrl object for the current page.</returns>
         private SitemapUrl GetPageUrl(TabInfo objTab, string language, PortalSettings ps)
         {
