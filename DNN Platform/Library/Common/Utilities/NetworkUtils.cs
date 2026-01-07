@@ -4,6 +4,7 @@
 namespace DotNetNuke.Common.Utils
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Net;
@@ -152,7 +153,9 @@ namespace DotNetNuke.Common.Utils
         /// <param name="sNetwork">The network name.</param>
         /// <param name="startIP">The start IP.</param>
         /// <param name="endIP">The end IP.</param>
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
         public static void Network2IpRange(string sNetwork, out uint startIP, out uint endIP)
+#pragma warning restore CS3001
         {
             try
             {
@@ -189,7 +192,9 @@ namespace DotNetNuke.Common.Utils
         /// <summary>Convert IP to Integer.</summary>
         /// <param name="ipNumber">The ip number.</param>
         /// <returns>IP number as integer.</returns>
+#pragma warning disable CS3002 // Return type is not CLS-compliant
         public static uint IP2Int(string ipNumber)
+#pragma warning restore CS3002
         {
             uint ip = 0;
             string[] elements = ipNumber.Split('.');

@@ -87,7 +87,9 @@ namespace DotNetNuke.Services.Installer
         }
 
         [Obsolete("Deprecated in DotNetNuke 9.11.0. Replaced with .NET compression types. Scheduled for removal in v11.0.0.")]
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
         public InstallFile(ZipInputStream zip, ZipEntry entry, InstallerInfo info)
+#pragma warning restore CS3001
         {
             this.Encoding = TextEncoding.UTF8;
             this.InstallerInfo = info;

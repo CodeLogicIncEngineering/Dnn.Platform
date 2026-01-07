@@ -60,7 +60,9 @@ namespace DotNetNuke.Common.Utilities
         /// <param name="input">The entry to check.</param>
         /// <exception cref="Exception">Illegal zip file.</exception>
         [DnnDeprecated(9, 11, 0, "Replaced with .NET compression types.")]
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
         public static partial void CheckZipEntry(this ZipEntry input)
+#pragma warning restore CS3001
         {
             var fullName = input.Name.Replace('\\', '/');
             if (fullName.StartsWith("..", StringComparison.Ordinal) || fullName.Contains("/../", StringComparison.Ordinal))

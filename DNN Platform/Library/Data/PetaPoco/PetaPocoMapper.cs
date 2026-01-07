@@ -25,7 +25,9 @@ namespace DotNetNuke.Data.PetaPoco
             defaultMapper = new StandardMapper();
         }
 
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
         public static void SetMapper<T>(IMapper mapper)
+#pragma warning restore CS3001
         {
             @lock.EnterWriteLock();
             try
@@ -42,7 +44,9 @@ namespace DotNetNuke.Data.PetaPoco
         }
 
         /// <inheritdoc/>
+#pragma warning disable CS3002 // Return type is not CLS-compliant
         public ColumnInfo GetColumnInfo(PropertyInfo pocoProperty)
+#pragma warning restore CS3002
         {
             bool includeColumn = true;
 
@@ -78,7 +82,9 @@ namespace DotNetNuke.Data.PetaPoco
         }
 
         /// <inheritdoc/>
+#pragma warning disable CS3002 // Return type is not CLS-compliant
         public TableInfo GetTableInfo(Type pocoType)
+#pragma warning restore CS3002
         {
             TableInfo ti = TableInfo.FromPoco(pocoType);
 

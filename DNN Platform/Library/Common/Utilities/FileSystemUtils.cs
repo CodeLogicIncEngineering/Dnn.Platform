@@ -768,9 +768,11 @@ namespace DotNetNuke.Common.Utilities
         /// <param name="zipFile">The zip file stream to add to.</param>
         /// <param name="filePath">The path to the file to add.</param>
         /// <param name="fileName">Name of the file to use in the zip entry.</param>
-        /// <param name="folder">The name of the folder to use in the zip entry..</param>
+        /// <param name="folder">The name of the folder to use in the zip entry.</param>
         [DnnDeprecated(9, 11, 0, "Replaced with .NET compression types.")]
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
         public static partial void AddToZip(ref ZipOutputStream zipFile, string filePath, string fileName, string folder)
+#pragma warning restore CS3001
         {
             FileStream fs = null;
             try
@@ -816,7 +818,9 @@ namespace DotNetNuke.Common.Utilities
         /// <param name="zipStream">The zip stream.</param>
         /// <param name="destPath">The destination path to extract to.</param>
         [DnnDeprecated(9, 11, 0, "Replaced with .NET compression types.")]
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
         public static partial void UnzipResources(ZipInputStream zipStream, string destPath)
+#pragma warning restore CS3001
         {
             try
             {

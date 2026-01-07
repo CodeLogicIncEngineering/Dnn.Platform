@@ -18,7 +18,9 @@ namespace DotNetNuke.Data.PetaPoco
         /// <summary>Initializes a new instance of the <see cref="PetaPocoRepository{T}"/> class.</summary>
         /// <param name="database">The database.</param>
         /// <param name="mapper">The mapper.</param>
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
         public PetaPocoRepository(Database database, IMapper mapper)
+#pragma warning restore CS3001
         {
             Requires.NotNull("database", database);
 
