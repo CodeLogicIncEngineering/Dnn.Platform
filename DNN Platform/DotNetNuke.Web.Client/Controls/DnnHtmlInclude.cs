@@ -18,7 +18,10 @@ namespace DotNetNuke.Web.Client.ClientResourceManagement
     /// <summary>Allows for registration of CSS and JavaScript resources.</summary>
     public class DnnHtmlInclude : Literal
     {
+        /// <summary>The pattern that matches a tag.</summary>
         public const string TagPattern = @"<{0}((\s+\w+(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)/?>";
+
+        /// <summary>The pattern that matches an attribute.</summary>
         public const string AttributePattern = @"{0}(\s*=\s*(?:""(?<val>.*?)""|'(?<val>.*?)'|(?<val>[^'"">\s]+)))";
 
         private const string MatchAllAttributes = @"(\S+)=[""']?((?:.(?![""']?\s+(?:\S+)=|[>""']))+.)[""']?";
@@ -28,6 +31,8 @@ namespace DotNetNuke.Web.Client.ClientResourceManagement
 
         private readonly IClientResourceController clientResourceController;
 
+        /// <summary>Initializes a new instance of the <see cref="DnnHtmlInclude"/> class.</summary>
+        /// <param name="clientResourceController">The client resource controller.</param>
         public DnnHtmlInclude(IClientResourceController clientResourceController)
         {
             this.clientResourceController = clientResourceController;
@@ -42,6 +47,7 @@ namespace DotNetNuke.Web.Client.ClientResourceManagement
         /// <summary>Gets or sets the group for this resource include.</summary>
         public int Group { get; set; } = 100;
 
+        /// <inheritdoc />
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
