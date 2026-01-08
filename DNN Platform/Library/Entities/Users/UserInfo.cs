@@ -14,6 +14,7 @@ namespace DotNetNuke.Entities.Users
     using System.Globalization;
     using System.Linq;
 
+    using DotNetNuke.Abstractions.Security;
     using DotNetNuke.Abstractions.Users;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
@@ -25,6 +26,8 @@ namespace DotNetNuke.Entities.Users
     using DotNetNuke.Security.Roles;
     using DotNetNuke.Services.Tokens;
     using DotNetNuke.UI.WebControls;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>The UserInfo class provides Business Layer model for Users.</summary>
     [Serializable]
@@ -278,8 +281,8 @@ namespace DotNetNuke.Entities.Users
                         return PropertyAccess.ContentLocked;
                     }
 
-                    var ps = PortalSecurity.Instance;
-                    var code = ps.Encrypt(Config.GetDecryptionkey(), this.PortalID + "-" + this.GetMembershipUserId());
+                    var cryptographyProvider = Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>();
+                    var code = cryptographyProvider.EncryptParameter($"{this.PortalID}-{this.GetMembershipUserId()}", Config.GetDecryptionkey()).EncryptedMessage;
                     return code.Replace("+", ".").Replace("/", "-").Replace("=", "_");
                 case "affiliateid":
                     if (internScope < Scope.SystemMessages)

@@ -15,6 +15,7 @@ namespace DotNetNuke.Entities.Users
     using System.Web;
 
     using DotNetNuke.Abstractions.Portals;
+    using DotNetNuke.Abstractions.Security;
     using DotNetNuke.Collections.Internal;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
@@ -36,6 +37,8 @@ namespace DotNetNuke.Entities.Users
     using DotNetNuke.Services.Log.EventLog;
     using DotNetNuke.Services.Mail;
     using DotNetNuke.Services.Messaging.Data;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     using MembershipProvider = DotNetNuke.Security.Membership.MembershipProvider;
 
@@ -1475,12 +1478,21 @@ namespace DotNetNuke.Entities.Users
         /// <exception cref="DotNetNuke.Entities.Users.UserAlreadyVerifiedException">Thrown when provided verification code has been already used.</exception>
         /// <exception cref="DotNetNuke.Entities.Users.InvalidVerificationCodeException">Thrown when the provided verification code is invalid.</exception>
         /// <exception cref="DotNetNuke.Entities.Users.UserDoesNotExistException">Thrown when the user does not exist.</exception>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Use overload with ICryptographyProvider. Scheduled for removal in v12.0.0.")]
         public static void VerifyUser(string verificationCode)
+            => VerifyUser(Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>(), verificationCode);
+
+        /// <summary>Tries to validate a verification code sent after a user is registered in a portal configured to use a verified registration.</summary>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
+        /// <param name="verificationCode">The verification code.</param>
+        /// <exception cref="DotNetNuke.Entities.Users.UserAlreadyVerifiedException">Thrown when provided verification code has been already used.</exception>
+        /// <exception cref="DotNetNuke.Entities.Users.InvalidVerificationCodeException">Thrown when the provided verification code is invalid.</exception>
+        /// <exception cref="DotNetNuke.Entities.Users.UserDoesNotExistException">Thrown when the user does not exist.</exception>
+        public static void VerifyUser(ICryptographyProvider cryptographyProvider, string verificationCode)
         {
             Requires.NotNullOrEmpty("verificationCode", verificationCode);
 
-            var portalSecurity = PortalSecurity.Instance;
-            var decryptString = portalSecurity.Decrypt(Config.GetDecryptionkey(), verificationCode);
+            var decryptString = cryptographyProvider.DecryptParameter(verificationCode, Config.GetDecryptionkey(), cryptographyProvider.EncryptParameterAlgorithmName);
             var strings = decryptString.Split('-');
 
             if (strings.Length != 2)
@@ -1488,16 +1500,14 @@ namespace DotNetNuke.Entities.Users
                 throw new InvalidVerificationCodeException();
             }
 
-            int portalId;
-            int userId;
             var userIdString = strings[1];
 
-            if (!int.TryParse(strings[0], out portalId) || string.IsNullOrWhiteSpace(userIdString))
+            if (!int.TryParse(strings[0], out var portalId) || string.IsNullOrWhiteSpace(userIdString))
             {
                 throw new InvalidVerificationCodeException();
             }
 
-            var user = int.TryParse(userIdString, out userId) ? GetUserById(portalId, userId) : GetUserByMembershipUserKey(portalId, userIdString);
+            var user = int.TryParse(userIdString, out var userId) ? GetUserById(portalId, userId) : GetUserByMembershipUserKey(portalId, userIdString);
 
             if (user == null)
             {
@@ -1520,7 +1530,7 @@ namespace DotNetNuke.Entities.Users
             ApproveUser(user);
         }
 
-        /// <summary>Returns a absolute URL for the user profile image while removing that of the deleted and super users.</summary>
+        /// <summary>Returns an absolute URL for the user profile image while removing that of the deleted and super users.</summary>
         /// <param name="portalId">The site (portal) id.</param>
         /// <param name="user">The user to get the profile image from.</param>
         /// <param name="width">Width in pixels.</param>

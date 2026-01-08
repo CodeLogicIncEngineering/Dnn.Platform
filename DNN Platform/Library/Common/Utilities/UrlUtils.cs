@@ -4,7 +4,6 @@
 namespace DotNetNuke.Common.Utilities
 {
     using System;
-    using System.Net;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Web;
@@ -13,8 +12,8 @@ namespace DotNetNuke.Common.Utilities
     using DotNetNuke.Abstractions;
     using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Abstractions.Portals;
+    using DotNetNuke.Abstractions.Security;
     using DotNetNuke.Entities.Controllers;
-    using DotNetNuke.Entities.Host;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Internal.SourceGenerators;
     using DotNetNuke.Security;
@@ -59,23 +58,40 @@ namespace DotNetNuke.Common.Utilities
         /// <summary>Decrypts an encrypted value generated via <see cref="EncryptParameter(string)"/>. Decrypted using the current portal's <see cref="IPortalSettings.GUID"/>.</summary>
         /// <param name="value">The encrypted value.</param>
         /// <returns>The decrypted value.</returns>
-        public static string DecryptParameter(string value)
-        {
-            return DecryptParameter(value, PortalController.Instance.GetCurrentSettings().GUID.ToString());
-        }
+        [DnnDeprecated(10, 2, 2, "Use overload taking ICryptographyProvider")]
+        public static partial string DecryptParameter(string value)
+            => DecryptParameter(Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>(), value);
+
+        /// <summary>Decrypts an encrypted value generated via <see cref="EncryptParameter(ICryptographyProvider,string)"/>. Decrypted using the current portal's <see cref="IPortalSettings.GUID"/>.</summary>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
+        /// <param name="value">The encrypted value.</param>
+        /// <returns>The decrypted value.</returns>
+        public static string DecryptParameter(ICryptographyProvider cryptographyProvider, string value)
+            => DecryptParameter(cryptographyProvider, value, PortalController.Instance.GetCurrentSettings().GUID.ToString());
 
         /// <summary>Decrypts an encrypted value generated via <see cref="EncryptParameter(string,string)"/>.</summary>
         /// <param name="value">The encrypted value.</param>
         /// <param name="encryptionKey">The key used to encrypt the value.</param>
         /// <returns>The decrypted value.</returns>
-        public static string DecryptParameter(string value, string encryptionKey)
+        [DnnDeprecated(10, 2, 2, "Use overload taking ICryptographyProvider")]
+        public static partial string DecryptParameter(string value, string encryptionKey)
+        {
+            return DecryptParameter(Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>(), value, encryptionKey);
+        }
+
+        /// <summary>Decrypts an encrypted value generated via <see cref="EncryptParameter(ICryptographyProvider,string,string)"/>.</summary>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
+        /// <param name="value">The encrypted value.</param>
+        /// <param name="encryptionKey">The key used to encrypt the value.</param>
+        /// <returns>The decrypted value.</returns>
+        public static string DecryptParameter(ICryptographyProvider cryptographyProvider, string value, string encryptionKey)
         {
             // [DNN-8257] - Can't do URLEncode/URLDecode as it introduces issues on decryption (with / = %2f), so we use a modified Base64
             var toDecrypt = new StringBuilder(value);
             toDecrypt.Replace('_', '/');
             toDecrypt.Replace('-', '+');
             toDecrypt.Replace("%3d", "=");
-            return PortalSecurity.Instance.Decrypt(encryptionKey, toDecrypt.ToString());
+            return cryptographyProvider.DecryptParameter(toDecrypt.ToString(), encryptionKey, cryptographyProvider.EncryptParameterAlgorithmName);
         }
 
         /// <summary>Encodes a value (using base64) for placing in a URL.</summary>
@@ -94,18 +110,33 @@ namespace DotNetNuke.Common.Utilities
         /// <summary>Encrypt a parameter for placing in a URL. Encrypted using the current portal's <see cref="IPortalSettings.GUID"/>.</summary>
         /// <param name="value">The value to encrypt.</param>
         /// <returns>The encrypted value.</returns>
-        public static string EncryptParameter(string value)
-        {
-            return EncryptParameter(value, PortalController.Instance.GetCurrentSettings().GUID.ToString());
-        }
+        [DnnDeprecated(10, 2, 2, "Use overload taking ICryptographyProvider")]
+        public static partial string EncryptParameter(string value)
+            => EncryptParameter(Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>(), value);
+
+        /// <summary>Encrypt a parameter for placing in a URL. Encrypted using the current portal's <see cref="IPortalSettings.GUID"/>.</summary>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
+        /// <param name="value">The value to encrypt.</param>
+        /// <returns>The encrypted value.</returns>
+        public static string EncryptParameter(ICryptographyProvider cryptographyProvider, string value)
+            => EncryptParameter(cryptographyProvider, value, PortalController.Instance.GetCurrentSettings().GUID.ToString());
 
         /// <summary>Encrypt a parameter for placing in a URL.</summary>
         /// <param name="value">The value to encrypt.</param>
         /// <param name="encryptionKey">The key to use when encrypting the value. This key must be used to decrypt the value.</param>
         /// <returns>The encrypted value.</returns>
-        public static string EncryptParameter(string value, string encryptionKey)
+        [DnnDeprecated(10, 2, 2, "Use overload taking ICryptographyProvider")]
+        public static partial string EncryptParameter(string value, string encryptionKey)
+            => EncryptParameter(Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>(), value, encryptionKey);
+
+        /// <summary>Encrypt a parameter for placing in a URL.</summary>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
+        /// <param name="value">The value to encrypt.</param>
+        /// <param name="encryptionKey">The key to use when encrypting the value. This key must be used to decrypt the value.</param>
+        /// <returns>The encrypted value.</returns>
+        public static string EncryptParameter(ICryptographyProvider cryptographyProvider, string value, string encryptionKey)
         {
-            var encryptedValue = PortalSecurity.Instance.Encrypt(encryptionKey, value);
+            var encryptedValue = cryptographyProvider.EncryptParameter(value, encryptionKey).EncryptedMessage;
             var parameterValue = new StringBuilder(encryptedValue);
 
             // [DNN-8257] - Can't do URLEncode/URLDecode as it introduces issues on decryption (with / = %2f), so we use a modified Base64

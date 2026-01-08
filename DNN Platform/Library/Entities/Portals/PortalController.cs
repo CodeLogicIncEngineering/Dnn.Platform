@@ -51,6 +51,7 @@ namespace DotNetNuke.Entities.Portals
     using Microsoft.Extensions.DependencyInjection;
 
     using IAbPortalSettings = DotNetNuke.Abstractions.Portals.IPortalSettings;
+    using ICryptographyProvider = DotNetNuke.Abstractions.Security.ICryptographyProvider;
 
     /// <summary>PortalController provides business layer of portal.</summary>
     /// <remarks>
@@ -66,11 +67,12 @@ namespace DotNetNuke.Entities.Portals
         private readonly IHostSettings hostSettings;
         private readonly IApplicationStatusInfo appStatus;
         private readonly IEventLogger eventLogger;
+        private readonly ICryptographyProvider cryptographyProvider;
 
         /// <summary>Initializes a new instance of the <see cref="PortalController"/> class.</summary>
         [Obsolete("Deprecated in DotNetNuke 10.0.0. Please use overload with IBusinessControllerProvider. Scheduled removal in v12.0.0.")]
         public PortalController()
-            : this(null, null, null, null)
+            : this(null, null, null, null, null)
         {
         }
 
@@ -78,7 +80,7 @@ namespace DotNetNuke.Entities.Portals
         /// <param name="businessControllerProvider">The business controller provider.</param>
         [Obsolete("Deprecated in DotNetNuke 10.0.2. Please use overload with IHostSettings. Scheduled removal in v12.0.0.")]
         public PortalController(IBusinessControllerProvider businessControllerProvider)
-            : this(businessControllerProvider, null, null, null)
+            : this(businessControllerProvider, null, null, null, null)
         {
         }
 
@@ -87,12 +89,19 @@ namespace DotNetNuke.Entities.Portals
         /// <param name="hostSettings">The host settings.</param>
         /// <param name="appStatus">The application status.</param>
         /// <param name="eventLogger">The event logger.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Use overload with ICryptographyProvider. Scheduled for removal in v12.0.0.")]
         public PortalController(IBusinessControllerProvider businessControllerProvider, IHostSettings hostSettings, IApplicationStatusInfo appStatus, IEventLogger eventLogger)
+            : this(businessControllerProvider, hostSettings, appStatus, eventLogger, null)
+        {
+        }
+
+        public PortalController(IBusinessControllerProvider businessControllerProvider, IHostSettings hostSettings, IApplicationStatusInfo appStatus, IEventLogger eventLogger, ICryptographyProvider cryptographyProvider)
         {
             this.businessControllerProvider = businessControllerProvider ?? Globals.GetCurrentServiceProvider().GetRequiredService<IBusinessControllerProvider>();
             this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
             this.appStatus = appStatus ?? Globals.GetCurrentServiceProvider().GetRequiredService<IApplicationStatusInfo>();
             this.eventLogger = eventLogger ?? Globals.GetCurrentServiceProvider().GetRequiredService<IEventLogger>();
+            this.cryptographyProvider = cryptographyProvider ?? Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>();
         }
 
         /// <summary>Adds the portal dictionary.</summary>
@@ -2700,16 +2709,18 @@ namespace DotNetNuke.Entities.Portals
             }
         }
 
-        private string EnsureSettingValue(string folderProviderType, FolderTypeSettingConfig settingNode, int portalId)
+        private (string SettingValue, string EncryptionAlgorithmName, string InitializationVector) EnsureSettingValue(FolderTypeSettingConfig settingNode, int portalId)
         {
             var ensuredSettingValue =
-                settingNode.Value.Replace("{PortalId}", (portalId != -1) ? portalId.ToString(CultureInfo.InvariantCulture) : "_default").Replace("{HostId}", this.hostSettings.Guid);
+                settingNode.Value
+                    .Replace("{PortalId}", (portalId != -1) ? portalId.ToString(CultureInfo.InvariantCulture) : "_default")
+                    .Replace("{HostId}", this.hostSettings.Guid);
             if (settingNode.Encrypt)
             {
-                return FolderProvider.Instance(folderProviderType).EncryptValue(ensuredSettingValue);
+                return FolderProvider.EncryptValue(this.cryptographyProvider, this.hostSettings, ensuredSettingValue);
             }
 
-            return ensuredSettingValue;
+            return (ensuredSettingValue, null, null);
         }
 
         private FolderMappingInfo GetFolderMappingFromConfig(FolderTypeConfig node, int portalId)
@@ -2723,8 +2734,13 @@ namespace DotNetNuke.Entities.Portals
 
             foreach (FolderTypeSettingConfig settingNode in node.Settings)
             {
-                var settingValue = this.EnsureSettingValue(folderMapping.FolderProviderType, settingNode, portalId);
+                var (settingValue, algorithmName, initializationVector) = this.EnsureSettingValue(settingNode, portalId);
                 folderMapping.FolderMappingSettings.Add(settingNode.Name, settingValue);
+                if (!string.IsNullOrWhiteSpace(algorithmName))
+                {
+                    folderMapping.FolderMappingSettings.Add(FolderProvider.GetAlgorithmSettingKey(settingNode.Name), algorithmName);
+                    folderMapping.FolderMappingSettings.Add(FolderProvider.GetInitializationVectorSettingKey(settingNode.Name), initializationVector);
+                }
             }
 
             return folderMapping;

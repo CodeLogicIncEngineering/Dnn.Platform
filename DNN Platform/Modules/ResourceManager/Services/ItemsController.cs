@@ -20,8 +20,10 @@ namespace Dnn.Modules.ResourceManager.Services
     using Dnn.Modules.ResourceManager.Services.Attributes;
     using Dnn.Modules.ResourceManager.Services.Dto;
     using DotNetNuke.Abstractions.Application;
+    using DotNetNuke.Abstractions.Security;
     using DotNetNuke.Abstractions.Security.Permissions;
     using DotNetNuke.Common;
+    using DotNetNuke.Common.Extensions;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Icons;
     using DotNetNuke.Entities.Users;
@@ -33,6 +35,8 @@ namespace Dnn.Modules.ResourceManager.Services
     using DotNetNuke.Services.Localization;
     using DotNetNuke.UI.Modules;
     using DotNetNuke.Web.Api;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     using CreateNewFolderRequest = Dnn.Modules.ResourceManager.Services.Dto.CreateNewFolderRequest;
 
@@ -50,6 +54,7 @@ namespace Dnn.Modules.ResourceManager.Services
         private readonly IPermissionDefinitionService permissionDefinitionService;
         private readonly IHostSettings hostSettings;
         private readonly RoleProvider roleProvider;
+        private readonly ICryptographyProvider cryptographyProvider;
 
         /// <summary>Initializes a new instance of the <see cref="ItemsController"/> class.</summary>
         /// <param name="modulePipeline">An instance of an <see cref="IModuleControlPipeline"/> used to hook into the EditUrl of the webforms folders provider settings UI.</param>
@@ -57,18 +62,33 @@ namespace Dnn.Modules.ResourceManager.Services
         /// <param name="permissionDefinitionService">The permission service.</param>
         /// <param name="hostSettings">The host settings.</param>
         /// <param name="roleProvider">The role provider.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Use overload with ICryptographyProvider. Scheduled for removal in v12.0.0.")]
+        public ItemsController(IModuleControlPipeline modulePipeline, IApplicationStatusInfo applicationStatusInfo, IPermissionDefinitionService permissionDefinitionService, IHostSettings hostSettings, RoleProvider roleProvider)
+            : this(modulePipeline, applicationStatusInfo, permissionDefinitionService, hostSettings, roleProvider, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="ItemsController"/> class.</summary>
+        /// <param name="modulePipeline">An instance of an <see cref="IModuleControlPipeline"/> used to hook into the EditUrl of the webforms folders provider settings UI.</param>
+        /// <param name="applicationStatusInfo">The application status info.</param>
+        /// <param name="permissionDefinitionService">The permission service.</param>
+        /// <param name="hostSettings">The host settings.</param>
+        /// <param name="roleProvider">The role provider.</param>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
         public ItemsController(
             IModuleControlPipeline modulePipeline,
             IApplicationStatusInfo applicationStatusInfo,
             IPermissionDefinitionService permissionDefinitionService,
             IHostSettings hostSettings,
-            RoleProvider roleProvider)
+            RoleProvider roleProvider,
+            ICryptographyProvider cryptographyProvider)
         {
             this.modulePipeline = modulePipeline;
             this.applicationStatusInfo = applicationStatusInfo;
             this.permissionDefinitionService = permissionDefinitionService;
             this.hostSettings = hostSettings;
             this.roleProvider = roleProvider;
+            this.cryptographyProvider = cryptographyProvider ?? HttpContextSource.Current.GetScope().ServiceProvider.GetRequiredService<ICryptographyProvider>();
         }
 
         /// <summary>Gets the content for a specific folder.</summary>
@@ -656,7 +676,7 @@ namespace Dnn.Modules.ResourceManager.Services
                 parameters.Add(this.PortalSettings.PortalId);
             }
 
-            var validationCode = ValidationUtils.ComputeValidationCode(this.hostSettings, parameters);
+            var validationCode = ValidationUtils.ComputeValidationCode(this.cryptographyProvider, this.hostSettings, parameters);
 
             var maxUploadFileSize = Config.GetMaxUploadSize(this.applicationStatusInfo);
 

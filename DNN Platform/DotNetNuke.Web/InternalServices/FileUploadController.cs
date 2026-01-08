@@ -24,6 +24,7 @@ namespace DotNetNuke.Web.InternalServices
 
     using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Abstractions.Portals;
+    using DotNetNuke.Abstractions.Security;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Common.Utils;
@@ -50,19 +51,32 @@ namespace DotNetNuke.Web.InternalServices
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(FileUploadController));
         private static readonly Regex UserFolderEx = new Regex(@"users/\d+/\d+/(\d+)/", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly List<string> ImageExtensions = Globals.ImageFileTypes.Split(',').ToList();
+
         private readonly IHostSettings hostSettings;
+        private readonly ICryptographyProvider cryptographyProvider;
 
         /// <summary>Initializes a new instance of the <see cref="FileUploadController"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Use overload with ICryptographyProvider. Scheduled for removal in v12.0.0.")]
         public FileUploadController()
-            : this(null)
+            : this(null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="FileUploadController"/> class.</summary>
         /// <param name="hostSettings">The host settings.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Use overload with ICryptographyProvider. Scheduled for removal in v12.0.0.")]
         public FileUploadController(IHostSettings hostSettings)
+            : this(hostSettings, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="FileUploadController"/> class.</summary>
+        /// <param name="hostSettings">The host settings.</param>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
+        public FileUploadController(IHostSettings hostSettings, ICryptographyProvider cryptographyProvider)
         {
             this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
+            this.cryptographyProvider = cryptographyProvider ?? Globals.GetCurrentServiceProvider().GetRequiredService<ICryptographyProvider>();
         }
 
         /// <summary>Gets the URL for a file.</summary>
@@ -387,7 +401,7 @@ namespace DotNetNuke.Web.InternalServices
                         currentSynchronizationContext.Send(
                             state =>
                             {
-                                result = UploadFile(this.hostSettings, stream, portalId, userInfo, folder, filter, fileName, overwrite, isHostPortal, extract, validationCode);
+                                result = UploadFile(this.cryptographyProvider, this.hostSettings, stream, portalId, userInfo, folder, filter, fileName, overwrite, isHostPortal, extract, validationCode);
                             },
                             null);
                     }
@@ -529,17 +543,18 @@ namespace DotNetNuke.Web.InternalServices
         }
 
         private static FileUploadDto UploadFile(
-                IHostSettings hostSettings,
-                Stream stream,
-                int portalId,
-                UserInfo userInfo,
-                string folder,
-                string filter,
-                string fileName,
-                bool overwrite,
-                bool isHostPortal,
-                bool extract,
-                string validationCode)
+            ICryptographyProvider cryptographyProvider,
+            IHostSettings hostSettings,
+            Stream stream,
+            int portalId,
+            UserInfo userInfo,
+            string folder,
+            string filter,
+            string fileName,
+            bool overwrite,
+            bool isHostPortal,
+            bool extract,
+            string validationCode)
         {
             var result = new FileUploadDto();
             BinaryReader reader = null;
@@ -558,7 +573,7 @@ namespace DotNetNuke.Web.InternalServices
                     validateParams.Add(portalId);
                 }
 
-                if (!ValidationUtils.ValidationCodeMatched(hostSettings, validateParams, validationCode))
+                if (!ValidationUtils.ValidationCodeMatched(cryptographyProvider, hostSettings, validateParams, validationCode))
                 {
                     throw new InvalidOperationException("Bad Request");
                 }
