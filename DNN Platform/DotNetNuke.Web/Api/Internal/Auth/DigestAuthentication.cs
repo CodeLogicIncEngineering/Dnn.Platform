@@ -11,15 +11,19 @@ namespace DotNetNuke.Web.Api.Internal.Auth
     using System.Text;
 
     using DotNetNuke.Entities.Users;
+    using DotNetNuke.Internal.SourceGenerators;
     using DotNetNuke.Security.Membership;
     using DotNetNuke.Web.Api.Auth;
 
     /// <summary>Helps implement the digest auth algorithm for <see cref="DigestAuthMessageHandler"/>.</summary>
-    internal class DigestAuthentication
+    [DnnDeprecated(10, 2, 2, "Use JWT or API token authentication")]
+    internal partial class DigestAuthentication
     {
         /// <summary>The scheme name for <see cref="AuthMessageHandlerBase.AuthScheme"/>.</summary>
         internal const string AuthenticationScheme = "Digest";
+#pragma warning disable CA5351 // Do not use broken cryptographic algorithms
         private static readonly MD5 Md5 = new MD5CryptoServiceProvider();
+#pragma warning restore CA5351
         private readonly int portalId;
         private readonly string ipAddress;
         private string password;

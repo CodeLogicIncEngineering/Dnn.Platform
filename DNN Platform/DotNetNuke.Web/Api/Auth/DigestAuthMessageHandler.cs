@@ -13,11 +13,13 @@ namespace DotNetNuke.Web.Api.Auth
     using System.Threading;
 
     using DotNetNuke.Entities.Portals;
+    using DotNetNuke.Internal.SourceGenerators;
     using DotNetNuke.Security.Membership;
     using DotNetNuke.Web.Api.Internal.Auth;
 
     /// <summary>Digest authentication message handler.</summary>
-    public class DigestAuthMessageHandler : AuthMessageHandlerBase
+    [DnnDeprecated(10, 2, 2, "Use JWT or API token authentication")]
+    public partial class DigestAuthMessageHandler : AuthMessageHandlerBase
     {
         /// <summary>Initializes a new instance of the <see cref="DigestAuthMessageHandler"/> class.</summary>
         /// <param name="includeByDefault">Should this handler be included by default on all routes.</param>
