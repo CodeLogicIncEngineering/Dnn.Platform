@@ -5,6 +5,7 @@ namespace DotNetNuke
 {
     using System;
     using System.Linq;
+    using System.Security.Cryptography;
 
     using DotNetNuke.Abstractions;
     using DotNetNuke.Abstractions.Application;
@@ -40,6 +41,7 @@ namespace DotNetNuke
     using DotNetNuke.Security;
     using DotNetNuke.Security.Permissions;
     using DotNetNuke.Security.Roles;
+    using DotNetNuke.Services.Cryptography;
     using DotNetNuke.Services.FileSystem;
     using DotNetNuke.Services.FileSystem.Internal;
     using DotNetNuke.Services.Installer;
@@ -59,6 +61,8 @@ namespace DotNetNuke
 
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+
+    using ICryptographyProvider = DotNetNuke.Abstractions.Security.ICryptographyProvider;
 
     /// <inheritdoc />
     public class Startup : IDnnStartup
@@ -133,6 +137,14 @@ namespace DotNetNuke
             services.AddTransient<ISearchHelper, SearchHelperImpl>();
             services.AddTransient<IFile, FileWrapper>();
             services.AddTransient<IDirectory, DirectoryWrapper>();
+            if (CryptoConfig.AllowOnlyFipsAlgorithms)
+            {
+                services.AddTransient<ICryptographyProvider, FipsCompilanceCryptographyProvider>();
+            }
+            else
+            {
+                services.AddTransient<ICryptographyProvider, CoreCryptographyProvider>();
+            }
 
             services.AddTransient<IDataContext>(serviceProvider =>
             {
@@ -144,7 +156,7 @@ namespace DotNetNuke
 
             services.AddTransient<ModuleInjectionManager>();
             services.AddTransient<PersonalizationController>();
-            services.AddTransient(_ => PortalSecurity.Instance);
+            services.AddTransient<PortalSecurity>();
             RegisterModuleInjectionFilters(services);
         }
 

@@ -6,6 +6,7 @@ namespace DotNetNuke.Tests.Content
     using System;
     using System.Linq;
 
+    using DotNetNuke.Abstractions.Security;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Content;
     using DotNetNuke.Entities.Content.Data;
@@ -44,6 +45,7 @@ namespace DotNetNuke.Tests.Content
                     services.AddSingleton(vocabularyController.Object);
                     services.AddSingleton(dataProvider.Object);
                     services.AddSingleton(this.mockCache.Object);
+                    services.AddSingleton(Mock.Of<ICryptographyProvider>());
                 });
         }
 

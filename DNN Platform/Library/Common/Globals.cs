@@ -460,20 +460,16 @@ namespace DotNetNuke.Common
         /// </value>
         public static Version OperatingSystemVersion { get; set; }
 
-        /// <summary>Gets or sets the NET framework version.</summary>
-        /// <value>
-        /// The NET framework version.
-        /// </value>
+        /// <summary>Gets or sets the .NET Framework version.</summary>
+        /// <value>The .NET Framework version.</value>
         public static Version NETFrameworkVersion { get; set; }
 
-        /// <summary>Gets the .Net framework version text.</summary>
-        /// <value>The .Net framework version text.</value>
+        /// <summary>Gets the .NET Framework version text.</summary>
+        /// <value>The .NET Framework version text.</value>
         public static string FormattedNetFrameworkVersion => FormatVersion(NETFrameworkVersion, "0", 3, ".");
 
         /// <summary>Gets or sets the database engine version.</summary>
-        /// <value>
-        /// The database engine version.
-        /// </value>
+        /// <value>The database engine version.</value>
         public static Version DatabaseEngineVersion { get; set; }
 
         /// <summary>Gets or sets the Dependency Service.</summary>

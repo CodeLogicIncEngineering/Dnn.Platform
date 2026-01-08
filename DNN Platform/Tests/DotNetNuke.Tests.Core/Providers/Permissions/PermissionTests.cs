@@ -7,6 +7,7 @@ namespace DotNetNuke.Tests.Core.Providers.Permissions
     using System.Collections.Generic;
     using System.Web;
 
+    using DotNetNuke.Abstractions.Security;
     using DotNetNuke.Common;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Users;
@@ -15,7 +16,11 @@ namespace DotNetNuke.Tests.Core.Providers.Permissions
     using DotNetNuke.Security.Permissions;
     using DotNetNuke.Security.Roles;
     using DotNetNuke.Tests.Utilities;
+    using DotNetNuke.Tests.Utilities.Fakes;
     using DotNetNuke.Tests.Utilities.Mocks;
+
+    using Microsoft.Extensions.DependencyInjection;
+
     using Moq;
     using NUnit.Framework;
 
@@ -23,6 +28,7 @@ namespace DotNetNuke.Tests.Core.Providers.Permissions
     public class PermissionTests : DnnUnitTest
     {
         private const int UserId = 400;
+        private FakeServiceProvider serviceProvider;
 
         [OneTimeSetUp]
         public override void OneTimeSetUp()
@@ -30,9 +36,16 @@ namespace DotNetNuke.Tests.Core.Providers.Permissions
             base.OneTimeSetUp();
         }
 
+        [SetUp]
+        public void SetUp()
+        {
+            this.serviceProvider = FakeServiceProvider.Setup(services => services.AddSingleton(Mock.Of<ICryptographyProvider>()));
+        }
+
         [TearDown]
         public void TearDown()
         {
+            this.serviceProvider?.Dispose();
             PortalController.ClearInstance();
             RoleController.ClearInstance();
             RelationshipController.ClearInstance();
