@@ -22,6 +22,7 @@ namespace Dnn.ExportImport.Components.Services
     using DotNetNuke.Entities.Tabs;
     using DotNetNuke.Entities.Users;
 
+    /// <summary>An export service for workflows.</summary>
     public class WorkflowsExportService : BasePortableService
     {
         /// <inheritdoc/>

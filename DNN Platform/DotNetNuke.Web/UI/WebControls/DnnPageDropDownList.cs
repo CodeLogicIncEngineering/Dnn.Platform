@@ -19,6 +19,7 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Services.Localization;
     using DotNetNuke.Web.UI.WebControls.Extensions;
 
+    /// <summary>A page dropdown control.</summary>
     [ToolboxData("<{0}:DnnPageDropDownList runat='server'></{0}:DnnPageDropDownList>")]
     public class DnnPageDropDownList : DnnDropDownList
     {
@@ -40,6 +41,7 @@ namespace DotNetNuke.Web.UI.WebControls
         /// <summary>Gets or sets a value indicating whether include Host Pages.</summary>
         public bool IncludeHostPages { get; set; }
 
+        /// <summary>Gets or sets the portal ID.</summary>
         public int PortalId
         {
             get

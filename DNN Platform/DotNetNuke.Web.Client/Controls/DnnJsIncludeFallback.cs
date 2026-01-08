@@ -20,8 +20,10 @@ namespace DotNetNuke.Web.Client.ClientResourceManagement
             this.FileName = fileName;
         }
 
+        /// <summary>Gets or sets the object name.</summary>
         public string ObjectName { get; set; }
 
+        /// <summary>Gets or sets the file name.</summary>
         public string FileName { get; set; }
 
         /// <inheritdoc/>

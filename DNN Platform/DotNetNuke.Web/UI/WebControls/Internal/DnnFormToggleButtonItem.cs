@@ -22,6 +22,7 @@ namespace DotNetNuke.Web.UI.WebControls.Internal
             this.Mode = CheckBoxMode.TrueFalse;
         }
 
+        /// <summary>The checkbox mode.</summary>
         public enum CheckBoxMode
         {
             /// <summary>True and False.</summary>
@@ -34,6 +35,7 @@ namespace DotNetNuke.Web.UI.WebControls.Internal
             YesNo = 2,
         }
 
+        /// <summary>Gets or sets the checkbox mode.</summary>
         public CheckBoxMode Mode { get; set; }
 
         /// <inheritdoc/>

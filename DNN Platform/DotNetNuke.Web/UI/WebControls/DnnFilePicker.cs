@@ -62,8 +62,10 @@ namespace DotNetNuke.Web.UI.WebControls
             Preview = 2,
         }
 
+        /// <summary>Gets or sets the maximum height in pixels.</summary>
         public int MaxHeight { get; set; } = 100;
 
+        /// <summary>Gets or sets the maximum width in pixels.</summary>
         public int MaxWidth { get; set; } = 135;
 
         /// <summary>  Gets or sets the class to be used for the Labels.</summary>
@@ -182,6 +184,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the permission keys.</summary>
         public string Permissions
         {
             get
@@ -214,6 +217,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets a value indicating whether to show folders.</summary>
         public bool ShowFolders
         {
             get
@@ -245,6 +249,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the user.</summary>
         public UserInfo User { get; set; }
 
         /// <inheritdoc/>

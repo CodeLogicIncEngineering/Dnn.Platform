@@ -9,6 +9,7 @@ namespace DotNetNuke.Web.UI.WebControls
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
+    /// <summary>A radio button control.</summary>
     public class DnnFormRadioButtonListItem : DnnFormListItemBase
     {
         private RadioButtonList radioButtonList;

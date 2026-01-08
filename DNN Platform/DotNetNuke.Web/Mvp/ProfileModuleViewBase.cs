@@ -47,8 +47,10 @@ namespace DotNetNuke.Web.Mvp
             }
         }
 
+        /// <summary>Gets the navigation manager.</summary>
         protected INavigationManager NavigationManager { get; }
 
+        /// <summary>Gets a value indicating whether the profile is for the current user.</summary>
         protected bool IsUser
         {
             get
@@ -57,6 +59,7 @@ namespace DotNetNuke.Web.Mvp
             }
         }
 
+        /// <summary>Gets the info about the user displayed in the profile.</summary>
         protected UserInfo ProfileUser
         {
             get { return UserController.GetUserById(this.ModuleContext.PortalId, this.ProfileUserId); }

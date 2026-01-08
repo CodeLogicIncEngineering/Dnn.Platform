@@ -23,6 +23,7 @@ namespace DotNetNuke.Web.Components.Controllers
 
     using Microsoft.Extensions.DependencyInjection;
 
+    /// <summary>The service locator and implementation for <see cref="IControlBarController"/>.</summary>
     public class ControlBarController : ServiceLocator<IControlBarController, ControlBarController>, IControlBarController
     {
         private const string BookmarkModulesTitle = "module";

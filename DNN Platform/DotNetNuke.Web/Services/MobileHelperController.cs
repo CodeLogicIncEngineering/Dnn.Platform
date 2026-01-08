@@ -21,6 +21,7 @@ namespace DotNetNuke.Web.Services
     using DotNetNuke.Web.Api;
     using DotNetNuke.Web.Models;
 
+    /// <summary>A web API controller for getting information about modules in the site.</summary>
     [AllowAnonymous]
     public class MobileHelperController : DnnApiController
     {
@@ -37,6 +38,9 @@ namespace DotNetNuke.Web.Services
             return this.Ok(monikers.Select(kpv => new { tabModuleId = kpv.Key, moniker = kpv.Value }));
         }
 
+        /// <summary>Gets the details about the modules in the site.</summary>
+        /// <param name="moduleList">A comma-delimited list of module names.</param>
+        /// <returns>A response with a <see cref="SiteDetail"/> object.</returns>
         [HttpGet]
         public HttpResponseMessage ModuleDetails(string moduleList)
         {

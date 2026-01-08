@@ -131,6 +131,7 @@ namespace DotNetNuke.Web.Client.ClientResourceManagement
             xmlDoc.Save(configPath);
         }
 
+        /// <summary>Remove the client dependency configuration from the <c>web.config</c>.</summary>
         public static void RemoveConfiguration()
         {
             Logger.Info("Removing ClientDependency from web.config");

@@ -19,6 +19,7 @@ namespace DotNetNuke.Web.Api
     using DotNetNuke.Common;
     using DotNetNuke.Services.Localization;
 
+    /// <summary>Selects the web API controller.</summary>
     internal class DnnHttpControllerSelector : IHttpControllerSelector
     {
         private const string ControllerSuffix = "Controller";
@@ -39,10 +40,7 @@ namespace DotNetNuke.Web.Api
                 isThreadSafe: true);
         }
 
-        private ConcurrentDictionary<string, HttpControllerDescriptor> DescriptorCache
-        {
-            get { return this.descriptorCache.Value; }
-        }
+        private ConcurrentDictionary<string, HttpControllerDescriptor> DescriptorCache => this.descriptorCache.Value;
 
         /// <inheritdoc/>
         public HttpControllerDescriptor SelectController(HttpRequestMessage request)
@@ -63,8 +61,7 @@ namespace DotNetNuke.Web.Api
             {
                 string fullName = GetFullName(controllerName, ns);
 
-                HttpControllerDescriptor descriptor;
-                if (this.DescriptorCache.TryGetValue(fullName, out descriptor))
+                if (this.DescriptorCache.TryGetValue(fullName, out var descriptor))
                 {
                     matches.Add(descriptor);
                 }

@@ -24,6 +24,7 @@ namespace Dnn.ExportImport.Components.Services
 
     using DataProvider = Dnn.ExportImport.Components.Providers.DataProvider;
 
+    /// <summary>An export service for assets.</summary>
     public class AssetsExportService : BasePortableService
     {
         private const string DefaultUsersFoldersPath = "Users";

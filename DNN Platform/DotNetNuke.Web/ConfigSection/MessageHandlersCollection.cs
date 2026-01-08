@@ -9,11 +9,14 @@ namespace DotNetNuke.Web.ConfigSection
     using System.Collections.Generic;
     using System.Configuration;
 
+    /// <summary>A collection of <see cref="MessageHandlerEntry"/> instances.</summary>
     public class MessageHandlersCollection : ConfigurationElementCollection, ICollection<ConfigurationElement>
     {
         /// <inheritdoc />
         bool ICollection<ConfigurationElement>.IsReadOnly => this.IsReadOnly();
 
+        /// <summary>Gets or sets the <see cref="MessageHandlerEntry"/> at the given <paramref name="index"/>.</summary>
+        /// <param name="index">The index.</param>
         public MessageHandlerEntry this[int index]
         {
             get

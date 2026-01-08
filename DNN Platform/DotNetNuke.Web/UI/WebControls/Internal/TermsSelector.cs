@@ -20,12 +20,16 @@ namespace DotNetNuke.Web.UI.WebControls.Internal
     {
         private static readonly char[] TermIdSeparator = [',',];
 
+        /// <summary>Gets or sets the portal ID.</summary>
         public int PortalId { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether to include terms from system vocabularies.</summary>
         public bool IncludeSystemVocabularies { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether to include terms from the tags vocabulary.</summary>
         public bool IncludeTags { get; set; } = true;
 
+        /// <summary>Gets or sets the terms.</summary>
         public List<Term> Terms
         {
             get

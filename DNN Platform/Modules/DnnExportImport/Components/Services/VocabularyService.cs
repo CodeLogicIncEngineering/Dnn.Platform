@@ -19,6 +19,7 @@ namespace Dnn.ExportImport.Components.Services
 
     using Util = DotNetNuke.Entities.Content.Common.Util;
 
+    /// <summary>An export service for vocabularies.</summary>
     public class VocabularyService : BasePortableService
     {
         /// <inheritdoc/>

@@ -17,6 +17,7 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Web.Common;
     using DotNetNuke.Web.UI.WebControls.Extensions;
 
+    /// <summary>A folder dropdown control.</summary>
     [ToolboxData("<{0}:DnnFolderDropDownList runat='server'></{0}:DnnFolderDropDownList>")]
     public class DnnFolderDropDownList : DnnDropDownList
     {

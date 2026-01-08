@@ -28,6 +28,7 @@ namespace DotNetNuke.Web.UI
     using DotNetNuke.Services.Localization;
     using Microsoft.Extensions.DependencyInjection;
 
+    /// <summary>An error code for a <see cref="DotNetNukeException"/>.</summary>
     public enum DotNetNukeErrorCode
     {
         /// <summary>Not set.</summary>
@@ -61,6 +62,7 @@ namespace DotNetNuke.Web.UI
         DuplicateWithAlias = 9,
     }
 
+    /// <summary>The relative location of a tab.</summary>
     public enum TabRelativeLocation
     {
         /// <summary>Location not set.</summary>
@@ -81,16 +83,25 @@ namespace DotNetNuke.Web.UI
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(RibbonBarManager));
 
+        /// <summary>Initializes tab info user to add a new tab/page.</summary>
+        /// <returns>The new <see cref="TabInfo"/> instance.</returns>
         public static TabInfo InitTabInfoObject()
         {
             return InitTabInfoObject(null, TabRelativeLocation.AFTER);
         }
 
+        /// <summary>Initializes tab info user to add a new tab/page after the given <paramref name="relativeToTab"/>.</summary>
+        /// <param name="relativeToTab">The page/tab to which the new page/tab should be relative.</param>
+        /// <returns>The new <see cref="TabInfo"/> instance.</returns>
         public static TabInfo InitTabInfoObject(TabInfo relativeToTab)
         {
             return InitTabInfoObject(relativeToTab, TabRelativeLocation.AFTER);
         }
 
+        /// <summary>Initializes tab info user to add a new tab/page, relative to the given <paramref name="relativeToTab"/>.</summary>
+        /// <param name="relativeToTab">The page/tab to which the new page/tab should be relative.</param>
+        /// <param name="location">The new page/tab's location relative to <paramref name="relativeToTab"/>.</param>
+        /// <returns>The new <see cref="TabInfo"/> instance.</returns>
         public static TabInfo InitTabInfoObject(TabInfo relativeToTab, TabRelativeLocation location)
         {
             if (relativeToTab == null)
@@ -166,6 +177,10 @@ namespace DotNetNuke.Web.UI
             return newTab;
         }
 
+        /// <summary>Gets the parent of the new page/tab.</summary>
+        /// <param name="relativeToTab">The page/tab to which the new page/tab should be relative.</param>
+        /// <param name="location">The new page/tab's location relative to <paramref name="relativeToTab"/>.</param>
+        /// <returns>The <see cref="TabInfo"/> or <see langword="null"/> if there is no parent.</returns>
         public static TabInfo GetParentTab(TabInfo relativeToTab, TabRelativeLocation location)
         {
             if (relativeToTab == null)
@@ -186,6 +201,8 @@ namespace DotNetNuke.Web.UI
             return parentTab;
         }
 
+        /// <summary>Gets the list of pages the current user can edit.</summary>
+        /// <returns>A list of <see cref="TabInfo"/> instances.</returns>
         public static IList<TabInfo> GetPagesList()
         {
             IList<TabInfo> portalTabs = null;
@@ -210,16 +227,23 @@ namespace DotNetNuke.Web.UI
             return portalTabs;
         }
 
+        /// <summary>Gets a value indicating whether the current page is the host dashboard page.</summary>
+        /// <returns><see langword="true"/> if the current page is the host console, otherwise <see langword="false"/>.</returns>
         public static bool IsHostConsolePage()
         {
             return PortalSettings.Current.ActiveTab.IsSuperTab && PortalSettings.Current.ActiveTab.TabPath == "//Host";
         }
 
+        /// <summary>Gets a value indicating whether the given <paramref name="tab"/> is the host dashboard page.</summary>
+        /// <param name="tab">The page.</param>
+        /// <returns><see langword="true"/> if the given <paramref name="tab"/> is the host console, otherwise <see langword="false"/>.</returns>
         public static bool IsHostConsolePage(TabInfo tab)
         {
             return tab.IsSuperTab && tab.TabPath == "//Host";
         }
 
+        /// <summary>Gets a value indicating whether the current page can be moved.</summary>
+        /// <returns><see langword="true"/> if the current page can be moved, otherwise <see langword="false"/>.</returns>
         public static bool CanMovePage()
         {
             // Cannot move the host console page
@@ -260,6 +284,14 @@ namespace DotNetNuke.Web.UI
             return SaveTabInfoObject(scope.ServiceProvider.GetRequiredService<IBusinessControllerProvider>(), tab, relativeToTab, location, templateFileId);
         }
 
+        /// <summary>Creates a new page/tab.</summary>
+        /// <param name="businessControllerProvider">The business controller provider.</param>
+        /// <param name="tab">The page to create.</param>
+        /// <param name="relativeToTab">The page/tab to which the new page/tab should be relative.</param>
+        /// <param name="location">The new page/tab's location relative to <paramref name="relativeToTab"/>.</param>
+        /// <param name="templateFileId">The file ID of the page template (or <see langword="null"/> or <see cref="string.Empty"/> to not use a page template).</param>
+        /// <returns>The new tab's ID.</returns>
+        /// <exception cref="DotNetNukeException">If the page is invalid.</exception>
         public static int SaveTabInfoObject(IBusinessControllerProvider businessControllerProvider, TabInfo tab, TabInfo relativeToTab, TabRelativeLocation location, string templateFileId)
         {
             // Validation:
@@ -475,6 +507,10 @@ namespace DotNetNuke.Web.UI
             return tab.TabID;
         }
 
+        /// <summary>Validates whether the page's parent contains a circular reference back to this page/tab.</summary>
+        /// <param name="portalID">The portal ID.</param>
+        /// <param name="tabID">The page/tab ID.</param>
+        /// <returns><see langword="true"/> if there is a circular reference, otherwise <see langword="false"/>.</returns>
         [SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Breaking change")]
         public static bool Validate_IsCircularReference(int portalID, int tabID)
         {
@@ -503,6 +539,9 @@ namespace DotNetNuke.Web.UI
             return false;
         }
 
+        /// <summary>Updates a <paramref name="tab"/> with permission information.</summary>
+        /// <param name="nodeTabPermissions">A list of tab permission elements.</param>
+        /// <param name="tab">The tab/page to update.</param>
         public static void DeserializeTabPermissions(XmlNodeList nodeTabPermissions, TabInfo tab)
         {
             var permissionController = new PermissionController();

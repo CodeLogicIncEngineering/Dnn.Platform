@@ -21,6 +21,7 @@ namespace Dnn.ExportImport.Components.Services
 
     using DataProvider = Dnn.ExportImport.Components.Providers.DataProvider;
 
+    /// <summary>An export service for templates.</summary>
     public class PageTemplatesExportService : AssetsExportService
     {
         private readonly string templatesFolder =

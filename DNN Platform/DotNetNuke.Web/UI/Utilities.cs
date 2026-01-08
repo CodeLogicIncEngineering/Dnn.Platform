@@ -167,6 +167,11 @@ namespace DotNetNuke.Web.UI
             }
         }
 
+        /// <summary>Create a thumbnail of an image.</summary>
+        /// <param name="image">The image file.</param>
+        /// <param name="img">The image to resize.</param>
+        /// <param name="maxWidth">The maximum width in pixels.</param>
+        /// <param name="maxHeight">The maximum height in pixels.</param>
         public static void CreateThumbnail(FileInfo image, Image img, int maxWidth, int maxHeight)
         {
             if (image.Width > image.Height)
@@ -199,27 +204,45 @@ namespace DotNetNuke.Web.UI
             }
         }
 
+        /// <summary>Gets a script to display an alert.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>A script.</returns>
         public static string GetClientAlert(Control ctrl, string message)
         {
             return GetClientAlert(ctrl, new MessageWindowParameters(message));
         }
 
+        /// <summary>Gets a script to display an alert.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>A script.</returns>
         public static string GetClientAlert(Control ctrl, MessageWindowParameters message)
         {
             return "jQuery(document).ready(function($){$.dnnAlert({ okText: '" + GetLocalizedString("Ok.Text") + "', text: '" + message.Message + "', title: '" + message.Title + "'});});";
         }
 
+        /// <summary>Gets the localized string corresponding to the <paramref name="key"/>.</summary>
+        /// <param name="key">The resource key to find.</param>
+        /// <returns>The localized text.</returns>
         public static string GetLocalizedString(string key)
         {
             string resourceFile = "/App_GlobalResources/WebControls.resx";
             return Localization.GetString(key, resourceFile);
         }
 
+        /// <summary>Gets the path to the local resource file associated to the control.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <returns>The path to the resource file.</returns>
         public static string GetLocalResourceFile(Control ctrl)
         {
             return UIUtilities.GetLocalResourceFile(ctrl);
         }
 
+        /// <summary>Gets the localized string corresponding to the <paramref name="key"/>, using the resource file of the <paramref name="control"/>.</summary>
+        /// <param name="key">The resource key to find.</param>
+        /// <param name="control">The control use to find the resource file.</param>
+        /// <returns>The localized text.</returns>
         public static string GetLocalizedStringFromParent(string key, Control control)
         {
             string returnValue = key;
@@ -233,11 +256,19 @@ namespace DotNetNuke.Web.UI
             return returnValue;
         }
 
+        /// <summary>Gets a script for a click confirmation.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>A script.</returns>
         public static string GetOnClientClickConfirm(Control ctrl, string message)
         {
             return GetOnClientClickConfirm(ctrl, new MessageWindowParameters(message));
         }
 
+        /// <summary>Gets a script for a click confirmation.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>A script.</returns>
         public static string GetOnClientClickConfirm(Control ctrl, MessageWindowParameters message)
         {
             AddMessageWindow(ctrl);
@@ -252,6 +283,10 @@ namespace DotNetNuke.Web.UI
                 HttpUtility.JavaScriptStringEncode(message.Title));
         }
 
+        /// <summary>Gets the <paramref name="value"/> as a <see cref="string"/>.</summary>
+        /// <param name="value">The view state object.</param>
+        /// <param name="defaultValue">The default value is <paramref name="value"/> is <see langword="null"/>.</param>
+        /// <returns>The string.</returns>
         public static string GetViewStateAsString(object value, string defaultValue)
         {
             if (value != null)
@@ -262,11 +297,17 @@ namespace DotNetNuke.Web.UI
             return defaultValue;
         }
 
+        /// <summary>Register a client script to display an alert.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <param name="message">The message.</param>
         public static void RegisterAlertOnPageLoad(Control ctrl, string message)
         {
             RegisterAlertOnPageLoad(ctrl, new MessageWindowParameters(message));
         }
 
+        /// <summary>Register a client script to display an alert.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <param name="message">The message.</param>
         public static void RegisterAlertOnPageLoad(Control ctrl, MessageWindowParameters message)
         {
             ctrl.Page.ClientScript.RegisterClientScriptBlock(ctrl.GetType(), ctrl.ID + "_AlertOnPageLoad", GetClientAlert(ctrl, message), true);

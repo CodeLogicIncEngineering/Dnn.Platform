@@ -40,6 +40,7 @@ namespace DotNetNuke.Web.InternalServices
 
     using Microsoft.Extensions.DependencyInjection;
 
+    /// <summary>A web API for the control bar.</summary>
     [DnnAuthorize]
     public class ControlBarController : DnnApiController
     {
@@ -67,6 +68,15 @@ namespace DotNetNuke.Web.InternalServices
             this.controller = Components.Controllers.ControlBarController.Instance;
         }
 
+        /// <summary>Gets the desktop modules available to the portal.</summary>
+        /// <param name="category">The module category (<c>"All"</c> if <see langword="null"/> or <see cref="string.Empty"/>).</param>
+        /// <param name="loadingStartIndex">The index.</param>
+        /// <param name="loadingPageSize">The page size.</param>
+        /// <param name="searchTerm">The search term.</param>
+        /// <param name="excludeCategories">A comma-delimited list of categories to exclude.</param>
+        /// <param name="sortBookmarks">Whether to sort bookmarked modules to the top.</param>
+        /// <param name="topModule">The friendly name of a module to display first in the list (only if <paramref name="sortBookmarks"/> is <see langword="true"/>).</param>
+        /// <returns>A response containing a list of <see cref="ModuleDefDTO"/> objects.</returns>
         [HttpGet]
         [DnnPageEditor]
         public HttpResponseMessage GetPortalDesktopModules(string category, int loadingStartIndex, int loadingPageSize, string searchTerm, string excludeCategories = "", bool sortBookmarks = false, string topModule = "")
@@ -116,6 +126,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, result);
         }
 
+        /// <summary>Gets the pages for a portal.</summary>
+        /// <param name="portal">The portal ID, or <see langword="null"/> or <see cref="string.Empty"/> for the current portal.</param>
+        /// <returns>A response with a list of <see cref="PageDefDTO"/> objects.</returns>
         [HttpGet]
         [DnnPageEditor]
         public HttpResponseMessage GetPageList(string portal)
@@ -160,6 +173,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, result);
         }
 
+        /// <summary>Gets the modules to a page.</summary>
+        /// <param name="tab">The tab ID.</param>
+        /// <returns>A response with a list of <see cref="ModuleDefDTO"/> objects.</returns>
         [HttpGet]
         [DnnPageEditor]
         public HttpResponseMessage GetTabModules(string tab)
@@ -185,6 +201,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Copy permissions from the active page to its descendants.</summary>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [DnnPageEditor]
@@ -200,6 +218,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Add a module to a page.</summary>
+        /// <param name="dto">Information about the module to add.</param>
+        /// <returns>A response with an object containing the tab-module ID of the new instance.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [DnnPageEditor]
@@ -301,6 +322,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Clears the host cache.</summary>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RequireHost]
@@ -316,6 +339,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Recycles the application pool.</summary>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RequireHost]
@@ -333,6 +358,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Switches to a different portal/site.</summary>
+        /// <param name="dto">Information about the site to switch to.</param>
+        /// <returns>A response with an object containing a <c>RedirectURL</c> field.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RequireHost]
@@ -366,6 +394,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Updates the user's preferred language.</summary>
+        /// <param name="dto">Information about the language switch.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage SwitchLanguage(SwitchLanguageDTO dto)
@@ -386,7 +417,7 @@ namespace DotNetNuke.Web.InternalServices
             }
             catch (System.Threading.ThreadAbortException)
             {
-                // Do nothing we are not logging ThreadAbortxceptions caused by redirects
+                // Do nothing we are not logging ThreadAbortExceptions caused by redirects
             }
             catch (Exception ex)
             {
@@ -396,6 +427,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Toggle between view and edit mode.</summary>
+        /// <param name="userMode">The user mode to switch to.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [DnnPageEditor]
@@ -424,6 +458,9 @@ namespace DotNetNuke.Web.InternalServices
             return response;
         }
 
+        /// <summary>Saves a bookmark for a user.</summary>
+        /// <param name="bookmark">The bookmark to save.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [DnnPageEditor]
@@ -439,6 +476,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, new { Success = true });
         }
 
+        /// <summary>Locks or unlocks the instance.</summary>
+        /// <param name="lockingRequest">The lock request.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RequireHost]
@@ -448,6 +488,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK);
         }
 
+        /// <summary>Locks or unlocks the current site.</summary>
+        /// <param name="lockingRequest">The lock request.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RequireHost]
@@ -457,6 +500,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK);
         }
 
+        /// <summary>Gets a value indicating whether the current user can add a module to the current page.</summary>
+        /// <returns><see langword="true"/>.</returns>
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Breaking change")]
         public bool CanAddModuleToPage()
         {
@@ -865,69 +910,98 @@ namespace DotNetNuke.Web.InternalServices
             return this.nameDics.TryGetValue(moduleName, out var name) ? name : moduleName;
         }
 
+        /// <summary>A data transfer object with information about a module definition.</summary>
         public class ModuleDefDTO
         {
+            /// <summary>Gets or sets the module ID.</summary>
             public int ModuleID { get; set; }
 
+            /// <summary>Gets or sets the module name.</summary>
             public string ModuleName { get; set; }
 
+            /// <summary>Gets or sets the path to the module's image.</summary>
             public string ModuleImage { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether the module is bookmarked.</summary>
             public bool Bookmarked { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether the module is in a bookmarked category.</summary>
             public bool ExistsInBookmarkCategory { get; set; }
         }
 
+        /// <summary>A data transfer object with information about a page.</summary>
         public class PageDefDTO
         {
+            /// <summary>Gets or sets the page's ID.</summary>
             public int TabID { get; set; }
 
+            /// <summary>Gets or sets the page's indented name.</summary>
             public string IndentedTabName { get; set; }
         }
 
+        /// <summary>A data transfer object with information about adding a module to a page.</summary>
         public class AddModuleDTO
         {
+            /// <summary>Gets or sets the visibility of the module.</summary>
             public string Visibility { get; set; }
 
+            /// <summary>Gets or sets the position of the module.</summary>
             public string Position { get; set; }
 
+            /// <summary>Gets or sets the ID of an existing module.</summary>
             public string Module { get; set; }
 
+            /// <summary>Gets or sets the ID of the page.</summary>
             public string Page { get; set; }
 
+            /// <summary>Gets or sets the pane name.</summary>
             public string Pane { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether to add an existing module instead of a new module.</summary>
             public string AddExistingModule { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether to copy an existing module instead of making a shared reference.</summary>
             public string CopyModule { get; set; }
 
+            /// <summary>Gets or sets the sort of the module.</summary>
             public string Sort { get; set; }
         }
 
+        /// <summary>A data transfer object with information about the user mode.</summary>
         public class UserModeDTO
         {
+            /// <summary>Gets or sets the user mode.</summary>
             public string UserMode { get; set; }
         }
 
+        /// <summary>A data transfer object with information about the site to switch to.</summary>
         public class SwitchSiteDTO
         {
+            /// <summary>Gets or sets the portal ID.</summary>
             public string Site { get; set; }
         }
 
+        /// <summary>A data transfer object with information about the language to switch to.</summary>
         public class SwitchLanguageDTO
         {
+            /// <summary>Gets or sets the language code.</summary>
             public string Language { get; set; }
         }
 
+        /// <summary>A data transfer object with information about a bookmark to add.</summary>
         public class BookmarkDTO
         {
+            /// <summary>Gets or sets the bookmark title.</summary>
             public string Title { get; set; }
 
+            /// <summary>Gets or sets the bookmark value.</summary>
             public string Bookmark { get; set; }
         }
 
+        /// <summary>A data transfer object with information about a lock/unlock request.</summary>
         public class LockingDTO
         {
+            /// <summary>Gets or sets a value indicating whether to lock or unlock the site or instance.</summary>
             public bool Lock { get; set; }
         }
     }
