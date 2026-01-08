@@ -26,7 +26,7 @@ namespace DotNetNuke.Services.Analytics
         public void UpgradeModule(string version)
         {
             // MD5 Hash value of the old synchronous script config file (from previous module versions)
-            string[] traditionalFileHashes = { "aRUf9NsElvrpiASJHHlmZg==", "+R2k5mvFvVhWsCm4WinyAA==" };
+            string[] traditionalFileHashes = ["aRUf9NsElvrpiASJHHlmZg==", "+R2k5mvFvVhWsCm4WinyAA==",];
 
             switch (version)
             {
@@ -37,23 +37,23 @@ namespace DotNetNuke.Services.Analytics
                         if (fileReader != null)
                         {
                             var fileEncoding = new ASCIIEncoding();
-                            using (var md5 = new MD5CryptoServiceProvider())
+#pragma warning disable CA5351 // Do not use broken cryptographic algorithms
+                            using var md5 = new MD5CryptoServiceProvider();
+#pragma warning restore CA5351
+                            string currFileHashValue = string.Empty;
+
+                            // calculate md5 hash of existing file
+                            currFileHashValue = Convert.ToBase64String(md5.ComputeHash(fileEncoding.GetBytes(fileReader.ReadToEnd())));
+                            fileReader.Close();
+
+                            IEnumerable<string> result = from h in traditionalFileHashes where h == currFileHashValue select h;
+
+                            // compare md5 hash
+                            if (result.Any())
                             {
-                                string currFileHashValue = string.Empty;
-
-                                // calculate md5 hash of existing file
-                                currFileHashValue = Convert.ToBase64String(md5.ComputeHash(fileEncoding.GetBytes(fileReader.ReadToEnd())));
-                                fileReader.Close();
-
-                                IEnumerable<string> result = from h in traditionalFileHashes where h == currFileHashValue select h;
-
-                                // compare md5 hash
-                                if (result.Any())
-                                {
-                                    // Copy new config file from \Config
-                                    // True causes .config to be overwritten
-                                    Common.Utilities.Config.GetPathToFile(Common.Utilities.Config.ConfigFileType.SiteAnalytics, true);
-                                }
+                                // Copy new config file from \Config
+                                // True causes .config to be overwritten
+                                Common.Utilities.Config.GetPathToFile(Common.Utilities.Config.ConfigFileType.SiteAnalytics, true);
                             }
                         }
                     }
