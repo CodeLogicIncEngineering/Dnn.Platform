@@ -390,17 +390,15 @@ namespace DotNetNuke.Services.GeneratedImage
 
         private static string GetIDFromBytes(byte[] buffer)
         {
-            using (var hasher = SHA1.Create())
+            using var hasher = CryptographyUtils.CreateSHA256();
+            byte[] result = hasher.ComputeHash(buffer);
+            var sb = new StringBuilder();
+            foreach (var b in result)
             {
-                byte[] result = hasher.ComputeHash(buffer);
-                var sb = new StringBuilder();
-                foreach (var b in result)
-                {
-                    sb.Append(b.ToString("X2", CultureInfo.InvariantCulture));
-                }
-
-                return sb.ToString();
+                sb.Append(b.ToString("X2", CultureInfo.InvariantCulture));
             }
+
+            return sb.ToString();
         }
 
         /// <summary>Returns the encoder for the specified mime type.</summary>
@@ -443,7 +441,7 @@ namespace DotNetNuke.Services.GeneratedImage
                 builder.Append(tran.UniqueString);
             }
 
-            return GetIDFromBytes(ASCIIEncoding.ASCII.GetBytes(builder.ToString()));
+            return GetIDFromBytes(Encoding.ASCII.GetBytes(builder.ToString()));
         }
 
         private Image GetImageThroughTransforms(Image image)
