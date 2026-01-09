@@ -1274,7 +1274,7 @@ namespace DotNetNuke.Services.FileSystem
         {
             Requires.NotNull("stream", stream);
             var hashText = new StringBuilder();
-            using (var hasher = SHA1.Create())
+            using (var hasher = CryptographyUtils.CreateSHA256())
             {
                 var hashData = hasher.ComputeHash(stream);
                 foreach (var b in hashData)
