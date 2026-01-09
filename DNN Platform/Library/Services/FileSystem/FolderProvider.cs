@@ -295,7 +295,9 @@ namespace DotNetNuke.Services.FileSystem
             }
 
             var hashText = new StringBuilder();
+#pragma warning disable CA5350
             using (var hasher = SHA1.Create())
+#pragma warning restore CA5350
             {
                 var hashData = hasher.ComputeHash(fileContent);
                 foreach (var b in hashData)
