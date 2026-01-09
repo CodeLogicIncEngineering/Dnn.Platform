@@ -45,7 +45,6 @@ namespace DotNetNuke.Services.Upgrade
     using DotNetNuke.Services.Log.EventLog;
     using DotNetNuke.Services.Upgrade.InternalController.Steps;
     using DotNetNuke.Services.Upgrade.Internals;
-    using DotNetNuke.Services.Upgrade.Internals.Steps;
     using DotNetNuke.Web.Client.ClientResourceManagement;
     using Microsoft.Extensions.DependencyInjection;
 
