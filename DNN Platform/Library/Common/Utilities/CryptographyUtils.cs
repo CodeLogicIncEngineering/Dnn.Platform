@@ -120,5 +120,21 @@ namespace DotNetNuke.Common.Utilities
                 return stringBuilder.ToString();
             }
         }
+
+        /// <summary>Gets the name of the setting for the hash algorithm used to encrypt the setting.</summary>
+        /// <param name="settingKey">The setting key for the encrypted value.</param>
+        /// <returns>The setting key for the algorithm name.</returns>
+        internal static string GetAlgorithmNameSettingKey(string settingKey)
+        {
+            return $"{settingKey}_algorithmName";
+        }
+
+        /// <summary>Gets the name of the setting for the initialization vector (IV) used to encrypt the setting.</summary>
+        /// <param name="settingKey">The setting key for the encrypted value.</param>
+        /// <returns>The setting key for the IV value.</returns>
+        internal static string GetInitializationVectorSettingKey(string settingKey)
+        {
+            return $"{settingKey}_initializationVector";
+        }
     }
 }

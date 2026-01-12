@@ -9,6 +9,7 @@ namespace DotNetNuke.Entities.Controllers
     using System.Data;
     using System.Globalization;
     using System.Linq;
+    using System.Security.Cryptography;
 
     using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Abstractions.Settings;
@@ -135,7 +136,9 @@ namespace DotNetNuke.Entities.Controllers
             Requires.NotNullOrEmpty("key", key);
             Requires.NotNullOrEmpty("passPhrase", passPhrase);
             var cipherText = this.GetString(key);
-            return Security.FIPSCompliant.DecryptAES(cipherText, passPhrase, HostSettings.GetHostGuid(this));
+            var algorithmName = this.GetString(CryptographyUtils.GetAlgorithmNameSettingKey(key));
+            var algorithm = string.IsNullOrWhiteSpace(algorithmName) ? HashAlgorithmName.SHA1 : new HashAlgorithmName(algorithmName);
+            return Security.FIPSCompliant.DecryptAES(algorithm, cipherText, passPhrase, HostSettings.GetHostGuid(this));
         }
 
         /// <inheritdoc cref="IHostSettingsService.GetString(string)" />
@@ -237,8 +240,9 @@ namespace DotNetNuke.Entities.Controllers
             Requires.NotNullOrEmpty("key", key);
             Requires.PropertyNotNull("value", value);
             Requires.NotNullOrEmpty("passPhrase", passPhrase);
-            var cipherText = Security.FIPSCompliant.EncryptAES(value, passPhrase, HostSettings.GetHostGuid(this));
+            var cipherText = Security.FIPSCompliant.EncryptAES(HashAlgorithmName.SHA512, value, passPhrase, HostSettings.GetHostGuid(this));
             this.Update(key, cipherText);
+            this.Update(CryptographyUtils.GetAlgorithmNameSettingKey(key), HashAlgorithmName.SHA512.Name);
         }
 
         /// <inheritdoc cref="IHostSettingsService.IncrementCrmVersion" />

@@ -104,7 +104,7 @@ namespace DotNetNuke.Services.FileSystem
         /// <returns>The name of the setting for the encryption algorithm name.</returns>
         public static string GetAlgorithmSettingKey(string settingName)
         {
-            return $"{settingName}_algorithmName";
+            return CryptographyUtils.GetAlgorithmNameSettingKey(settingName);
         }
 
         /// <summary>Gets the name of a setting to store the initialization vector used to encrypt the setting with the given name.</summary>
@@ -112,7 +112,7 @@ namespace DotNetNuke.Services.FileSystem
         /// <returns>The name of the setting for the encryption IV.</returns>
         public static string GetInitializationVectorSettingKey(string settingName)
         {
-            return $"{settingName}_initializationVector";
+            return CryptographyUtils.GetInitializationVectorSettingKey(settingName);
         }
 
         /// <summary>Get the list of all the folder providers.</summary>

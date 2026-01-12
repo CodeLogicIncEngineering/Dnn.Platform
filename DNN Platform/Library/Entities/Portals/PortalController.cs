@@ -11,6 +11,7 @@ namespace DotNetNuke.Entities.Portals
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
+    using System.Security.Cryptography;
     using System.Text;
     using System.Web;
     using System.Xml;
@@ -612,8 +613,12 @@ namespace DotNetNuke.Entities.Portals
             Requires.NotNullOrEmpty("passPhrase", passPhrase);
 
             var cipherText = GetPortalSetting(portalController, settingName, portalId, string.Empty);
+            var algorithmName = GetPortalSetting(portalController, CryptographyUtils.GetAlgorithmNameSettingKey(settingName), portalId, string.Empty);
 
-            return Security.FIPSCompliant.DecryptAES(cipherText, passPhrase, hostSettings.Guid);
+            var hashAlgorithm = string.IsNullOrWhiteSpace(algorithmName)
+                ? HashAlgorithmName.SHA1
+                : new HashAlgorithmName(algorithmName);
+            return Security.FIPSCompliant.DecryptAES(hashAlgorithm, cipherText, passPhrase, hostSettings.Guid);
         }
 
         /// <summary>Gets the portal setting.</summary>
@@ -927,13 +932,24 @@ namespace DotNetNuke.Entities.Portals
         /// <param name="settingName">host settings key.</param>
         /// <param name="settingValue">host settings value.</param>
         /// <param name="passPhrase">pass phrase to allow encryption/decryption.</param>
-        public static void UpdateEncryptedString(IHostSettings hostSettings, int portalId, string settingName, string settingValue, string passPhrase)
+        [DnnDeprecated(10, 2, 2, "Use overload taking HashAlgorithmName")]
+        public static partial void UpdateEncryptedString(IHostSettings hostSettings, int portalId, string settingName, string settingValue, string passPhrase)
+            => UpdateEncryptedString(hostSettings, HashAlgorithmName.SHA1, portalId, settingName, settingValue, passPhrase);
+
+        /// <summary>takes in a text value, encrypts it with a FIPS compliant algorithm and stores.</summary>
+        /// <param name="hostSettings">The host settings.</param>
+        /// <param name="hashAlgorithm">the hash algorithm to use to derive the encryption key.</param>
+        /// <param name="portalId">The portal ID.</param>
+        /// <param name="settingName">host settings key.</param>
+        /// <param name="settingValue">host settings value.</param>
+        /// <param name="passPhrase">pass phrase to allow encryption/decryption.</param>
+        public static void UpdateEncryptedString(IHostSettings hostSettings, HashAlgorithmName hashAlgorithm, int portalId, string settingName, string settingValue, string passPhrase)
         {
             Requires.NotNullOrEmpty("key", settingName);
             Requires.PropertyNotNull("value", settingValue);
             Requires.NotNullOrEmpty("passPhrase", passPhrase);
 
-            var cipherText = Security.FIPSCompliant.EncryptAES(settingValue, passPhrase, hostSettings.Guid);
+            var cipherText = Security.FIPSCompliant.EncryptAES(hashAlgorithm, settingValue, passPhrase, hostSettings.Guid);
 
             UpdatePortalSetting(portalId, settingName, cipherText);
         }
@@ -1875,6 +1891,7 @@ namespace DotNetNuke.Entities.Portals
         void IPortalController.UpdatePortalSetting(int portalID, string settingName, string settingValue, bool clearCache, string cultureCode)
         {
             UpdatePortalSettingInternal(
+                this,
                 this.hostSettings,
                 this.appStatus,
                 this.eventLogger,
@@ -1890,6 +1907,7 @@ namespace DotNetNuke.Entities.Portals
         void IPortalController.UpdatePortalSetting(int portalID, string settingName, string settingValue, bool clearCache, string cultureCode, bool isSecure)
         {
             UpdatePortalSettingInternal(
+                this,
                 this.hostSettings,
                 this.appStatus,
                 this.eventLogger,
@@ -2370,13 +2388,14 @@ namespace DotNetNuke.Entities.Portals
             return cultureCode;
         }
 
-        private static void UpdatePortalSettingInternal(IHostSettings hostSettings, IApplicationStatusInfo appStatus, IEventLogger eventLogger, int portalId, string settingName, string settingValue, bool clearCache, string cultureCode, bool isSecure)
+        private static void UpdatePortalSettingInternal(IPortalController portalController, IHostSettings hostSettings, IApplicationStatusInfo appStatus, IEventLogger eventLogger, int portalId, string settingName, string settingValue, bool clearCache, string cultureCode, bool isSecure)
         {
-            string currentSetting = GetPortalSetting(settingName, portalId, string.Empty, cultureCode);
+            string currentSetting = GetPortalSetting(portalController, settingName, portalId, string.Empty, cultureCode);
 
             if (isSecure && !string.IsNullOrEmpty(settingName) && !string.IsNullOrEmpty(settingValue))
             {
-                settingValue = Security.FIPSCompliant.EncryptAES(settingValue, Config.GetDecryptionkey(), hostSettings.Guid);
+                settingValue = Security.FIPSCompliant.EncryptAES(HashAlgorithmName.SHA512, settingValue, Config.GetDecryptionkey(), hostSettings.Guid);
+                UpdatePortalSettingInternal(portalController, hostSettings, appStatus, eventLogger, portalId, CryptographyUtils.GetAlgorithmNameSettingKey(settingName), HashAlgorithmName.SHA512.Name, false, cultureCode, false);
             }
 
             if (currentSetting != settingValue)
@@ -2751,7 +2770,7 @@ namespace DotNetNuke.Entities.Portals
             var processorPassword = portal.ProcessorPassword;
             if (!string.IsNullOrEmpty(processorPassword))
             {
-                processorPassword = Security.FIPSCompliant.EncryptAES(processorPassword, Config.GetDecryptionkey(), this.hostSettings.Guid);
+                processorPassword = Security.FIPSCompliant.EncryptAES(HashAlgorithmName.SHA1, processorPassword, Config.GetDecryptionkey(), this.hostSettings.Guid);
             }
 
             DataProvider.Instance().UpdatePortalInfo(

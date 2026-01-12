@@ -5,6 +5,7 @@
 namespace DotNetNuke.Tests.Integration.Tests.Portals
 {
     using System;
+    using System.Security.Cryptography;
 
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Host;
@@ -47,7 +48,7 @@ namespace DotNetNuke.Tests.Integration.Tests.Portals
             PortalController.UpdatePortalSetting(this.PortalId, this._settingName, this._settingValue, true, null, true);
 
             var result = PortalController.GetPortalSetting(this._settingName, this.PortalId, string.Empty);
-            var decrypted = DotNetNuke.Security.FIPSCompliant.DecryptAES(result, Config.GetDecryptionkey(), Host.GUID);
+            var decrypted = DotNetNuke.Security.FIPSCompliant.DecryptAES(HashAlgorithmName.SHA512, result, Config.GetDecryptionkey(), Host.GUID);
 
             // Assert
             Assert.That(result, Is.Not.EqualTo(string.Empty));
