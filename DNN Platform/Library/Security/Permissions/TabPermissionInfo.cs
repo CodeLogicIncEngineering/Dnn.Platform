@@ -21,20 +21,14 @@ namespace DotNetNuke.Security.Permissions
         // local property declarations
         private int tabPermissionID;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabPermissionInfo"/> class.
-        /// Constructs a new TabPermissionInfo.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TabPermissionInfo"/> class.</summary>
         public TabPermissionInfo()
         {
             this.tabPermissionID = Null.NullInteger;
             this.tabID = Null.NullInteger;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabPermissionInfo"/> class.
-        /// Constructs a new TabPermissionInfo.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TabPermissionInfo"/> class.</summary>
         /// <param name="permission">A PermissionInfo object.</param>
         public TabPermissionInfo(PermissionInfo permission)
             : this()

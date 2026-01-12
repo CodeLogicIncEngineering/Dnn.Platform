@@ -23,7 +23,6 @@ namespace DotNetNuke.Modules.Groups.Controls
 
     [DefaultProperty("Text")]
     [ToolboxData("<{0}:GroupListControl runat=server></{0}:GroupListControl>")]
-
     public class GroupListControl : WebControl
     {
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1307:AccessibleFieldsMustBeginWithUpperCaseLetter", Justification = "Breaking Change")]
@@ -34,13 +33,7 @@ namespace DotNetNuke.Modules.Groups.Controls
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public PortalSettings PortalSettings
-        {
-            get
-            {
-                return PortalController.Instance.GetCurrentPortalSettings();
-            }
-        }
+        public PortalSettings PortalSettings => PortalSettings.Current;
 
         [DefaultValue("")]
         [PersistenceMode(PersistenceMode.InnerProperty)]

@@ -20,20 +20,14 @@ namespace DotNetNuke.Security.Permissions
         // local property declarations
         private int modulePermissionID;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModulePermissionInfo"/> class.
-        /// Constructs a new ModulePermissionInfo.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ModulePermissionInfo"/> class.</summary>
         public ModulePermissionInfo()
         {
             this.modulePermissionID = Null.NullInteger;
             this.moduleID = Null.NullInteger;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModulePermissionInfo"/> class.
-        /// Constructs a new ModulePermissionInfo.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ModulePermissionInfo"/> class.</summary>
         /// <param name="permission">A PermissionInfo object.</param>
         public ModulePermissionInfo(PermissionInfo permission)
             : this()
@@ -50,15 +44,8 @@ namespace DotNetNuke.Security.Permissions
         [XmlElement("modulepermissionid")]
         public int ModulePermissionID
         {
-            get
-            {
-                return this.modulePermissionID;
-            }
-
-            set
-            {
-                this.modulePermissionID = value;
-            }
+            get => this.modulePermissionID;
+            set => this.modulePermissionID = value;
         }
 
         /// <summary>Gets or sets the Module ID.</summary>
@@ -66,15 +53,8 @@ namespace DotNetNuke.Security.Permissions
         [XmlElement("moduleid")]
         public int ModuleID
         {
-            get
-            {
-                return this.moduleID;
-            }
-
-            set
-            {
-                this.moduleID = value;
-            }
+            get => this.moduleID;
+            set => this.moduleID = value;
         }
 
         /// <summary>Gets or sets the Key ID.</summary>
@@ -83,15 +63,8 @@ namespace DotNetNuke.Security.Permissions
         [JsonIgnore]
         public int KeyID
         {
-            get
-            {
-                return this.ModulePermissionID;
-            }
-
-            set
-            {
-                this.ModulePermissionID = value;
-            }
+            get => this.ModulePermissionID;
+            set => this.ModulePermissionID = value;
         }
 
         /// <summary>Fills a ModulePermissionInfo from a Data Reader.</summary>
