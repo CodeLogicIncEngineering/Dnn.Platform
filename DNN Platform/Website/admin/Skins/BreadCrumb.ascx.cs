@@ -110,6 +110,7 @@ namespace DotNetNuke.UI.Skins.Controls
 
         private IPortalAliasInfo CurrentPortalAlias => this.PortalSettings.PortalAlias;
 
+        /// <inheritdoc />
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
