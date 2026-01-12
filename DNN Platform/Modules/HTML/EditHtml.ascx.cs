@@ -10,6 +10,7 @@ namespace DotNetNuke.Modules.Html
     using System.Web.UI.WebControls;
 
     using DotNetNuke.Abstractions;
+    using DotNetNuke.Abstractions.Portals;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Content.Workflow;
     using DotNetNuke.Entities.Content.Workflow.Entities;
@@ -26,18 +27,31 @@ namespace DotNetNuke.Modules.Html
     using DotNetNuke.UI.Skins.Controls;
     using Microsoft.Extensions.DependencyInjection;
 
-    /// <summary>The EditHtml PortalModuleBase is used to manage Html.</summary>
+    /// <summary>The EditHtml PortalModuleBase is used to manage HTML.</summary>
     public partial class EditHtml : HtmlModuleBase
     {
-        private readonly INavigationManager navigationManager;
-        private readonly HtmlTextController htmlTextController;
         private readonly HtmlTextLogController htmlTextLogController = new HtmlTextLogController();
         private readonly IWorkflowManager workflowManager = WorkflowManager.Instance;
+        private readonly INavigationManager navigationManager;
+        private readonly HtmlTextController htmlTextController;
+        private readonly IPortalAliasService portalAliasService;
 
+        /// <summary>Initializes a new instance of the <see cref="EditHtml"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with INavigationManager. Scheduled removal in v12.0.0.")]
         public EditHtml()
+            : this(null, null, null)
         {
-            this.navigationManager = this.DependencyProvider.GetRequiredService<INavigationManager>();
-            this.htmlTextController = new HtmlTextController(this.navigationManager);
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="EditHtml"/> class.</summary>
+        /// <param name="navigationManager">The navigation manager.</param>
+        /// <param name="htmlTextController">The HTML/Text controller.</param>
+        /// <param name="portalAliasService">The portal alias service.</param>
+        public EditHtml(INavigationManager navigationManager, HtmlTextController htmlTextController, IPortalAliasService portalAliasService)
+        {
+            this.navigationManager = navigationManager ?? this.DependencyProvider.GetRequiredService<INavigationManager>();
+            this.htmlTextController = htmlTextController ?? this.DependencyProvider.GetRequiredService<HtmlTextController>();
+            this.portalAliasService = portalAliasService ?? this.DependencyProvider.GetRequiredService<IPortalAliasService>();
         }
 
         private enum WorkflowType
@@ -229,17 +243,8 @@ namespace DotNetNuke.Modules.Html
                 // get content
                 var htmlContent = this.GetLatestHTMLContent();
 
-                var aliases = from PortalAliasInfo pa in PortalAliasController.Instance.GetPortalAliasesByPortalId(this.PortalSettings.PortalId)
-                              select pa.HTTPAlias;
-                string content;
-                if (this.phEdit.Visible)
-                {
-                    content = this.txtContent.Text;
-                }
-                else
-                {
-                    content = this.hfEditor.Value;
-                }
+                var aliases = this.portalAliasService.GetPortalAliasesByPortalId(this.PortalSettings.PortalId).Select(pa => pa.HttpAlias);
+                var content = this.phEdit.Visible ? this.txtContent.Text : this.hfEditor.Value;
 
                 if (this.Request.QueryString["nuru"] == null)
                 {
@@ -743,10 +748,10 @@ namespace DotNetNuke.Modules.Html
         {
             if (this.txtContent.IsRichEditorAvailable)
             {
-                this.ddlRender.Items.Add(new ListItem(this.LocalizeString("liRichText"), "RICH"));
+                this.ddlRender.Items.Add(new ListItem(this.LocalizeText("liRichText"), "RICH"));
             }
 
-            this.ddlRender.Items.Add(new ListItem(this.LocalizeString("liBasicText"), "BASIC"));
+            this.ddlRender.Items.Add(new ListItem(this.LocalizeText("liBasicText"), "BASIC"));
         }
     }
 }
