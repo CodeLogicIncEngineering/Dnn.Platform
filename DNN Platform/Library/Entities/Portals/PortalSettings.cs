@@ -212,14 +212,6 @@ namespace DotNetNuke.Entities.Portals
             }
         }
 
-        /*
-         * add <a name="[moduleid]"></a> on the top of the module
-         *
-         * Desactivate this remove the html5 compatibility warnings
-         * (and make the output smaller)
-         *
-         */
-
         /// <inheritdoc/>
         public bool InjectModuleHyperLink
         {
@@ -228,12 +220,6 @@ namespace DotNetNuke.Entities.Portals
                 return PortalController.GetPortalSettingAsBoolean("InjectModuleHyperLink", this.PortalId, true);
             }
         }
-
-        /*
-         * generates a : Page.Response.AddHeader("X-UA-Compatible", "");
-         *
-
-         */
 
         /// <inheritdoc/>
         public string AddCompatibleHttpHeader
@@ -244,7 +230,7 @@ namespace DotNetNuke.Entities.Portals
                 string setting;
                 if (PortalController.Instance.GetPortalSettings(this.PortalId).TryGetValue("AddCompatibleHttpHeader", out setting))
                 {
-                    // Hack to store empty string portalsetting with non empty default value
+                    // Hack to store empty string portal setting with non-empty default value
                     compatibleHttpHeader = (setting == "false") ? string.Empty : setting;
                 }
 
@@ -253,22 +239,10 @@ namespace DotNetNuke.Entities.Portals
         }
 
         /// <inheritdoc />
-        public bool AddCachebusterToResourceUris
-        {
-            get
-            {
-                return PortalController.GetPortalSettingAsBoolean("AddCachebusterToResourceUris", this.PortalId, true);
-            }
-        }
+        public bool AddCachebusterToResourceUris => PortalController.GetPortalSettingAsBoolean("AddCachebusterToResourceUris", this.PortalId, true);
 
         /// <inheritdoc />
-        public bool DisablePrivateMessage
-        {
-            get
-            {
-                return PortalController.GetPortalSetting("DisablePrivateMessage", this.PortalId, "N") == "Y";
-            }
-        }
+        public bool DisablePrivateMessage => PortalController.GetPortalSetting("DisablePrivateMessage", this.PortalId, "N") == "Y";
 
         public TabInfo ActiveTab { get; set; }
 
@@ -556,13 +530,47 @@ namespace DotNetNuke.Entities.Portals
         public FileExtensionWhitelist AllowedExtensionsWhitelist { get; internal set; }
 
         /// <inheritdoc/>
-        public bool ShowQuickModuleAddMenu
-        {
-            get
-            {
-                return PortalController.GetPortalSettingAsBoolean("ShowQuickModuleAddMenu", this.PortalId, false);
-            }
-        }
+        public bool ShowQuickModuleAddMenu => PortalController.GetPortalSettingAsBoolean("ShowQuickModuleAddMenu", this.PortalId, false);
+
+        /// <summary>Create an <see cref="IPortalSettings"/> instance.</summary>
+        /// <returns>A new <see cref="IPortalSettings"/> instance.</returns>
+        public static IPortalSettings Create()
+            => new PortalSettings();
+
+        /// <summary>Create an <see cref="IPortalSettings"/> instance.</summary>
+        /// <param name="portalController">A portal controller.</param>
+        /// <param name="portalId">The portal ID.</param>
+        /// <returns>A new <see cref="IPortalSettings"/> instance.</returns>
+        public static IPortalSettings Create(IPortalController portalController, int portalId)
+            => new PortalSettings(Null.NullInteger, portalController.GetPortal(portalId));
+
+        /// <summary>Create an <see cref="IPortalSettings"/> instance.</summary>
+        /// <param name="portalController">A portal controller.</param>
+        /// <param name="tabId">The active tab ID.</param>
+        /// <param name="portalId">The portal ID.</param>
+        /// <returns>A new <see cref="IPortalSettings"/> instance.</returns>
+        public static IPortalSettings Create(IPortalController portalController, int tabId, int portalId)
+            => new PortalSettings(tabId, portalController.GetPortal(portalId));
+
+        /// <summary>Create an <see cref="IPortalSettings"/> instance.</summary>
+        /// <param name="tabId">The active tab ID.</param>
+        /// <param name="portalAlias">The portal alias.</param>
+        /// <returns>A new <see cref="IPortalSettings"/> instance.</returns>
+        public static IPortalSettings Create(int tabId, IPortalAliasInfo portalAlias)
+            => portalAlias is PortalAliasInfo alias ? new PortalSettings(tabId, alias) : new PortalSettings(tabId, portalAlias.PortalId);
+
+        /// <summary>Create an <see cref="IPortalSettings"/> instance.</summary>
+        /// <param name="portal">The portal info.</param>
+        /// <returns>A new <see cref="IPortalSettings"/> instance.</returns>
+        public static IPortalSettings Create(IPortalInfo portal)
+            => portal is PortalInfo portalInfo ? new PortalSettings(portalInfo) : new PortalSettings(Null.NullInteger, portal.PortalId);
+
+        /// <summary>Create an <see cref="IPortalSettings"/> instance.</summary>
+        /// <param name="tabId">The tab ID.</param>
+        /// <param name="portal">The portal info.</param>
+        /// <returns>A new <see cref="IPortalSettings"/> instance.</returns>
+        public static IPortalSettings Create(int tabId, IPortalInfo portal)
+            => portal is PortalInfo portalInfo ? new PortalSettings(tabId, portalInfo) : new PortalSettings(tabId, portal.PortalId);
 
         /// <inheritdoc/>
         public string GetProperty(string propertyName, string format, CultureInfo formatProvider, UserInfo accessingUser, Scope accessLevel, ref bool propertyNotFound)
