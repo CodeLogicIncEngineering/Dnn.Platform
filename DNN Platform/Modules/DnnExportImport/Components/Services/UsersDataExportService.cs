@@ -15,39 +15,59 @@ namespace Dnn.ExportImport.Components.Services
     using Dnn.ExportImport.Components.Entities;
     using Dnn.ExportImport.Dto.Assets;
     using Dnn.ExportImport.Dto.Users;
+
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Common;
     using DotNetNuke.Entities.Users;
     using DotNetNuke.Services.FileSystem;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>Supplementary service to import users additional data.</summary>
     public class UsersDataExportService : BasePortableService
     {
         private static readonly Tuple<string, Type>[] UserRolesDatasetColumns =
         {
-            new Tuple<string, Type>("PortalId", typeof(int)),
-            new Tuple<string, Type>("UserId", typeof(int)),
-            new Tuple<string, Type>("RoleId", typeof(int)),
-            new Tuple<string, Type>("ExpiryDate", typeof(DateTime)),
-            new Tuple<string, Type>("IsTrialUsed", typeof(bool)),
-            new Tuple<string, Type>("EffectiveDate", typeof(DateTime)),
-            new Tuple<string, Type>("CreatedByUserId", typeof(int)),
-            new Tuple<string, Type>("LastModifiedByUserId", typeof(int)),
-            new Tuple<string, Type>("Status", typeof(int)),
-            new Tuple<string, Type>("IsOwner", typeof(bool)),
-            new Tuple<string, Type>("IsSuperUser", typeof(bool)),
+            Tuple.Create("PortalId", typeof(int)),
+            Tuple.Create("UserId", typeof(int)),
+            Tuple.Create("RoleId", typeof(int)),
+            Tuple.Create("ExpiryDate", typeof(DateTime)),
+            Tuple.Create("IsTrialUsed", typeof(bool)),
+            Tuple.Create("EffectiveDate", typeof(DateTime)),
+            Tuple.Create("CreatedByUserId", typeof(int)),
+            Tuple.Create("LastModifiedByUserId", typeof(int)),
+            Tuple.Create("Status", typeof(int)),
+            Tuple.Create("IsOwner", typeof(bool)),
+            Tuple.Create("IsSuperUser", typeof(bool)),
         };
 
         private static readonly Tuple<string, Type>[] UserProfileDatasetColumns =
         {
-            new Tuple<string, Type>("PortalId", typeof(int)),
-            new Tuple<string, Type>("UserId", typeof(int)),
-            new Tuple<string, Type>("PropertyDefinitionId", typeof(int)),
-            new Tuple<string, Type>("PropertyValue", typeof(string)),
-            new Tuple<string, Type>("PropertyText", typeof(string)),
-            new Tuple<string, Type>("Visibility", typeof(int)),
-            new Tuple<string, Type>("ExtendedVisibility", typeof(string)),
-            new Tuple<string, Type>("IsSuperUser", typeof(bool)),
+            Tuple.Create("PortalId", typeof(int)),
+            Tuple.Create("UserId", typeof(int)),
+            Tuple.Create("PropertyDefinitionId", typeof(int)),
+            Tuple.Create("PropertyValue", typeof(string)),
+            Tuple.Create("PropertyText", typeof(string)),
+            Tuple.Create("Visibility", typeof(int)),
+            Tuple.Create("ExtendedVisibility", typeof(string)),
+            Tuple.Create("IsSuperUser", typeof(bool)),
         };
+
+        private readonly IHostSettings hostSettings;
+
+        /// <summary>Initializes a new instance of the <see cref="UsersDataExportService"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IHostSettings. Scheduled removal in v12.0.0.")]
+        public UsersDataExportService()
+            : this(null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="UsersDataExportService"/> class.</summary>
+        /// <param name="hostSettings">The host settings.</param>
+        public UsersDataExportService(IHostSettings hostSettings)
+        {
+            this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
+        }
 
         /// <inheritdoc/>
         public override string Category => Constants.Category_UsersData;
@@ -187,10 +207,11 @@ namespace Dnn.ExportImport.Components.Services
                                         foreach (var userProfile in userProfiles)
                                         {
                                             var profileDefinitionId = Util.GetProfilePropertyId(
+                                                this.hostSettings,
                                                 importJob.PortalId,
                                                 userProfile.PropertyDefinitionId,
                                                 userProfile.PropertyName);
-                                            if (profileDefinitionId == null || profileDefinitionId == -1)
+                                            if (profileDefinitionId is null or -1)
                                             {
                                                 continue;
                                             }

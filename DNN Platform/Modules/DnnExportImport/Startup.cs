@@ -23,6 +23,7 @@ namespace Dnn.ExportImport
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IEntitiesController, EntitiesController>();
+            services.AddTransient<ISettingsController, SettingsController>();
             services.AddTransient<ExportImportEngine>();
             services.AddTransient<ImportController>();
             services.AddTransient<ExportController>();

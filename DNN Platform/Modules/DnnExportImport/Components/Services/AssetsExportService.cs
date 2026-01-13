@@ -15,11 +15,16 @@ namespace Dnn.ExportImport.Components.Services
     using Dnn.ExportImport.Components.Entities;
     using Dnn.ExportImport.Dto.Assets;
     using Dnn.ExportImport.Dto.Workflow;
+
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Users;
     using DotNetNuke.Services.FileSystem;
+
+    using Microsoft.Extensions.DependencyInjection;
+
     using Newtonsoft.Json;
 
     using DataProvider = Dnn.ExportImport.Components.Providers.DataProvider;
@@ -35,8 +40,22 @@ namespace Dnn.ExportImport.Components.Services
             @"users/\d+/\d+/(\d+)/",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private readonly string assetsFolder =
-            $"{Globals.ApplicationMapPath}{Constants.ExportFolder}{{0}}\\{Constants.ExportZipFiles}";
+        private readonly string assetsFolder;
+
+        /// <summary>Initializes a new instance of the <see cref="AssetsExportService"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IApplicationStatusInfo. Scheduled removal in v12.0.0.")]
+        public AssetsExportService()
+            : this(null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="AssetsExportService"/> class.</summary>
+        /// <param name="appStatus">The application status.</param>
+        public AssetsExportService(IApplicationStatusInfo appStatus)
+        {
+            appStatus ??= Globals.GetCurrentServiceProvider().GetRequiredService<IApplicationStatusInfo>();
+            this.assetsFolder = $"{appStatus.ApplicationMapPath}{Constants.ExportFolder}{{0}}\\{Constants.ExportZipFiles}";
+        }
 
         /// <inheritdoc/>
         public override string Category => Constants.Category_Assets;

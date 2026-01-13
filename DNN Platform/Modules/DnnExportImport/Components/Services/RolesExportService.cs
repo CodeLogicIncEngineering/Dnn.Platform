@@ -14,12 +14,44 @@ namespace Dnn.ExportImport.Components.Services
     using Dnn.ExportImport.Components.Entities;
     using Dnn.ExportImport.Components.Providers;
     using Dnn.ExportImport.Dto.Roles;
+
+    using DotNetNuke.Abstractions.Logging;
+    using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
+    using DotNetNuke.Entities.Portals;
+    using DotNetNuke.Entities.Users;
     using DotNetNuke.Security.Roles;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>An export service for roles.</summary>
     public class RolesExportService : BasePortableService
     {
+        private readonly RoleProvider roleProvider;
+        private readonly IEventLogger eventLogger;
+        private readonly IUserController userController;
+        private readonly IPortalController portalController;
+
+        /// <summary>Initializes a new instance of the <see cref="RolesExportService"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with RoleProvider. Scheduled removal in v12.0.0.")]
+        public RolesExportService()
+            : this(null, null, null, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="RolesExportService"/> class.</summary>
+        /// <param name="roleProvider">The role provider.</param>
+        /// <param name="eventLogger">The event logger.</param>
+        /// <param name="userController">The user controller.</param>
+        /// <param name="portalController">The portal controller.</param>
+        public RolesExportService(RoleProvider roleProvider, IEventLogger eventLogger, IUserController userController, IPortalController portalController)
+        {
+            this.roleProvider = roleProvider ?? Globals.GetCurrentServiceProvider().GetRequiredService<RoleProvider>();
+            this.eventLogger = eventLogger ?? Globals.GetCurrentServiceProvider().GetRequiredService<IEventLogger>();
+            this.userController = userController ?? Globals.GetCurrentServiceProvider().GetRequiredService<IUserController>();
+            this.portalController = portalController ?? Globals.GetCurrentServiceProvider().GetRequiredService<IPortalController>();
+        }
+
         /// <inheritdoc/>
         public override string Category => Constants.Category_Roles;
 
@@ -290,7 +322,7 @@ namespace Dnn.ExportImport.Components.Services
                         RoleGroupName = other.RoleGroupName,
                         Description = other.Description,
                     };
-                    other.LocalId = RoleController.AddRoleGroup(roleGroup);
+                    other.LocalId = RoleController.AddRoleGroup(this.roleProvider, this.eventLogger, this.userController, PortalSettings.Create(this.portalController, portalId), roleGroup);
                     changedGroups.Add(new RoleGroupItem(roleGroup.RoleGroupID, createdBy, modifiedBy));
                     this.Result.AddLogEntry("Added role group", other.RoleGroupName);
                 }

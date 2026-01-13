@@ -19,7 +19,10 @@ namespace Dnn.ExportImport.Components.Services
     using Dnn.ExportImport.Dto.Workflow;
     using Dnn.ExportImport.Repository;
 
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Abstractions.Modules;
+    using DotNetNuke.Abstractions.Portals;
+    using DotNetNuke.Abstractions.Security.Permissions;
     using DotNetNuke.Application;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Extensions;
@@ -50,6 +53,8 @@ namespace Dnn.ExportImport.Components.Services
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(ExportImportEngine));
 
         private readonly IBusinessControllerProvider businessControllerProvider;
+        private readonly IPortalAliasService portalAliasService;
+        private readonly IApplicationStatusInfo appStatus;
         private ProgressTotals totals;
         private DataProvider dataProvider;
         private ITabController tabController;
@@ -63,16 +68,29 @@ namespace Dnn.ExportImport.Components.Services
         private List<ImportModuleMapping> importContentList = []; // map the exported module and local module.
 
         /// <summary>Initializes a new instance of the <see cref="PagesExportService"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IPortalAliasService. Scheduled removal in v12.0.0.")]
         public PagesExportService()
-            : this(null)
+            : this(null, null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="PagesExportService"/> class.</summary>
         /// <param name="businessControllerProvider">The business controller provider.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IPortalAliasService. Scheduled removal in v12.0.0.")]
         public PagesExportService(IBusinessControllerProvider businessControllerProvider)
+            : this(businessControllerProvider, null, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="PagesExportService"/> class.</summary>
+        /// <param name="businessControllerProvider">The business controller provider.</param>
+        /// <param name="portalAliasService">The portal alias service.</param>
+        /// <param name="appStatus">The application status.</param>
+        public PagesExportService(IBusinessControllerProvider businessControllerProvider, IPortalAliasService portalAliasService, IApplicationStatusInfo appStatus)
         {
             this.businessControllerProvider = businessControllerProvider ?? Globals.GetCurrentServiceProvider().GetRequiredService<IBusinessControllerProvider>();
+            this.portalAliasService = portalAliasService ?? Globals.GetCurrentServiceProvider().GetRequiredService<IPortalAliasService>();
+            this.appStatus = appStatus ?? Globals.GetCurrentServiceProvider().GetRequiredService<IApplicationStatusInfo>();
         }
 
         /// <inheritdoc/>
@@ -818,7 +836,7 @@ namespace Dnn.ExportImport.Components.Services
                 var local = isNew ? null : localTabPermissions.FirstOrDefault(
                     x => x.PermissionCode == other.PermissionCode && x.PermissionKey == other.PermissionKey
                     && x.PermissionName.Equals(other.PermissionName, StringComparison.OrdinalIgnoreCase) &&
-                    x.RoleID == roleId && x.UserID == userId);
+                    ((IPermissionInfo)x).RoleId == roleId && ((IPermissionInfo)x).UserId == userId);
                 var isUpdate = false;
                 if (local != null)
                 {
@@ -848,17 +866,17 @@ namespace Dnn.ExportImport.Components.Services
                         local = new TabPermissionInfo
                         {
                             TabID = localTab.TabID,
-                            UserID = Null.NullInteger,
-                            RoleID = noRole,
                             Username = other.Username,
                             RoleName = other.RoleName,
-                            ModuleDefID = Util.GeModuleDefIdByFriendltName(other.FriendlyName) ?? -1,
                             PermissionKey = other.PermissionKey,
                             PermissionName = other.PermissionName,
                             AllowAccess = other.AllowAccess,
-                            PermissionID = permissionId.Value,
                         };
-                        if (other.UserID != null && other.UserID > 0 && !string.IsNullOrEmpty(other.Username))
+                        ((IPermissionInfo)local).UserId = Null.NullInteger;
+                        ((IPermissionInfo)local).RoleId = noRole;
+                        ((IPermissionInfo)local).ModuleDefId = Util.GeModuleDefIdByFriendltName(other.FriendlyName) ?? -1;
+                        ((IPermissionInfo)local).PermissionId = permissionId.Value;
+                        if (other.UserID is > 0 && !string.IsNullOrEmpty(other.Username))
                         {
                             if (userId == null)
                             {
@@ -869,7 +887,7 @@ namespace Dnn.ExportImport.Components.Services
                                 continue;
                             }
 
-                            local.UserID = userId.Value;
+                            ((IPermissionInfo)local).UserId = userId.Value;
                         }
 
                         if (other.RoleID != null && other.RoleID > noRole && !string.IsNullOrEmpty(other.RoleName))
@@ -883,7 +901,7 @@ namespace Dnn.ExportImport.Components.Services
                                 continue;
                             }
 
-                            local.RoleID = roleId.Value;
+                            ((IPermissionInfo)local).RoleId = roleId.Value;
                         }
 
                         localTab.TabPermissions.Add(local, true);
@@ -948,14 +966,14 @@ namespace Dnn.ExportImport.Components.Services
                 }
                 else
                 {
-                    var alias = PortalAliasController.Instance.GetPortalAliasesByPortalId(this.ImportDto.PortalId).FirstOrDefault(a => a.IsPrimary);
+                    var alias = this.portalAliasService.GetPortalAliasesByPortalId(this.ImportDto.PortalId).FirstOrDefault(a => a.IsPrimary);
                     local = new TabUrlInfo
                     {
                         TabId = localTab.TabID,
                         CultureCode = other.CultureCode,
                         HttpStatus = other.HttpStatus,
                         IsSystem = other.IsSystem,
-                        PortalAliasId = alias?.PortalAliasID ?? -1,
+                        PortalAliasId = alias?.PortalAliasId ?? -1,
                         PortalAliasUsage = (PortalAliasUsageType)(other.PortalAliasUsage ?? 0), // reset to default
                         QueryString = other.QueryString,
                         SeqNum = other.SeqNum,
@@ -1405,15 +1423,15 @@ namespace Dnn.ExportImport.Components.Services
                     var local = new ModulePermissionInfo
                     {
                         ModuleID = localModule.ModuleID,
-                        UserID = Null.NullInteger,
-                        RoleID = noRole,
                         RoleName = other.RoleName,
                         Username = other.Username,
                         PermissionKey = other.PermissionKey,
                         PermissionName = other.PermissionName,
                         AllowAccess = other.AllowAccess,
-                        PermissionID = permissionId.Value,
                     };
+                    ((IPermissionInfo)local).UserId = Null.NullInteger;
+                    ((IPermissionInfo)local).RoleId = noRole;
+                    ((IPermissionInfo)local).PermissionId = permissionId.Value;
                     if (other.UserID is > 0 && !string.IsNullOrEmpty(other.Username))
                     {
                         if (userId == null)
@@ -1421,7 +1439,7 @@ namespace Dnn.ExportImport.Components.Services
                             continue;
                         }
 
-                        local.UserID = userId.Value;
+                        ((IPermissionInfo)local).UserId = userId.Value;
                     }
 
                     if (other.RoleID != null && other.RoleID > noRole && !string.IsNullOrEmpty(other.RoleName))
@@ -1431,7 +1449,7 @@ namespace Dnn.ExportImport.Components.Services
                             continue;
                         }
 
-                        local.RoleID = roleId.Value;
+                        ((IPermissionInfo)local).RoleId = roleId.Value;
                     }
 
                     other.LocalId = localModule.ModulePermissions.Add(local, true);
@@ -1907,7 +1925,7 @@ namespace Dnn.ExportImport.Components.Services
         {
             if (!this.exportedModuleDefinitions.Contains(exportModule.ModuleDefID) && this.exportDto.IncludeExtensions)
             {
-                var packageZipFile = $"{Globals.ApplicationMapPath}{Constants.ExportFolder}{this.exportImportJob.Directory.TrimEnd('\\', '/')}\\{Constants.ExportZipPackages}";
+                var packageZipFile = $"{this.appStatus.ApplicationMapPath}{Constants.ExportFolder}{this.exportImportJob.Directory.TrimEnd('\\', '/')}\\{Constants.ExportZipPackages}";
                 var moduleDefinition = ModuleDefinitionController.GetModuleDefinitionByID(exportModule.ModuleDefID);
                 var desktopModuleId = moduleDefinition.DesktopModuleID;
                 var desktopModule = DesktopModuleController.GetDesktopModule(desktopModuleId, Null.NullInteger);
