@@ -237,7 +237,7 @@ namespace DotNetNuke.Modules.Journal.Components
             }
 
             string url;
-            var portalSettings = PortalController.Instance.GetCurrentPortalSettings();
+            var portalSettings = PortalController.Instance.GetCurrentSettings();
             var journalId = Convert.ToInt32(searchResult.UniqueKey.Split('_')[1]);
             var groupId = Convert.ToInt32(searchResult.Keywords["GroupId"]);
             var tabId = Convert.ToInt32(searchResult.Keywords["TabId"]);
