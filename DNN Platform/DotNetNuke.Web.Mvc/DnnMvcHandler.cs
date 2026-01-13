@@ -10,9 +10,12 @@ namespace DotNetNuke.Web.Mvc
     using System.Web.SessionState;
 
     using DotNetNuke.ComponentModel;
+    using DotNetNuke.Entities.Controllers;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.HttpModules.Membership;
+    using DotNetNuke.Security.Roles;
     using DotNetNuke.Services.Localization;
+    using DotNetNuke.Services.UserRequest;
     using DotNetNuke.UI.Modules;
     using DotNetNuke.Web.Mvc.Common;
     using DotNetNuke.Web.Mvc.Framework.Modules;
@@ -34,39 +37,21 @@ namespace DotNetNuke.Web.Mvc
         public RequestContext RequestContext { get; private set; }
 
         /// <inheritdoc/>
-        bool IHttpHandler.IsReusable
-        {
-            get { return this.IsReusable; }
-        }
+        bool IHttpHandler.IsReusable => this.IsReusable;
 
         internal ControllerBuilder ControllerBuilder
         {
-            get
-            {
-                if (this.controllerBuilder == null)
-                {
-                    this.controllerBuilder = ControllerBuilder.Current;
-                }
-
-                return this.controllerBuilder;
-            }
-
-            set
-            {
-                this.controllerBuilder = value;
-            }
+            get => this.controllerBuilder ??= ControllerBuilder.Current;
+            set => this.controllerBuilder = value;
         }
 
-        protected virtual bool IsReusable
-        {
-            get { return false; }
-        }
+        protected virtual bool IsReusable => false;
 
         /// <inheritdoc/>
         void IHttpHandler.ProcessRequest(HttpContext httpContext)
         {
             SetThreadCulture();
-            MembershipModule.AuthenticateRequest(this.RequestContext.HttpContext, allowUnknownExtensions: true);
+            MembershipModule.AuthenticateRequest(new HostController(), PortalController.Instance, UserRequestIPAddressController.Instance, RoleController.Instance, this.RequestContext.HttpContext, allowUnknownExtensions: true);
             this.ProcessRequest(httpContext);
         }
 

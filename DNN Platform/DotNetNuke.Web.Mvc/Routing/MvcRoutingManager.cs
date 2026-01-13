@@ -9,6 +9,7 @@ namespace DotNetNuke.Web.Mvc.Routing
     using System.Web.Http;
     using System.Web.Routing;
 
+    using DotNetNuke.Abstractions.Portals;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Internal;
     using DotNetNuke.Common.Utilities;
@@ -24,15 +25,21 @@ namespace DotNetNuke.Web.Mvc.Routing
         private readonly RouteCollection routes;
         private readonly PortalAliasMvcRouteManager portalAliasMvcRouteManager;
 
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IPortalAliasService. Scheduled removal in v12.0.0.")]
         public MvcRoutingManager()
-            : this(RouteTable.Routes)
+            : this(null)
         {
         }
 
-        internal MvcRoutingManager(RouteCollection routes)
+        public MvcRoutingManager(IPortalAliasService portalAliasService)
+            : this(portalAliasService, RouteTable.Routes)
+        {
+        }
+
+        internal MvcRoutingManager(IPortalAliasService portalAliasService, RouteCollection routes)
         {
             this.routes = routes;
-            this.portalAliasMvcRouteManager = new PortalAliasMvcRouteManager();
+            this.portalAliasMvcRouteManager = new PortalAliasMvcRouteManager(portalAliasService);
             this.TypeLocator = new TypeLocator();
         }
 

@@ -8,7 +8,10 @@ namespace DotNetNuke.Web.Mvc.Framework.ActionFilters
     using System.Web;
     using System.Web.Mvc;
 
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Common;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     public abstract class AuthorizeAttributeBase : FilterAttribute, IAuthorizationFilter
     {
@@ -53,7 +56,7 @@ namespace DotNetNuke.Web.Mvc.Framework.ActionFilters
         protected virtual void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             const string failureMessage = "Authorization has been denied for this request.";
-            var authFilterContext = new AuthFilterContext(filterContext, failureMessage);
+            var authFilterContext = new AuthFilterContext(Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>(), filterContext, failureMessage);
             authFilterContext.HandleUnauthorizedRequest();
 
             // filterContext.HttpContext.Response.Redirect(Globals.AccessDeniedURL());

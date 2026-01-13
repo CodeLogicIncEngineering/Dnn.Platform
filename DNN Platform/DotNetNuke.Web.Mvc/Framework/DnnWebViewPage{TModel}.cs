@@ -5,7 +5,10 @@ namespace DotNetNuke.Web.Mvc.Framework
 {
     using System.Web.Mvc;
 
+    using DotNetNuke.Common;
     using DotNetNuke.Web.Mvc.Helpers;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     public abstract class DnnWebViewPage<TModel> : WebViewPage<TModel>
     {
@@ -21,7 +24,7 @@ namespace DotNetNuke.Web.Mvc.Framework
             this.Ajax = new AjaxHelper<TModel>(this.ViewContext, this);
             this.Html = new DnnHtmlHelper<TModel>(this.ViewContext, this);
             this.Url = new DnnUrlHelper(this.ViewContext);
-            this.Dnn = new DnnHelper<TModel>(this.ViewContext, this);
+            this.Dnn = ActivatorUtilities.CreateInstance<DnnHelper<TModel>>(Globals.GetCurrentServiceProvider(), this.ViewContext, this);
         }
     }
 }

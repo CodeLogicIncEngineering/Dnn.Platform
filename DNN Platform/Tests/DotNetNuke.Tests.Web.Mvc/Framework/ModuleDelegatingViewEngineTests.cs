@@ -6,6 +6,7 @@ namespace DotNetNuke.Tests.Web.Mvc.Framework
     using System.Linq;
     using System.Web.Mvc;
 
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Tests.Utilities.Fakes;
     using DotNetNuke.Web.Mvc.Framework;
     using DotNetNuke.Web.Mvc.Framework.Controllers;
@@ -58,7 +59,7 @@ namespace DotNetNuke.Tests.Web.Mvc.Framework
 
             SetupMockModuleApplication(context, mockEngines.Object);
 
-            var viewEngine = new ModuleDelegatingViewEngine();
+            var viewEngine = new ModuleDelegatingViewEngine(Mock.Of<IHostSettings>());
 
             // Act
             ViewEngineResult engineResult = viewEngine.FindPartialView(context, viewName, true);

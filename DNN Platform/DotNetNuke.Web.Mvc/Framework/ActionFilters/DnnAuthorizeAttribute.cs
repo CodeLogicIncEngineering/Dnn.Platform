@@ -57,7 +57,7 @@ namespace DotNetNuke.Web.Mvc.Framework.ActionFilters
 
         protected virtual UserInfo GetCurrentUser()
         {
-            return PortalController.Instance.GetCurrentPortalSettings().UserInfo;
+            return UserController.Instance.GetCurrentUserInfo();
         }
 
         /// <inheritdoc/>
