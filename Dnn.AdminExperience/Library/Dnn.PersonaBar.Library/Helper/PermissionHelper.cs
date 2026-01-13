@@ -4,37 +4,43 @@
 
 namespace Dnn.PersonaBar.Library.Helper
 {
-    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
 
     using Dnn.PersonaBar.Library.Dto;
+
+    using DotNetNuke.Abstractions.Security.Permissions;
     using DotNetNuke.Common;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Security.Permissions;
     using DotNetNuke.Security.Roles;
 
+    using Microsoft.Extensions.DependencyInjection;
+
     public static class PermissionHelper
     {
         public static void AddUserPermission(this Dto.Permissions dto, PermissionInfoBase permissionInfo)
+            => dto.AddUserPermission((IPermissionInfo)permissionInfo);
+
+        public static void AddUserPermission(this Dto.Permissions dto, IPermissionInfo permissionInfo)
         {
-            var userPermission = dto.UserPermissions.FirstOrDefault(p => p.UserId == permissionInfo.UserID);
+            var userPermission = dto.UserPermissions.FirstOrDefault(p => p.UserId == permissionInfo.UserId);
             if (userPermission == null)
             {
                 userPermission = new UserPermission
                 {
-                    UserId = permissionInfo.UserID,
+                    UserId = permissionInfo.UserId,
                     DisplayName = permissionInfo.DisplayName,
                 };
                 dto.UserPermissions.Add(userPermission);
             }
 
-            if (userPermission.Permissions.All(p => p.PermissionId != permissionInfo.PermissionID))
+            if (userPermission.Permissions.All(p => p.PermissionId != permissionInfo.PermissionId))
             {
                 userPermission.Permissions.Add(new Permission
                 {
-                    PermissionId = permissionInfo.PermissionID,
+                    PermissionId = permissionInfo.PermissionId,
                     PermissionName = permissionInfo.PermissionName,
                     AllowAccess = permissionInfo.AllowAccess,
                 });
@@ -42,23 +48,26 @@ namespace Dnn.PersonaBar.Library.Helper
         }
 
         public static void AddRolePermission(this Dto.Permissions dto, PermissionInfoBase permissionInfo)
+            => dto.AddRolePermission((IPermissionInfo)permissionInfo);
+
+        public static void AddRolePermission(this Dto.Permissions dto, IPermissionInfo permissionInfo)
         {
-            var rolePermission = dto.RolePermissions.FirstOrDefault(p => p.RoleId == permissionInfo.RoleID);
+            var rolePermission = dto.RolePermissions.FirstOrDefault(p => p.RoleId == permissionInfo.RoleId);
             if (rolePermission == null)
             {
                 rolePermission = new RolePermission
                 {
-                    RoleId = permissionInfo.RoleID,
+                    RoleId = permissionInfo.RoleId,
                     RoleName = permissionInfo.RoleName,
                 };
                 dto.RolePermissions.Add(rolePermission);
             }
 
-            if (rolePermission.Permissions.All(p => p.PermissionId != permissionInfo.PermissionID))
+            if (rolePermission.Permissions.All(p => p.PermissionId != permissionInfo.PermissionId))
             {
                 rolePermission.Permissions.Add(new Permission
                 {
-                    PermissionId = permissionInfo.PermissionID,
+                    PermissionId = permissionInfo.PermissionId,
                     PermissionName = permissionInfo.PermissionName,
                     AllowAccess = permissionInfo.AllowAccess,
                 });
@@ -110,19 +119,22 @@ namespace Dnn.PersonaBar.Library.Helper
         }
 
         public static object GetRoles(int portalId)
+            => GetRoles(Globals.GetCurrentServiceProvider().GetRequiredService<RoleProvider>(), portalId);
+
+        public static object GetRoles(RoleProvider roleProvider, int portalId)
         {
             var data = new { Groups = new List<object>(), Roles = new List<object>() };
 
-            // retreive role groups info
+            // retrieve role groups info
             data.Groups.Add(new { GroupId = -2, Name = "AllRoles" });
             data.Groups.Add(new { GroupId = -1, Name = "GlobalRoles", Selected = true });
 
-            foreach (RoleGroupInfo group in RoleController.GetRoleGroups(portalId))
+            foreach (RoleGroupInfo group in RoleController.GetRoleGroups(roleProvider, portalId))
             {
                 data.Groups.Add(new { GroupId = group.RoleGroupID, Name = group.RoleGroupName });
             }
 
-            // retreive roles info
+            // retrieve roles info
             data.Roles.Add(new { RoleID = int.Parse(Globals.glbRoleUnauthUser, CultureInfo.InvariantCulture), GroupId = -1, RoleName = Globals.glbRoleUnauthUserName });
             data.Roles.Add(new { RoleID = int.Parse(Globals.glbRoleAllUsers, CultureInfo.InvariantCulture), GroupId = -1, RoleName = Globals.glbRoleAllUsersName });
             foreach (RoleInfo role in RoleController.Instance.GetRoles(portalId).OrderBy(r => r.RoleName))

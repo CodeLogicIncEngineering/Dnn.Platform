@@ -138,8 +138,6 @@ namespace Dnn.PersonaBar.Library.Controllers
                 return null;
             }
 
-            var currentPortalSetting = PortalController.Instance.GetCurrentPortalSettings();
-
             if (this.contentVerifier.IsContentExistsForRequestedPortal(targetPage.PortalID, portalSettings))
             {
                 try
@@ -200,8 +198,6 @@ namespace Dnn.PersonaBar.Library.Controllers
 
                 if (module != null)
                 {
-                    var currentPortal = PortalController.Instance.GetCurrentPortalSettings();
-
                     if (this.contentVerifier.IsContentExistsForRequestedPortal(module.PortalID, portalSettings, true))
                     {
                         return module;

@@ -12,6 +12,8 @@ namespace Dnn.PersonaBar.Library.Controllers
     using Dnn.PersonaBar.Library.Containers;
     using Dnn.PersonaBar.Library.Permissions;
     using Dnn.PersonaBar.Library.Repository;
+
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Common;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Users;
@@ -29,21 +31,36 @@ namespace Dnn.PersonaBar.Library.Controllers
 
         private readonly IPersonaBarRepository personaBarRepository;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly Lazy<IPersonaBarContainer> personaBarContainer;
+        private readonly IHostSettings hostSettings;
 
         /// <summary>Initializes a new instance of the <see cref="PersonaBarController"/> class.</summary>
         [Obsolete("Deprecated in DotNetNuke 10.0.0. Please use overload with IServiceScopeFactory. Scheduled removal in v12.0.0.")]
         public PersonaBarController()
-            : this(Globals.DependencyProvider.GetRequiredService<IServiceScopeFactory>(), PersonaBarRepository.Instance)
+            : this(null, null, null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="PersonaBarController"/> class.</summary>
         /// <param name="serviceScopeFactory">The service scope factory.</param>
         /// <param name="personaBarRepository">The Persona Bar repository.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IPersonaBarContainer. Scheduled removal in v12.0.0.")]
         public PersonaBarController(IServiceScopeFactory serviceScopeFactory, IPersonaBarRepository personaBarRepository)
+            : this(serviceScopeFactory, personaBarRepository, null, null)
         {
-            this.serviceScopeFactory = serviceScopeFactory;
-            this.personaBarRepository = personaBarRepository;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="PersonaBarController"/> class.</summary>
+        /// <param name="serviceScopeFactory">The service scope factory.</param>
+        /// <param name="personaBarRepository">The Persona Bar repository.</param>
+        /// <param name="personaBarContainer">The Persona Bar container.</param>
+        /// <param name="hostSettings">The host settings.</param>
+        public PersonaBarController(IServiceScopeFactory serviceScopeFactory, IPersonaBarRepository personaBarRepository, Lazy<IPersonaBarContainer> personaBarContainer, IHostSettings hostSettings)
+        {
+            this.serviceScopeFactory = serviceScopeFactory ?? Globals.GetCurrentServiceProvider().GetRequiredService<IServiceScopeFactory>();
+            this.personaBarRepository = personaBarRepository ?? PersonaBarRepository.Instance;
+            this.personaBarContainer = personaBarContainer ?? Globals.GetCurrentServiceProvider().GetRequiredService<Lazy<IPersonaBarContainer>>();
+            this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
         }
 
         /// <inheritdoc/>
@@ -54,10 +71,10 @@ namespace Dnn.PersonaBar.Library.Controllers
             {
                 var personaBarMenu = this.personaBarRepository.GetMenu();
                 var filteredMenu = new PersonaBarMenu();
-                var rootItems = personaBarMenu.MenuItems.Where(m => PersonaBarContainer.Instance.RootItems.Contains(m.Identifier)).ToList();
+                var rootItems = personaBarMenu.MenuItems.Where(m => this.personaBarContainer.Value.RootItems.Contains(m.Identifier)).ToList();
                 this.GetPersonaBarMenuWithPermissionCheck(portalSettings, user, filteredMenu.MenuItems, rootItems);
 
-                PersonaBarContainer.Instance.FilterMenu(filteredMenu);
+                this.personaBarContainer.Value.FilterMenu(filteredMenu);
                 return filteredMenu;
             }
             catch (Exception e)
@@ -72,7 +89,7 @@ namespace Dnn.PersonaBar.Library.Controllers
         {
             var visible = menuItem.Enabled
                    && !(user.IsSuperUser && !menuItem.AllowHost)
-                   && MenuPermissionController.CanView(portalSettings.PortalId, menuItem);
+                   && MenuPermissionController.CanView(this.hostSettings, portalSettings.PortalId, menuItem);
 
             if (visible)
             {
@@ -98,19 +115,19 @@ namespace Dnn.PersonaBar.Library.Controllers
             return Globals.DependencyProvider.GetRequiredService<IPersonaBarController>;
         }
 
-        private static void AddPermissions(MenuItem menuItem, IDictionary<string, object> settings)
+        private static void AddPermissions(IHostSettings hostSettings, MenuItem menuItem, IDictionary<string, object> settings)
         {
             var portalSettings = PortalSettings.Current;
             if (!settings.ContainsKey("permissions") && portalSettings != null)
             {
-                var menuPermissions = MenuPermissionController.GetPermissions(menuItem.MenuId)
+                var menuPermissions = MenuPermissionController.GetPermissions(hostSettings, menuItem.MenuId)
                     .Where(p => p.PermissionKey != "VIEW");
                 var portalId = portalSettings.PortalId;
                 var permissions = new Dictionary<string, bool>();
                 foreach (var permission in menuPermissions)
                 {
                     var key = permission.PermissionKey;
-                    var hasPermission = MenuPermissionController.HasMenuPermission(portalId, menuItem, key);
+                    var hasPermission = MenuPermissionController.HasMenuPermission(hostSettings, portalId, menuItem, key);
                     permissions.Add(key, hasPermission);
                 }
 
@@ -213,7 +230,7 @@ namespace Dnn.PersonaBar.Library.Controllers
                 var menuController = GetMenuItemController(scope, menuItem);
                 settings = menuController?.GetSettings(menuItem) ?? new Dictionary<string, object>();
 
-                AddPermissions(menuItem, settings);
+                AddPermissions(this.hostSettings, menuItem, settings);
             }
             catch (Exception ex)
             {

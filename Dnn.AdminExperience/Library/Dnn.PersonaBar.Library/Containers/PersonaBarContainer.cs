@@ -63,21 +63,10 @@ namespace Dnn.PersonaBar.Library.Containers
         }
 
         [Obsolete("Deprecated in DotNetNuke 10.0.0. Please resolve via dependency injection. Scheduled removal in v12.0.0.")]
-        public static IPersonaBarContainer Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = Globals.DependencyProvider.GetRequiredService<IPersonaBarContainer>();
-                }
-
-                return instance;
-            }
-        }
+        public static IPersonaBarContainer Instance => instance ??= Globals.DependencyProvider.GetRequiredService<IPersonaBarContainer>();
 
         /// <inheritdoc/>
-        public virtual IList<string> RootItems => new List<string> { "Content", "Manage", "Settings", "Edit" };
+        public virtual IList<string> RootItems => ["Content", "Manage", "Settings", "Edit",];
 
         /// <inheritdoc/>
         public virtual bool Visible => true;
