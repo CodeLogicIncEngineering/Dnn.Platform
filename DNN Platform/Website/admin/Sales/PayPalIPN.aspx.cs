@@ -135,7 +135,7 @@ namespace DotNetNuke.Modules.Admin.Sales
                 // postback to verify the source
                 if (blnValid)
                 {
-                    Dictionary<string, string> settings = PortalController.Instance.GetPortalSettings(this.PortalSettings.PortalId);
+                    Dictionary<string, string> settings = this.PortalController.GetPortalSettings(this.PortalSettings.PortalId);
                     string strPayPalURL;
 
                     // Sandbox mode
@@ -181,7 +181,7 @@ namespace DotNetNuke.Modules.Admin.Sales
                 {
                     int intAdministratorRoleId = 0;
                     string strProcessorID = Null.NullString;
-                    PortalInfo objPortalInfo = PortalController.Instance.GetPortal(intPortalID);
+                    PortalInfo objPortalInfo = this.PortalController.GetPortal(intPortalID);
                     if (objPortalInfo != null)
                     {
                         intAdministratorRoleId = objPortalInfo.AdministratorRoleId;
@@ -195,7 +195,7 @@ namespace DotNetNuke.Modules.Admin.Sales
                         float portalPrice = objPortalInfo.HostFee;
                         if ((portalPrice.ToString() == dblAmount.ToString()) && (HttpUtility.UrlDecode(strPayPalID.ToLowerInvariant()) == strProcessorID))
                         {
-                            PortalController.Instance.UpdatePortalExpiry(intPortalID, PortalController.GetActivePortalLanguage(intPortalID));
+                            this.PortalController.UpdatePortalExpiry(intPortalID, DotNetNuke.Entities.Portals.PortalController.GetActivePortalLanguage(intPortalID));
                         }
                         else
                         {
