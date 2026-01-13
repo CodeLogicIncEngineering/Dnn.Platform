@@ -220,7 +220,7 @@ namespace DotNetNuke.Web.Client
             {
                 using var scope = DependencyInjection.GetOrCreateServiceScope();
                 var portalController = ActivatorUtilities.GetServiceOrCreateInstance(scope.ServiceProvider, PortalControllerType);
-                var method = PortalControllerType.GetMethod("GetPortalSettings", BindingFlags.Public | BindingFlags.Instance);
+                var method = PortalControllerType.GetMethod("GetPortalSettings", BindingFlags.Public | BindingFlags.Instance, null, [typeof(int),], null);
                 var dictionary = (Dictionary<string, string>)method.Invoke(portalController, [portalId.Value,]);
 
                 if (dictionary.TryGetValue(settingKey, out var value))
