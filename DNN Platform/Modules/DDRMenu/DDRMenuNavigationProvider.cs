@@ -8,6 +8,7 @@ namespace DotNetNuke.Web.DDRMenu
     using System.Reflection;
     using System.Web.UI;
 
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Extensions;
     using DotNetNuke.Modules.NavigationProvider;
@@ -22,20 +23,31 @@ namespace DotNetNuke.Web.DDRMenu
     public class DDRMenuNavigationProvider : NavigationProvider
     {
         private readonly ILocaliser localiser;
+        private readonly IHostSettings hostSettings;
         private DDRMenuControl menuControl;
 
         /// <summary>Initializes a new instance of the <see cref="DDRMenuNavigationProvider"/> class.</summary>
         [Obsolete("Deprecated in DotNetNuke 10.0.0. Please use overload with ILocaliser. Scheduled removal in v12.0.0.")]
         public DDRMenuNavigationProvider()
-            : this(null)
+            : this(null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="DDRMenuNavigationProvider"/> class.</summary>
         /// <param name="localiser">The localizer.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IHostSettings. Scheduled removal in v12.0.0.")]
         public DDRMenuNavigationProvider(ILocaliser localiser)
+            : this(localiser, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="DDRMenuNavigationProvider"/> class.</summary>
+        /// <param name="localiser">The localizer.</param>
+        /// <param name="hostSettings">The host settings.</param>
+        public DDRMenuNavigationProvider(ILocaliser localiser, IHostSettings hostSettings)
         {
             this.localiser = localiser ?? Globals.GetCurrentServiceProvider().GetRequiredService<ILocaliser>();
+            this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
         }
 
         /// <inheritdoc/>
@@ -296,7 +308,7 @@ namespace DotNetNuke.Web.DDRMenu
         /// <inheritdoc/>
         public override void Initialize()
         {
-            this.menuControl = new DDRMenuControl(this.localiser) { ID = this.ControlID, EnableViewState = false };
+            this.menuControl = new DDRMenuControl(this.localiser, this.hostSettings) { ID = this.ControlID, EnableViewState = false, };
             this.menuControl.NodeClick += this.RaiseEvent_NodeClick;
         }
 

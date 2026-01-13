@@ -8,6 +8,7 @@ namespace DotNetNuke.Web.DDRMenu
     using System.ComponentModel;
     using System.Web.UI;
 
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Extensions;
     using DotNetNuke.Services.Exceptions;
@@ -21,21 +22,32 @@ namespace DotNetNuke.Web.DDRMenu
 
     public class SkinObject : SkinObjectBase
     {
+        private readonly IHostSettings hostSettings;
         private readonly ILocaliser localiser;
         private MenuBase menu;
 
         /// <summary>Initializes a new instance of the <see cref="SkinObject"/> class.</summary>
         [Obsolete("Deprecated in DotNetNuke 10.0.0. Please use overload with ILocaliser. Scheduled removal in v12.0.0.")]
         public SkinObject()
-            : this(null)
+            : this(null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="SkinObject"/> class.</summary>
         /// <param name="localiser">The tab localizer.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IHostSettings. Scheduled removal in v12.0.0.")]
         public SkinObject(ILocaliser localiser)
+            : this(localiser, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="SkinObject"/> class.</summary>
+        /// <param name="localiser">The tab localizer.</param>
+        /// <param name="hostSettings">The host settings.</param>
+        public SkinObject(ILocaliser localiser, IHostSettings hostSettings)
         {
             this.localiser = localiser ?? Globals.GetCurrentServiceProvider().GetRequiredService<ILocaliser>();
+            this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
         }
 
         public string MenuStyle { get; set; }
@@ -71,7 +83,7 @@ namespace DotNetNuke.Web.DDRMenu
                 {
                     base.OnPreRender(e);
 
-                    this.menu = MenuBase.Instantiate(this.localiser, this.MenuStyle);
+                    this.menu = MenuBase.Instantiate(this.localiser, this.hostSettings, this.MenuStyle);
                     this.menu.ApplySettings(
                         new Settings
                         {

@@ -6,8 +6,8 @@ namespace DotNetNuke.Web.DDRMenu
     using System;
     using System.Web.UI;
 
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.Common;
-    using DotNetNuke.Common.Extensions;
     using DotNetNuke.Services.Exceptions;
     using DotNetNuke.UI;
     using DotNetNuke.Web.DDRMenu.DNNCommon;
@@ -19,20 +19,31 @@ namespace DotNetNuke.Web.DDRMenu
     public partial class MenuView : ModuleBase
     {
         private readonly ILocaliser localiser;
+        private readonly IHostSettings hostSettings;
         private MenuBase menu;
 
         /// <summary>Initializes a new instance of the <see cref="MenuView"/> class.</summary>
         [Obsolete("Deprecated in DotNetNuke 10.0.0. Please use overload with ILocaliser. Scheduled removal in v12.0.0.")]
         public MenuView()
-            : this(null)
+            : this(null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="MenuView"/> class.</summary>
         /// <param name="localiser">The tab localizer.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IHostSettings. Scheduled removal in v12.0.0.")]
         public MenuView(ILocaliser localiser)
+            : this(localiser, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="MenuView"/> class.</summary>
+        /// <param name="localiser">The tab localizer.</param>
+        /// <param name="hostSettings">The host settings.</param>
+        public MenuView(ILocaliser localiser, IHostSettings hostSettings)
         {
             this.localiser = localiser ?? Globals.GetCurrentServiceProvider().GetRequiredService<ILocaliser>();
+            this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
         }
 
         /// <inheritdoc/>
@@ -81,7 +92,7 @@ namespace DotNetNuke.Web.DDRMenu
                                         DNNAbstract.GetNavNodeOptions(true))));
                     }
 
-                    this.menu = MenuBase.Instantiate(this.localiser, menuStyle);
+                    this.menu = MenuBase.Instantiate(this.localiser, this.hostSettings, menuStyle);
                     this.menu.RootNode = rootNode;
                     this.menu.ApplySettings(menuSettings);
 
