@@ -15,36 +15,46 @@ namespace DNNConnect.CKEditorProvider.Module
     using DNNConnect.CKEditorProvider.Helper;
     using DNNConnect.CKEditorProvider.Objects;
     using DNNConnect.CKEditorProvider.Utilities;
+
+    using DotNetNuke.Abstractions.Application;
+    using DotNetNuke.Abstractions.Portals;
+    using DotNetNuke.Common;
+    using DotNetNuke.Common.Extensions;
     using DotNetNuke.Entities.Modules;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Tabs;
     using DotNetNuke.Services.Exceptions;
     using DotNetNuke.Services.Localization;
 
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>The Editor Config Manger Module.</summary>
     public partial class EditorConfigManager : ModuleSettingsBase
     {
-        /// <summary>  Gets Current Language from Url.</summary>
-        protected string LangCode
+        private readonly IHostSettings hostSettings;
+        private readonly IPortalController portalController;
+
+        /// <summary>Initializes a new instance of the <see cref="EditorConfigManager"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IHostSettings. Scheduled removal in v12.0.0.")]
+        public EditorConfigManager()
+            : this(null, null)
         {
-            get
-            {
-                return CultureInfo.CurrentCulture.Name;
-            }
         }
 
-        /// <summary>  Gets the Name for the Current Resource file name.</summary>
-        protected string ResXFile
+        /// <summary>Initializes a new instance of the <see cref="EditorConfigManager"/> class.</summary>
+        /// <param name="hostSettings">The host settings.</param>
+        /// <param name="portalController">The portal controller.</param>
+        public EditorConfigManager(IHostSettings hostSettings, IPortalController portalController)
         {
-            get
-            {
-                return
-                    this.ResolveUrl(
-                        string.Format(
-                            "~/Providers/HtmlEditorProviders/DNNConnect.CKE/{0}/Options.aspx.resx",
-                            Localization.LocalResourceDirectory));
-            }
+            this.hostSettings = hostSettings ?? HttpContextSource.Current.GetScope().ServiceProvider.GetRequiredService<IHostSettings>();
+            this.portalController = portalController ?? HttpContextSource.Current.GetScope().ServiceProvider.GetRequiredService<IPortalController>();
         }
+
+        /// <summary>  Gets Current Language from Url.</summary>
+        protected string LangCode => CultureInfo.CurrentCulture.Name;
+
+        /// <summary>  Gets the Name for the Current Resource file name.</summary>
+        protected string ResXFile => this.ResolveUrl($"~/Providers/HtmlEditorProviders/DNNConnect.CKE/{Localization.LocalResourceDirectory}/Options.aspx.resx");
 
         /// <summary>Gets or sets the editor options control.</summary>
         private CKEditorOptions EditorOptions { get; set; }
@@ -317,21 +327,21 @@ namespace DNNConnect.CKEditorProvider.Module
 
             var moduleController = new ModuleController();
 
-            var settingsDictionary = EditorController.GetEditorHostSettings();
+            var settingsDictionary = EditorController.GetEditorHostSettings(this.hostSettings);
 
             if (this.PortalOnly.Checked)
             {
                 this.RenderPortalNode(
-                    new PortalController().GetPortal(this.PortalSettings.PortalId), moduleController, settingsDictionary);
+                    this.portalController.GetPortal(this.PortalSettings.PortalId), moduleController, settingsDictionary);
             }
             else
             {
-                var portals = new PortalController().GetPortals().Cast<PortalInfo>().ToList();
+                var portals = this.portalController.GetPortals().Cast<IPortalInfo>();
                 this.RenderHostNode(portals, moduleController, settingsDictionary);
             }
         }
 
-        private void RenderHostNode(IEnumerable<PortalInfo> portals, ModuleController moduleController, List<EditorHostSetting> editorHostSettings)
+        private void RenderHostNode(IEnumerable<IPortalInfo> portals, ModuleController moduleController, List<EditorHostSetting> editorHostSettings)
         {
             var hostKey = SettingConstants.HostKey;
             var hostSettingsExist = SettingsUtil.CheckSettingsExistByKey(editorHostSettings, hostKey);
@@ -341,9 +351,9 @@ namespace DNNConnect.CKEditorProvider.Module
                 Text = Localization.GetString("AllPortals.Text", this.ResXFile, this.LangCode),
                 Value = "h",
                 ImageUrl =
-                               hostSettingsExist
-                                    ? "../images/HostHasSetting.png"
-                                    : "../images/HostNoSetting.png",
+                    hostSettingsExist
+                        ? "../images/HostHasSetting.png"
+                        : "../images/HostNoSetting.png",
                 Expanded = true,
             };
 
@@ -360,9 +370,9 @@ namespace DNNConnect.CKEditorProvider.Module
         /// <param name="moduleController">The module controller.</param>
         /// <param name="editorHostSettings">The editor host settings.</param>
         /// <param name="parentNode">The parent node.</param>
-        private void RenderPortalNode(PortalInfo portal, ModuleController moduleController, List<EditorHostSetting> editorHostSettings, TreeNode parentNode = null)
+        private void RenderPortalNode(IPortalInfo portal, ModuleController moduleController, List<EditorHostSetting> editorHostSettings, TreeNode parentNode = null)
         {
-            var portalKey = SettingConstants.PortalKey(portal.PortalID);
+            var portalKey = SettingConstants.PortalKey(portal.PortalId);
 
             var portalSettingsExists = SettingsUtil.CheckSettingsExistByKey(editorHostSettings, portalKey);
 
@@ -370,7 +380,7 @@ namespace DNNConnect.CKEditorProvider.Module
             var portalNode = new TreeNode
             {
                 Text = portal.PortalName,
-                Value = $"p{portal.PortalID}",
+                Value = $"p{portal.PortalId}",
                 ImageUrl =
                     portalSettingsExists
                         ? "../images/PortalHasSetting.png"
@@ -378,8 +388,8 @@ namespace DNNConnect.CKEditorProvider.Module
                 Expanded = this.PortalOnly.Checked,
             };
 
-            Dictionary<int, HashSet<TreeNode>> modulesNodes = GetModuleNodes(portal.PortalID, moduleController, editorHostSettings);
-            var tabs = TabController.GetPortalTabs(portal.PortalID, -1, false, null, true, false, true, true, false);
+            Dictionary<int, HashSet<TreeNode>> modulesNodes = GetModuleNodes(portal.PortalId, moduleController, editorHostSettings);
+            var tabs = TabController.GetPortalTabs(portal.PortalId, -1, false, null, true, false, true, true, false);
 
             LoadNodesByTreeViewHelper(editorHostSettings, portalNode, modulesNodes, tabs);
 
