@@ -156,7 +156,7 @@ namespace DotNetNuke.Tests.Web.InternalServices
                     services.AddSingleton<IApplicationStatusInfo>(new ApplicationStatusInfo(Mock.Of<IApplicationInfo>()));
                 });
 
-            this.searchServiceController = new SearchServiceController(new SearchControllerImpl(this.serviceProvider), HtmlModDefId) { Request = request };
+            this.searchServiceController = new SearchServiceController(new SearchControllerImpl(this.serviceProvider), Mock.Of<IHostSettings>(), (IHostSettingsService)this.mockHostController.Object, HtmlModDefId) { Request = request };
 
             this.internalSearchController = InternalSearchController.Instance;
             this.CreateNewLuceneControllerInstance();

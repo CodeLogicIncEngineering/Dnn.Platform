@@ -99,7 +99,7 @@ namespace DotNetNuke.Web.UI.WebControls
 
             if (this.DisplayType == 0)
             {
-                PortalSettings portalSettings = PortalController.Instance.GetCurrentPortalSettings();
+                var portalSettings = PortalController.Instance.GetCurrentSettings();
                 string viewTypePersonalizationKey = "ViewType" + portalSettings.PortalId;
                 string viewType = Convert.ToString(Personalization.GetProfile("LanguageDisplayMode", viewTypePersonalizationKey), CultureInfo.InvariantCulture);
                 switch (viewType)

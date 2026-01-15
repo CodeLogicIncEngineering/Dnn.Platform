@@ -9,9 +9,12 @@ namespace DotNetNuke.Web.UI.WebControls.Internal.PropertyEditorControls
     using System.Globalization;
     using System.Web.UI;
 
+    using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Instrumentation;
     using DotNetNuke.UI.WebControls;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// The DateEditControl control provides a standard UI component for editing
@@ -29,15 +32,8 @@ namespace DotNetNuke.Web.UI.WebControls.Internal.PropertyEditorControls
         /// <inheritdoc/>
         public override string ID
         {
-            get
-            {
-                return base.ID + "_control";
-            }
-
-            set
-            {
-                base.ID = value;
-            }
+            get => base.ID + "_control";
+            set => base.ID = value;
         }
 
         /// <summary>Gets dateValue returns the Date representation of the Value.</summary>
@@ -67,13 +63,7 @@ namespace DotNetNuke.Web.UI.WebControls.Internal.PropertyEditorControls
         /// </summary>
         /// <value>A String representing the default format to use to render the date.</value>
         /// <returns>A Format String.</returns>
-        protected virtual string DefaultFormat
-        {
-            get
-            {
-                return "g";
-            }
-        }
+        protected virtual string DefaultFormat => "g";
 
         /// <summary>Gets format is a string that will be used to format the date in View mode.</summary>
         /// <value>A String representing the format to use to render the date.</value>
@@ -145,18 +135,7 @@ namespace DotNetNuke.Web.UI.WebControls.Internal.PropertyEditorControls
             }
         }
 
-        private DnnDateTimePicker DateControl
-        {
-            get
-            {
-                if (this.dateControl == null)
-                {
-                    this.dateControl = new DnnDateTimePicker();
-                }
-
-                return this.dateControl;
-            }
-        }
+        private DnnDateTimePicker DateControl => this.dateControl ??= ActivatorUtilities.CreateInstance<DnnDateTimePicker>(Globals.GetCurrentServiceProvider());
 
         /// <inheritdoc/>
         public override bool LoadPostData(string postDataKey, NameValueCollection postCollection)
@@ -174,8 +153,7 @@ namespace DotNetNuke.Web.UI.WebControls.Internal.PropertyEditorControls
                 }
                 else
                 {
-                    DateTime value;
-                    if (DateTime.TryParseExact(postedValue, "yyyy-MM-dd-HH-mm-ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
+                    if (DateTime.TryParseExact(postedValue, "yyyy-MM-dd-HH-mm-ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var value))
                     {
                         this.Value = value;
                         dataChanged = true;
@@ -211,10 +189,12 @@ namespace DotNetNuke.Web.UI.WebControls.Internal.PropertyEditorControls
         /// <param name="e">An EventArgs object.</param>
         protected override void OnDataChanged(EventArgs e)
         {
-            var args = new PropertyEditorEventArgs(this.Name);
-            args.Value = this.DateValue;
-            args.OldValue = this.OldDateValue;
-            args.StringValue = this.DateValue.ToString(CultureInfo.InvariantCulture);
+            var args = new PropertyEditorEventArgs(this.Name)
+            {
+                Value = this.DateValue,
+                OldValue = this.OldDateValue,
+                StringValue = this.DateValue.ToString(CultureInfo.InvariantCulture),
+            };
             this.OnValueChanged(args);
         }
 

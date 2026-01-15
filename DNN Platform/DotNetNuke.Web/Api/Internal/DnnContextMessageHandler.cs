@@ -10,6 +10,7 @@ namespace DotNetNuke.Web.Api.Internal
     using System.Threading;
     using System.Web.Http;
 
+    using DotNetNuke.Abstractions.Portals;
     using DotNetNuke.Common.Internal;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Modules;
@@ -18,7 +19,7 @@ namespace DotNetNuke.Web.Api.Internal
     using DotNetNuke.Services.Localization;
     using DotNetNuke.Services.Localization.Internal;
 
-    /// <summary>Sets up Dnn context information upon a request.</summary>
+    /// <summary>Sets up DNN context information upon a request.</summary>
     public class DnnContextMessageHandler : MessageProcessingHandler
     {
         /// <inheritdoc/>
@@ -47,16 +48,17 @@ namespace DotNetNuke.Web.Api.Internal
 
         private static PortalSettings SetupPortalSettings(HttpRequestMessage request)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             var domainName = TestableGlobals.Instance.GetDomainName(request.RequestUri);
             var alias = PortalAliasController.Instance.GetPortalAlias(domainName);
 
-            int tabId;
-            ValidateTabAndModuleContext(request, alias.PortalID, out tabId);
+            ValidateTabAndModuleContext(request, alias.PortalID, out var tabId);
 
             var portalSettings = new PortalSettings(tabId, alias);
 
             request.GetHttpContext().Items["PortalSettings"] = portalSettings;
             return portalSettings;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         private static bool TabIsInPortalOrHost(int tabId, int portalId)
@@ -68,14 +70,14 @@ namespace DotNetNuke.Web.Api.Internal
 
         private static bool InSamePortalGroup(int portalId1, int portalId2)
         {
-            var portal1 = PortalController.Instance.GetPortal(portalId1);
-            var portal2 = PortalController.Instance.GetPortal(portalId2);
+            IPortalInfo portal1 = PortalController.Instance.GetPortal(portalId1);
+            IPortalInfo portal2 = PortalController.Instance.GetPortal(portalId2);
 
-            return portal1 != null
-                       && portal2 != null
-                       && portal1.PortalGroupID > Null.NullInteger
-                       && portal2.PortalGroupID > Null.NullInteger
-                       && portal1.PortalGroupID == portal2.PortalGroupID;
+            return portal1 != null &&
+                   portal2 != null &&
+                   portal1.PortalGroupId > Null.NullInteger &&
+                   portal2.PortalGroupId > Null.NullInteger &&
+                   portal1.PortalGroupId == portal2.PortalGroupId;
         }
 
         private static bool IsHostTab(TabInfo tab)

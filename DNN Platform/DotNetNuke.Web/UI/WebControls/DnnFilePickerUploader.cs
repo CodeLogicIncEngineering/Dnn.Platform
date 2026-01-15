@@ -11,6 +11,8 @@ namespace DotNetNuke.Web.UI.WebControls
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
+    using DotNetNuke.Abstractions.Application;
+    using DotNetNuke.Abstractions.Logging;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Portals;
@@ -21,6 +23,8 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Services.Localization;
     using DotNetNuke.UI.UserControls;
     using DotNetNuke.Web.Common;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>A file picker uploader control.</summary>
     public class DnnFilePickerUploader : UserControl, IFilePickerUploader
@@ -53,10 +57,28 @@ namespace DotNetNuke.Web.UI.WebControls
 
         // ReSharper restore InconsistentNaming
         private const string MyFileName = "filepickeruploader.ascx";
+        private readonly IApplicationStatusInfo appStatus;
+        private readonly IEventLogger eventLogger;
         private int? portalId;
         private string fileFilter;
         private string folderPath = string.Empty;
         private bool folderPathSet;
+
+        /// <summary>Initializes a new instance of the <see cref="DnnFilePickerUploader"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IApplicationStatusInfo. Scheduled removal in v12.0.0.")]
+        public DnnFilePickerUploader()
+            : this(null, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="DnnFilePickerUploader"/> class.</summary>
+        /// <param name="appStatus">The application status.</param>
+        /// <param name="eventLogger">The event logger.</param>
+        public DnnFilePickerUploader(IApplicationStatusInfo appStatus, IEventLogger eventLogger)
+        {
+            this.appStatus = appStatus ?? Globals.GetCurrentServiceProvider().GetRequiredService<IApplicationStatusInfo>();
+            this.eventLogger = eventLogger ?? Globals.GetCurrentServiceProvider().GetRequiredService<IEventLogger>();
+        }
 
         /// <summary>Gets or sets a value indicating whether to use the user's personal folder.</summary>
         public bool UsePersonalFolder { get; set; }
@@ -106,7 +128,7 @@ namespace DotNetNuke.Web.UI.WebControls
             {
                 this.EnsureChildControls();
 
-                return this.FilesComboBox.SelectedFile != null ? this.FilesComboBox.SelectedFile.FileId : Null.NullInteger;
+                return this.FilesComboBox.SelectedFile?.FileId ?? Null.NullInteger;
             }
 
             set
@@ -171,59 +193,28 @@ namespace DotNetNuke.Web.UI.WebControls
         /// <summary>Gets or sets the portal ID.</summary>
         public int PortalId
         {
-            get
-            {
-                return !this.portalId.HasValue ? PortalSettings.Current.PortalId : this.portalId.Value;
-            }
-
-            set
-            {
-                this.portalId = value;
-            }
+            get => this.portalId ?? PortalSettings.Current.PortalId;
+            set => this.portalId = value;
         }
 
         /// <summary>Gets or sets a value indicating whether the control support the host file system.</summary>
         public bool SupportHost
         {
-            get { return this.FileUploadControl.SupportHost; }
-            set { this.FileUploadControl.SupportHost = value; }
+            get => this.FileUploadControl.SupportHost;
+            set => this.FileUploadControl.SupportHost = value;
         }
 
         /// <summary>Gets the folder label.</summary>
-        protected string FolderLabel
-        {
-            get
-            {
-                return Localization.GetString("Folder", Localization.GetResourceFile(this, MyFileName));
-            }
-        }
+        protected string FolderLabel => Localization.GetString("Folder", Localization.GetResourceFile(this, MyFileName));
 
         /// <summary>Gets the file label.</summary>
-        protected string FileLabel
-        {
-            get
-            {
-                return Localization.GetString("File", Localization.GetResourceFile(this, MyFileName));
-            }
-        }
+        protected string FileLabel => Localization.GetString("File", Localization.GetResourceFile(this, MyFileName));
 
         /// <summary>Gets upload file label.</summary>
-        protected string UploadFileLabel
-        {
-            get
-            {
-                return Localization.GetString("UploadFile", Localization.GetResourceFile(this, MyFileName));
-            }
-        }
+        protected string UploadFileLabel => Localization.GetString("UploadFile", Localization.GetResourceFile(this, MyFileName));
 
         /// <summary>Gets the drop file label.</summary>
-        protected string DropFileLabel
-        {
-            get
-            {
-                return Localization.GetString("DropFile", Localization.GetResourceFile(this, MyFileName));
-            }
-        }
+        protected string DropFileLabel => Localization.GetString("DropFile", Localization.GetResourceFile(this, MyFileName));
 
         /// <inheritdoc/>
         protected override void OnLoad(EventArgs e)
@@ -246,8 +237,8 @@ namespace DotNetNuke.Web.UI.WebControls
             }
 
             this.LoadFolders();
-            JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
-            JavaScript.RequestRegistration(CommonJs.DnnPlugins);
+            JavaScript.RequestRegistration(this.appStatus, this.eventLogger, PortalSettings.Current, CommonJs.jQueryFileUpload);
+            JavaScript.RequestRegistration(this.appStatus, this.eventLogger, PortalSettings.Current, CommonJs.DnnPlugins);
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
         }
 

@@ -12,6 +12,8 @@ namespace DotNetNuke.Web.UI.WebControls
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
+    using DotNetNuke.Abstractions.ClientResources;
+    using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Tabs;
@@ -19,10 +21,26 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Services.Localization;
     using DotNetNuke.Web.UI.WebControls.Extensions;
 
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>A page dropdown control.</summary>
     [ToolboxData("<{0}:DnnPageDropDownList runat='server'></{0}:DnnPageDropDownList>")]
     public class DnnPageDropDownList : DnnDropDownList
     {
+        /// <summary>Initializes a new instance of the <see cref="DnnPageDropDownList"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IClientResourceController. Scheduled removal in v12.0.0.")]
+        public DnnPageDropDownList()
+            : this(null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="DnnPageDropDownList"/> class.</summary>
+        /// <param name="clientResourceController">The client resource controller.</param>
+        public DnnPageDropDownList(IClientResourceController clientResourceController)
+            : base(clientResourceController ?? Globals.GetCurrentServiceProvider().GetRequiredService<IClientResourceController>())
+        {
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether disabled pages are not selectable
         /// Please note: IncludeDisabledTabs needs also be set to true to include disabled pages.

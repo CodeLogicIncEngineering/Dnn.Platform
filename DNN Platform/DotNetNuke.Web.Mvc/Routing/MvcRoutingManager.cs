@@ -21,21 +21,26 @@ namespace DotNetNuke.Web.Mvc.Routing
     public sealed class MvcRoutingManager : IMapRoute, IRoutingManager
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(MvcRoutingManager));
-        private readonly Dictionary<string, int> moduleUsage = new Dictionary<string, int>();
         private readonly RouteCollection routes;
         private readonly PortalAliasMvcRouteManager portalAliasMvcRouteManager;
 
+        /// <summary>Initializes a new instance of the <see cref="MvcRoutingManager"/> class.</summary>
         [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IPortalAliasService. Scheduled removal in v12.0.0.")]
         public MvcRoutingManager()
             : this(null)
         {
         }
 
+        /// <summary>Initializes a new instance of the <see cref="MvcRoutingManager"/> class.</summary>
+        /// <param name="portalAliasService">The portal alias service.</param>
         public MvcRoutingManager(IPortalAliasService portalAliasService)
             : this(portalAliasService, RouteTable.Routes)
         {
         }
 
+        /// <summary>Initializes a new instance of the <see cref="MvcRoutingManager"/> class.</summary>
+        /// <param name="portalAliasService">The portal alias service.</param>
+        /// <param name="routes">The routes.</param>
         internal MvcRoutingManager(IPortalAliasService portalAliasService, RouteCollection routes)
         {
             this.routes = routes;
@@ -155,7 +160,6 @@ namespace DotNetNuke.Web.Mvc.Routing
             RegisterSystemRoutes();
             this.ClearCachedRouteData();
 
-            this.moduleUsage.Clear();
             foreach (var routeMapper in this.GetServiceRouteMappers())
             {
                 try

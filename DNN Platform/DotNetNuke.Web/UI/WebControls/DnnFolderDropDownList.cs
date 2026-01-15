@@ -10,6 +10,8 @@ namespace DotNetNuke.Web.UI.WebControls
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
+    using DotNetNuke.Abstractions.ClientResources;
+    using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Services.FileSystem;
@@ -17,10 +19,26 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Web.Common;
     using DotNetNuke.Web.UI.WebControls.Extensions;
 
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>A folder dropdown control.</summary>
     [ToolboxData("<{0}:DnnFolderDropDownList runat='server'></{0}:DnnFolderDropDownList>")]
     public class DnnFolderDropDownList : DnnDropDownList
     {
+        /// <summary>Initializes a new instance of the <see cref="DnnFolderDropDownList"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IClientResourceController. Scheduled removal in v12.0.0.")]
+        public DnnFolderDropDownList()
+            : this(Globals.GetCurrentServiceProvider().GetRequiredService<IClientResourceController>())
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="DnnFolderDropDownList"/> class.</summary>
+        /// <param name="clientResourceController">The client resource controller.</param>
+        public DnnFolderDropDownList(IClientResourceController clientResourceController)
+            : base(clientResourceController)
+        {
+        }
+
         /// <summary>Gets or sets the selected Folder in the control, or selects the Folder in the control.</summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -34,7 +52,7 @@ namespace DotNetNuke.Web.UI.WebControls
 
             set
             {
-                var folderName = value != null ? value.FolderName : null;
+                var folderName = value?.FolderName;
                 if (folderName == string.Empty)
                 {
                     folderName = PortalSettings.Current.ActiveTab.IsSuperTab ? DynamicSharedConstants.HostRootFolder : DynamicSharedConstants.RootFolder;

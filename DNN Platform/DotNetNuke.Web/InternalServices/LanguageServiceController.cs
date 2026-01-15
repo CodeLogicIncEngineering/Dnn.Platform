@@ -4,6 +4,7 @@
 
 namespace DotNetNuke.Web.InternalServices
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -12,19 +13,35 @@ namespace DotNetNuke.Web.InternalServices
     using System.Web.Http;
 
     using DotNetNuke.Abstractions;
+    using DotNetNuke.Common;
     using DotNetNuke.Entities.Tabs;
     using DotNetNuke.Services.Localization;
     using DotNetNuke.Web.Api;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>A web API for getting the translation status of a site.</summary>
     [DnnAuthorize]
     public class LanguageServiceController : DnnApiController
     {
+        private readonly ILocaleController localeController;
+
         /// <summary>Initializes a new instance of the <see cref="LanguageServiceController"/> class.</summary>
         /// <param name="navigationManager">The navigation manager.</param>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IPortalAliasService. Scheduled removal in v12.0.0.")]
         public LanguageServiceController(INavigationManager navigationManager)
+            : this(navigationManager, null)
         {
             this.NavigationManager = navigationManager;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="LanguageServiceController"/> class.</summary>
+        /// <param name="navigationManager">The navigation manager.</param>
+        /// <param name="localeController">The locale controller.</param>
+        public LanguageServiceController(INavigationManager navigationManager, ILocaleController localeController)
+        {
+            this.NavigationManager = navigationManager ?? Globals.GetCurrentServiceProvider().GetRequiredService<INavigationManager>();
+            this.localeController = localeController ?? Globals.GetCurrentServiceProvider().GetRequiredService<ILocaleController>();
         }
 
         /// <summary>Gets the navigation manager.</summary>
@@ -37,9 +54,9 @@ namespace DotNetNuke.Web.InternalServices
         public HttpResponseMessage GetNonTranslatedPages(string languageCode)
         {
             var request = HttpContext.Current.Request;
-            var locale = new LocaleController().GetLocale(languageCode);
+            var locale = this.localeController.GetLocale(languageCode);
 
-            List<PageDto> pages = new List<PageDto>();
+            List<PageDto> pages = [];
             if (!this.IsDefaultLanguage(locale.Code))
             {
                 TabController ctl = new TabController();

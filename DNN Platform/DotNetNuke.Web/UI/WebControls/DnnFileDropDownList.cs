@@ -10,16 +10,34 @@ namespace DotNetNuke.Web.UI.WebControls
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
+    using DotNetNuke.Abstractions.ClientResources;
+    using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Services.FileSystem;
     using DotNetNuke.Services.Localization;
     using DotNetNuke.Web.Common;
     using DotNetNuke.Web.UI.WebControls.Extensions;
 
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>A file dropdown control.</summary>
     [ToolboxData("<{0}:DnnFileDropDownList runat='server'></{0}:DnnFileDropDownList>")]
     public class DnnFileDropDownList : DnnDropDownList
     {
+        /// <summary>Initializes a new instance of the <see cref="DnnFileDropDownList"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IClientResourceController. Scheduled removal in v12.0.0.")]
+        public DnnFileDropDownList()
+            : this(Globals.GetCurrentServiceProvider().GetRequiredService<IClientResourceController>())
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="DnnFileDropDownList"/> class.</summary>
+        /// <param name="clientResourceController">The client resource controller.</param>
+        public DnnFileDropDownList(IClientResourceController clientResourceController)
+            : base(clientResourceController)
+        {
+        }
+
         /// <summary>Gets or sets the selected Folder in the control, or selects the Folder in the control.</summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

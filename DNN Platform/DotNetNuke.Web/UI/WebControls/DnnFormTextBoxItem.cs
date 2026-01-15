@@ -8,12 +8,32 @@ namespace DotNetNuke.Web.UI.WebControls
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
+    using DotNetNuke.Abstractions.Application;
+    using DotNetNuke.Abstractions.Logging;
+    using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>A text box control.</summary>
     public class DnnFormTextBoxItem : DnnFormItemBase
     {
         private TextBox textBox;
+
+        /// <summary>Initializes a new instance of the <see cref="DnnFormTextBoxItem"/> class.</summary>
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IApplicationStatusInfo. Scheduled removal in v12.0.0.")]
+        public DnnFormTextBoxItem()
+            : this(null, null)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="DnnFormTextBoxItem"/> class.</summary>
+        /// <param name="appStatus">The application status.</param>
+        /// <param name="eventLogger">The event logger.</param>
+        public DnnFormTextBoxItem(IApplicationStatusInfo appStatus, IEventLogger eventLogger)
+            : base(appStatus ?? Globals.GetCurrentServiceProvider().GetRequiredService<IApplicationStatusInfo>(), eventLogger ?? Globals.GetCurrentServiceProvider().GetRequiredService<IEventLogger>())
+        {
+        }
 
         /// <summary>Gets or sets the autocomplete type.</summary>
         public AutoCompleteType AutoCompleteType { get; set; }
