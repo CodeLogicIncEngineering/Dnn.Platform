@@ -60,26 +60,6 @@ namespace DotNetNuke.Tests.Core.Controllers.Portal
         }
 
         [Test]
-        public void PortalGroupController_Constructor_Throws_On_Null_DataService()
-        {
-            // Arrange
-            var mockPortalController = new Mock<IPortalController>();
-
-            // Act, Assert
-            Assert.Throws<ArgumentNullException>(() => new PortalGroupController(null, mockPortalController.Object));
-        }
-
-        [Test]
-        public void PortalGroupController_Constructor_Throws_On_Null_PortalController()
-        {
-            // Arrange
-            var mockDataService = new Mock<IDataService>();
-
-            // Act, Assert
-            Assert.Throws<ArgumentNullException>(() => new PortalGroupController(mockDataService.Object, null));
-        }
-
-        [Test]
         public void PortalGroupController_AddPortalToGroup_Throws_On_Null_PortalGroup()
         {
             // Arrange

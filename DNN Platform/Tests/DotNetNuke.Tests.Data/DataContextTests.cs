@@ -7,10 +7,14 @@ namespace DotNetNuke.Tests.Data
     using System.Collections.Generic;
     using System.Configuration;
 
+    using DotNetNuke.Abstractions.Application;
     using DotNetNuke.ComponentModel;
     using DotNetNuke.Data;
     using DotNetNuke.Data.PetaPoco;
     using DotNetNuke.Tests.Utilities;
+
+    using Moq;
+
     using NUnit.Framework;
     using PetaPoco;
 
@@ -22,7 +26,7 @@ namespace DotNetNuke.Tests.Data
         public void SetUp()
         {
             ComponentFactory.Container = new SimpleContainer();
-            ComponentFactory.RegisterComponentInstance<DataProvider>(new SqlDataProvider());
+            ComponentFactory.RegisterComponentInstance<DataProvider>(new SqlDataProvider(Mock.Of<IApplicationStatusInfo>()));
             ComponentFactory.RegisterComponentSettings<SqlDataProvider>(new Dictionary<string, string>()
             {
                 { "name", "SqlDataProvider" },
@@ -44,7 +48,7 @@ namespace DotNetNuke.Tests.Data
             // Arrange
 
             // Act
-            var context = DataContext.Instance();
+            var context = DataContext.Instance(Mock.Of<IHostSettings>());
 
             // Assert
             Assert.That(context, Is.InstanceOf<IDataContext>());
@@ -58,7 +62,7 @@ namespace DotNetNuke.Tests.Data
             var connectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
 
             // Act
-            var context = (PetaPocoDataContext)DataContext.Instance();
+            var context = (PetaPocoDataContext)DataContext.Instance(Mock.Of<IHostSettings>());
 
             // Assert
             Database db = Util.GetPrivateMember<PetaPocoDataContext, Database>(context, "database");
@@ -74,7 +78,7 @@ namespace DotNetNuke.Tests.Data
             var connectionString = ConfigurationManager.ConnectionStrings[name].ConnectionString;
 
             // Act
-            var context = (PetaPocoDataContext)DataContext.Instance(name);
+            var context = (PetaPocoDataContext)DataContext.Instance(Mock.Of<IHostSettings>(), name);
 
             // Assert
             Database db = Util.GetPrivateMember<PetaPocoDataContext, Database>(context, "database");
