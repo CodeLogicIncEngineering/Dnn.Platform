@@ -9,6 +9,8 @@
     using Dnn.PersonaBar.Pages.Services.Dto;
     using Dnn.PersonaBar.Security.Components;
     using Dnn.PersonaBar.Security.Components.Checks;
+
+    using DotNetNuke.Abstractions.Logging;
     using DotNetNuke.Abstractions.Portals;
     using DotNetNuke.Common;
     using DotNetNuke.ComponentModel;
@@ -249,12 +251,12 @@
 
         private static void RegisterTestablePermissionProvider()
         {
-            var mock = new Mock<PermissionProvider>();
+            var permissionProviderMock = new Mock<PermissionProvider>(Mock.Of<IEventLogger>());
 
-            mock.Setup(x => x.ImplicitRolesForPages(It.IsAny<int>()))
+            permissionProviderMock.Setup(x => x.ImplicitRolesForPages(It.IsAny<int>()))
                 .Returns(new List<RoleInfo>());
 
-            ComponentFactory.RegisterComponentInstance<PermissionProvider>(mock.Object);
+            ComponentFactory.RegisterComponentInstance<PermissionProvider>(permissionProviderMock.Object);
         }
 
         private static Mock<IPagesController> SetupPagesControllerMock(
