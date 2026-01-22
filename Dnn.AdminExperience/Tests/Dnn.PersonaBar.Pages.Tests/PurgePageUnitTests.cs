@@ -22,6 +22,7 @@ namespace Dnn.PersonaBar.Pages.Tests
         private Mock<ITabController> tabControllerMock;
         private Mock<IRecyclebinController> recycleBinControllerMock;
         private Mock<IContentVerifier> contentVerifierMock;
+        private Mock<IPortalController> portalControllerMock;
         private FakeServiceProvider serviceProvider;
 
         [SetUp]
@@ -30,6 +31,7 @@ namespace Dnn.PersonaBar.Pages.Tests
             this.tabControllerMock = new Mock<ITabController>();
             this.recycleBinControllerMock = new Mock<IRecyclebinController>();
             this.contentVerifierMock = new Mock<IContentVerifier>();
+            this.portalControllerMock = new Mock<IPortalController>();
 
             this.serviceProvider = FakeServiceProvider.Setup(
                 services =>
@@ -37,6 +39,7 @@ namespace Dnn.PersonaBar.Pages.Tests
                     services.AddSingleton(this.tabControllerMock.Object);
                     services.AddSingleton(this.recycleBinControllerMock.Object);
                     services.AddSingleton(this.contentVerifierMock.Object);
+                    services.AddSingleton(this.portalControllerMock.Object);
                 });
         }
 
@@ -107,7 +110,7 @@ namespace Dnn.PersonaBar.Pages.Tests
             int tabId = 919;
             PortalSettings portalSettings = new PortalSettings();
 
-            IConsoleCommand purgeCommand = new PurgePage(this.tabControllerMock.Object, this.recycleBinControllerMock.Object, this.contentVerifierMock.Object);
+            var purgeCommand = new PurgePage(this.tabControllerMock.Object, this.recycleBinControllerMock.Object, this.contentVerifierMock.Object);
 
             var args = new[] { "purge-page", tabId.ToString() };
             purgeCommand.Initialize(args, portalSettings, null, 0);

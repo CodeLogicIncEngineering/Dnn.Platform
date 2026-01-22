@@ -1,4 +1,4 @@
-﻿namespace Dnn.PersonaBar.Security.Tests.Checks
+﻿﻿namespace Dnn.PersonaBar.Security.Tests.Checks
 {
     using System;
     using System.Collections.Generic;

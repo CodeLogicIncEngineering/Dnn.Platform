@@ -30,6 +30,7 @@ namespace Dnn.PersonaBar.Pages.Tests
         private Mock<ITabController> tabControllerMock;
         private Mock<IRecyclebinController> recycleBinControllerMock;
         private Mock<IContentVerifier> contentVerifierMock;
+        private Mock<IPortalController> portalControllerMock;
         private FakeServiceProvider serviceProvider;
 
         [SetUp]
@@ -41,6 +42,7 @@ namespace Dnn.PersonaBar.Pages.Tests
             this.tabControllerMock = new Mock<ITabController>();
             this.recycleBinControllerMock = new Mock<IRecyclebinController>();
             this.contentVerifierMock = new Mock<IContentVerifier>();
+            this.portalControllerMock = new Mock<IPortalController>();
 
             this.tabControllerMock.SetReturnsDefault(this.tab);
             this.contentVerifierMock.SetReturnsDefault(true);
@@ -53,6 +55,7 @@ namespace Dnn.PersonaBar.Pages.Tests
                     services.AddSingleton(this.tabControllerMock.Object);
                     services.AddSingleton(this.recycleBinControllerMock.Object);
                     services.AddSingleton(this.contentVerifierMock.Object);
+                    services.AddSingleton(this.portalControllerMock.Object);
                 });
         }
 
