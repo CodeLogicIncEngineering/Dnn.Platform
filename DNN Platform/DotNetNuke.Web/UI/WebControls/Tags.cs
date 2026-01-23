@@ -16,6 +16,7 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Entities.Content.Taxonomy;
     using DotNetNuke.Services.Localization;
 
+    /// <summary>A tags control.</summary>
     public class Tags : WebControl, IPostBackEventHandler, IPostBackDataHandler
     {
         private string repeatDirection = "Horizontal";
@@ -23,16 +24,22 @@ namespace DotNetNuke.Web.UI.WebControls
 
         private string tags;
 
+        /// <summary>An event which is triggered when the tags are updated.</summary>
         public event EventHandler<EventArgs> TagsUpdated;
 
+        /// <summary>Gets or sets the URL of the add image.</summary>
         public string AddImageUrl { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether to allow tagging.</summary>
         public bool AllowTagging { get; set; }
 
+        /// <summary>Gets or sets the URL of the cancel image.</summary>
         public string CancelImageUrl { get; set; }
 
+        /// <summary>Gets or sets the content item.</summary>
         public ContentItem ContentItem { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether it's in edit mode.</summary>
         public bool IsEditMode
         {
             get
@@ -52,8 +59,10 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the URL format string.</summary>
         public string NavigateUrlFormatString { get; set; }
 
+        /// <summary>Gets or sets the repeat direction.</summary>
         public string RepeatDirection
         {
             get
@@ -67,8 +76,10 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the URL of the save image.</summary>
         public string SaveImageUrl { get; set; }
 
+        /// <summary>Gets or sets the separator.</summary>
         public string Separator
         {
             get
@@ -82,8 +93,10 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets a value indicating whether to show categories.</summary>
         public bool ShowCategories { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether to show tags.</summary>
         public bool ShowTags { get; set; }
 
         private static Vocabulary TagVocabulary
@@ -239,6 +252,8 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>A method which triggers the <see cref="TagsUpdated"/> event.</summary>
+        /// <param name="e">The event args.</param>
         protected void OnTagsUpdate(EventArgs e)
         {
             if (this.TagsUpdated != null)

@@ -165,6 +165,9 @@ namespace DotNetNuke.UI
             return slaveModule;
         }
 
+        /// <summary>Gets the path to the local resource file associated to the control.</summary>
+        /// <param name="ctrl">The control.</param>
+        /// <returns>The path to the resource file.</returns>
         internal static string GetLocalResourceFile(Control ctrl)
         {
             string resourceFileName = Null.NullString;

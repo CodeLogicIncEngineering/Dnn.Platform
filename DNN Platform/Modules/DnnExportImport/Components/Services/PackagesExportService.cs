@@ -21,6 +21,7 @@ namespace Dnn.ExportImport.Components.Services
     using DotNetNuke.Services.Installer.Packages;
     using Newtonsoft.Json;
 
+    /// <summary>An export service for extension packages.</summary>
     public class PackagesExportService : BasePortableService
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(PackagesExportService));
@@ -143,6 +144,8 @@ namespace Dnn.ExportImport.Components.Services
             return this.Repository.GetCount<ExportPackage>();
         }
 
+        /// <summary>Install the package.</summary>
+        /// <param name="filePath">The file path to the installer.</param>
         public void InstallPackage(string filePath)
         {
             using (var stream = new FileStream(filePath, FileMode.Open))

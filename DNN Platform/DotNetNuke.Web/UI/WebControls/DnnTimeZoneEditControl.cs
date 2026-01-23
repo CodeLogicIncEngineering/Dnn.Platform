@@ -10,6 +10,7 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.UI.WebControls;
     using DotNetNuke.Web.UI.WebControls.Extensions;
 
+    /// <summary>A time zone edit control.</summary>
     public class DnnTimeZoneEditControl : TextEditControl
     {
         private DnnTimeZoneComboBox timeZones;

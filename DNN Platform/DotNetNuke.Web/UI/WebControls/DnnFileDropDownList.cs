@@ -16,6 +16,7 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Web.Common;
     using DotNetNuke.Web.UI.WebControls.Extensions;
 
+    /// <summary>A file dropdown control.</summary>
     [ToolboxData("<{0}:DnnFileDropDownList runat='server'></{0}:DnnFileDropDownList>")]
     public class DnnFileDropDownList : DnnDropDownList
     {
@@ -36,6 +37,7 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the folder ID.</summary>
         public int FolderId
         {
             get
@@ -49,12 +51,14 @@ namespace DotNetNuke.Web.UI.WebControls
             }
         }
 
+        /// <summary>Gets or sets the filter.</summary>
         public string Filter
         {
             get { return this.Services.Parameters.TryGetValue("filter", out var filter) ? filter : string.Empty; }
             set { this.Services.Parameters["filter"] = value; }
         }
 
+        /// <summary>Gets or sets a value indicating whether to include a "none specified" item.</summary>
         public bool IncludeNoneSpecificItem { get; set; }
 
         /// <inheritdoc/>

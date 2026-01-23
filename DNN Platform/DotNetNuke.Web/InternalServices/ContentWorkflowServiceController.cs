@@ -33,6 +33,9 @@ namespace DotNetNuke.Web.InternalServices
             this.workflowEngine = WorkflowEngine.Instance;
         }
 
+        /// <summary>Rejects a workflow.</summary>
+        /// <param name="postData">The workflow notification to reject.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage Reject(NotificationDTO postData)
@@ -69,6 +72,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "unable to process notification");
         }
 
+        /// <summary>Approves a workflow.</summary>
+        /// <param name="postData">The workflow notification to approve.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage Approve(NotificationDTO postData)
@@ -105,6 +111,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "unable to process notification");
         }
 
+        /// <summary>Complete a workflow state for the current page.</summary>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage CompleteState()
@@ -122,6 +130,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "unable to process notification");
         }
 
+        /// <summary>Discards a workflow state for the current page.</summary>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage DiscardState()
@@ -139,6 +149,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "unable to process notification");
         }
 
+        /// <summary>Complete a workflow for the current page.</summary>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage CompleteWorkflow()
@@ -156,6 +168,8 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "unable to process notification");
         }
 
+        /// <summary>Discards a workflow for the current page.</summary>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage DiscardWorkflow()

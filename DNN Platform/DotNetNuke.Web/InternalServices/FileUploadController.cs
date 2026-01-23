@@ -43,6 +43,7 @@ namespace DotNetNuke.Web.InternalServices
     using ContentDisposition = System.Net.Mime.ContentDisposition;
     using FileInfo = DotNetNuke.Services.FileSystem.FileInfo;
 
+    /// <summary>A web API for uploading files.</summary>
     [DnnAuthorize]
     public class FileUploadController : DnnApiController
     {
@@ -64,12 +65,18 @@ namespace DotNetNuke.Web.InternalServices
             this.hostSettings = hostSettings ?? Globals.GetCurrentServiceProvider().GetRequiredService<IHostSettings>();
         }
 
+        /// <summary>Gets the URL for a file.</summary>
+        /// <param name="fileId">The ID of the file.</param>
+        /// <returns>The URL.</returns>
         public static string GetUrl(int fileId)
         {
             var file = FileManager.Instance.GetFile(fileId, true);
             return FileManager.Instance.GetUrl(file);
         }
 
+        /// <summary>Gets the files in the folder.</summary>
+        /// <param name="folderItem">Information about the folder.</param>
+        /// <returns>A response with a list of <see cref="FileItem"/> objects.</returns>
         [HttpPost]
         public HttpResponseMessage LoadFiles(FolderItemDTO folderItem)
         {
@@ -107,6 +114,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, fileItems);
         }
 
+        /// <summary>Gets the URL of an image file.</summary>
+        /// <param name="fileId">The file ID.</param>
+        /// <returns>A response with either <c>null</c> or the image URL.</returns>
         [HttpGet]
         public HttpResponseMessage LoadImage(string fileId)
         {
@@ -123,6 +133,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.InternalServerError);
         }
 
+        /// <summary>Uploads an image.</summary>
+        /// <returns>A response with an <see cref="SavedFileDTO"/> object.</returns>
+        /// <exception cref="HttpResponseException">If the request is not using a multipart MIME content type.</exception>
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
         public Task<HttpResponseMessage> PostFile()
@@ -246,6 +259,8 @@ namespace DotNetNuke.Web.InternalServices
             return task;
         }
 
+        /// <summary>Uploads a file to the current portal.</summary>
+        /// <returns>A response with a <see cref="FileUploadDto"/> object.</returns>
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -254,6 +269,10 @@ namespace DotNetNuke.Web.InternalServices
             return this.UploadFromLocal(this.PortalSettings.PortalId);
         }
 
+        /// <summary>Uploads a file.</summary>
+        /// <param name="portalId">The ID of the portal to which to upload it.</param>
+        /// <returns>A response with a <see cref="FileUploadDto"/> object.</returns>
+        /// <exception cref="HttpResponseException">If the request is not using a multipart MIME content type.</exception>
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -744,65 +763,90 @@ namespace DotNetNuke.Web.InternalServices
             return mygroup != null && mygroup.Any(p => p.PortalID == portalId);
         }
 
+        /// <summary>A data transfer object with information about a folder.</summary>
         public class FolderItemDTO
         {
+            /// <summary>Gets or sets the folder ID.</summary>
             public int FolderId { get; set; }
 
+            /// <summary>Gets or sets the file filter.</summary>
             public string FileFilter { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether to include an entry for an unspecified file.</summary>
             public bool Required { get; set; }
         }
 
+        /// <summary>A data transfer object with information about a file that has been saved.</summary>
         public class SavedFileDTO
         {
+            /// <summary>Gets or sets the ID of the file.</summary>
             public string FileId { get; set; }
 
+            /// <summary>Gets or sets the path of the file.</summary>
             public string FilePath { get; set; }
         }
 
+        /// <summary>A data transfer object with information about an upload by URL request.</summary>
         public class UploadByUrlDto
         {
+            /// <summary>Gets or sets the URL.</summary>
             public string Url { get; set; }
 
+            /// <summary>Gets or sets the destination folder.</summary>
             public string Folder { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether to overwrite an existing file.</summary>
             public bool Overwrite { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether to unzip the resulting file.</summary>
             public bool Unzip { get; set; }
 
+            /// <summary>Gets or sets the filter.</summary>
             public string Filter { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether the request is from the host menu.</summary>
             public bool IsHostMenu { get; set; }
 
+            /// <summary>Gets or sets the portal ID.</summary>
             public int PortalId { get; set; } = -1;
 
+            /// <summary>Gets or sets the validation code.</summary>
             public string ValidationCode { get; set; }
         }
 
+        /// <summary>A data transfer object with information about a file upload.</summary>
         [DataContract]
         public class FileUploadDto
         {
+            /// <summary>Gets or sets the file path.</summary>
             [DataMember(Name = "path")]
             public string Path { get; set; }
 
+            /// <summary>Gets or sets the image orientation.</summary>
             [DataMember(Name = "orientation")]
             public Orientation Orientation { get; set; }
 
+            /// <summary>Gets or sets a value indicating whether the file already exists.</summary>
             [DataMember(Name = "alreadyExists")]
             public bool AlreadyExists { get; set; }
 
+            /// <summary>Gets or sets an error message.</summary>
             [DataMember(Name = "message")]
             public string Message { get; set; }
 
+            /// <summary>Gets or sets the URL of the file type icon.</summary>
             [DataMember(Name = "fileIconUrl")]
             public string FileIconUrl { get; set; }
 
+            /// <summary>Gets or sets the ID of the file.</summary>
             [DataMember(Name = "fileId")]
             public int FileId { get; set; }
 
+            /// <summary>Gets or sets the name of the file.</summary>
             [DataMember(Name = "fileName")]
             public string FileName { get; set; }
 
+            /// <summary>Gets or sets a JSON string with <c>invalidFiles</c> and <c>totalCount</c> fields.</summary>
             [DataMember(Name = "prompt")]
             public string Prompt { get; set; }
         }

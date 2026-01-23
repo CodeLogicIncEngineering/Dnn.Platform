@@ -30,6 +30,7 @@ namespace DotNetNuke.Web.InternalServices
     using DotNetNuke.Web.Api;
     using DotNetNuke.Web.InternalServices.Views.Search;
 
+    /// <summary>A web API controller for searching.</summary>
     [DnnAuthorize(StaticRoles = "Administrators")]
     public class SearchServiceController : DnnApiController
     {
@@ -44,6 +45,8 @@ namespace DotNetNuke.Web.InternalServices
         private readonly ISearchController searchController;
         private int htmlModuleDefinitionId;
 
+        /// <summary>Initializes a new instance of the <see cref="SearchServiceController"/> class.</summary>
+        /// <param name="searchController">The search controller.</param>
         public SearchServiceController(ISearchController searchController)
         {
             this.searchController = searchController;
@@ -51,7 +54,10 @@ namespace DotNetNuke.Web.InternalServices
             this.htmlModuleDefinitionId = modDef != null ? modDef.ModuleDefID : -1;
         }
 
-        // this constructor is for unit tests
+        /// <summary>Initializes a new instance of the <see cref="SearchServiceController"/> class.</summary>
+        /// <remarks>this constructor is for unit tests.</remarks>
+        /// <param name="searchController">The search controller.</param>
+        /// <param name="htmlModuleDefinitionId">The ID of the HTML module definition.</param>
         internal SearchServiceController(ISearchController searchController, int htmlModuleDefinitionId) // , TabController newtabController, ModuleController newmoduleController)
         {
             this.searchController = searchController;
@@ -61,6 +67,12 @@ namespace DotNetNuke.Web.InternalServices
             // _moduleController = newmoduleController;
         }
 
+        /// <summary>Previews a search.</summary>
+        /// <param name="keywords">The keywords.</param>
+        /// <param name="culture">The culture.</param>
+        /// <param name="forceWild"><c>0</c> to not use wildcards, any positive integer to force a wildcard search.</param>
+        /// <param name="portal">The portal ID.</param>
+        /// <returns>A response with a list of <see cref="GroupedBasicView"/> objects.</returns>
         [HttpGet]
         [AllowAnonymous]
         public HttpResponseMessage Preview(string keywords, string culture, int forceWild = 1, int portal = -1)
@@ -113,6 +125,13 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, results);
         }
 
+        /// <summary>Performs a search.</summary>
+        /// <param name="search">The search criteria.</param>
+        /// <param name="culture">The culture.</param>
+        /// <param name="pageIndex">The page index.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="sortOption">A <see cref="SortFields"/> value.</param>
+        /// <returns>A response with an object that has <c>results</c>, <c>totalHits</c>, and <c>more</c> fields.</returns>
         [HttpGet]
         [AllowAnonymous]
         public HttpResponseMessage Search(string search, string culture, int pageIndex, int pageSize, int sortOption)
@@ -173,6 +192,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, new { results, totalHits, more });
         }
 
+        /// <summary>Add a synonyms group.</summary>
+        /// <param name="synonymsGroup">The synonyms group to add.</param>
+        /// <returns>A response with an object that has <c>Id</c> and <c>DuplicateWord</c> fields.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SupportedModules("SearchAdmin")]
@@ -183,6 +205,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, new { Id = synonymsGroupId, DuplicateWord = duplicateWord });
         }
 
+        /// <summary>Update a synonyms group.</summary>
+        /// <param name="synonymsGroup">The synonyms group to update.</param>
+        /// <returns>A response with an object that has <c>Id</c> and <c>DuplicateWord</c> fields.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SupportedModules("SearchAdmin")]
@@ -193,6 +218,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, new { Id = synonymsGroupId, DuplicateWord = duplicateWord });
         }
 
+        /// <summary>Deletes a synonyms group.</summary>
+        /// <param name="synonymsGroup">The synonyms group to delete.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SupportedModules("SearchAdmin")]
@@ -202,6 +230,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK);
         }
 
+        /// <summary>Add search stop words.</summary>
+        /// <param name="stopWords">The stop words to add.</param>
+        /// <returns>A response with an object that has an <c>Id</c> field.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SupportedModules("SearchAdmin")]
@@ -211,6 +242,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, new { Id = stopWordsId });
         }
 
+        /// <summary>Update search stop words.</summary>
+        /// <param name="stopWords">The stop words to update.</param>
+        /// <returns>A response with an object that has an <c>Id</c> field.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SupportedModules("SearchAdmin")]
@@ -220,6 +254,9 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK, new { Id = stopWordsId });
         }
 
+        /// <summary>Delete search stop words.</summary>
+        /// <param name="stopWords">The stop words to delete.</param>
+        /// <returns>A response indicating success.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SupportedModules("SearchAdmin")]
@@ -229,6 +266,12 @@ namespace DotNetNuke.Web.InternalServices
             return this.Request.CreateResponse(HttpStatusCode.OK);
         }
 
+        /// <summary>Gets grouped detail views.</summary>
+        /// <param name="searchQuery">The search query.</param>
+        /// <param name="userSearchTypeId">The ID of the user search type.</param>
+        /// <param name="totalHits">The total number of hits.</param>
+        /// <param name="more">Whether there is more.</param>
+        /// <returns>A list of <see cref="GroupedDetailView"/> instances.</returns>
         internal IEnumerable<GroupedDetailView> GetGroupedDetailViews(SearchQuery searchQuery, int userSearchTypeId, out int totalHits, out bool more)
         {
             var searchResults = this.searchController.SiteSearch(searchQuery);
@@ -334,6 +377,11 @@ namespace DotNetNuke.Web.InternalServices
             return groups;
         }
 
+        /// <summary>Gets grouped basic views.</summary>
+        /// <param name="query">The query.</param>
+        /// <param name="userSearchSource">The user search source.</param>
+        /// <param name="portalId">The portal ID.</param>
+        /// <returns>A list of <see cref="GroupedBasicView"/> instances.</returns>
         internal List<GroupedBasicView> GetGroupedBasicViews(SearchQuery query, SearchContentSource userSearchSource, int portalId)
         {
             int totalHists;
@@ -381,6 +429,10 @@ namespace DotNetNuke.Web.InternalServices
             return results;
         }
 
+        /// <summary>Gets basic views.</summary>
+        /// <param name="searchQuery">The search query.</param>
+        /// <param name="totalHits">The total number of hits.</param>
+        /// <returns>A sequence of <see cref="BasicView"/> instances.</returns>
         internal IEnumerable<BasicView> GetBasicViews(SearchQuery searchQuery, out int totalHits)
         {
             var sResult = this.searchController.SiteSearch(searchQuery);
@@ -665,25 +717,35 @@ namespace DotNetNuke.Web.InternalServices
             return showFriendlyTitle ? GetFriendlyTitle(result) : result.Title;
         }
 
+        /// <summary>A data transfer object with information about a synonyms group.</summary>
         public class SynonymsGroupDto
         {
+            /// <summary>Gets or sets the ID.</summary>
             public int Id { get; set; }
 
+            /// <summary>Gets or sets the tags.</summary>
             public string Tags { get; set; }
 
+            /// <summary>Gets or sets the portal ID.</summary>
             public int PortalId { get; set; }
 
+            /// <summary>Gets or sets the culture.</summary>
             public string Culture { get; set; }
         }
 
+        /// <summary>A data transfer object with information about stop words.</summary>
         public class StopWordsDto
         {
+            /// <summary>Gets or sets the ID.</summary>
             public int Id { get; set; }
 
+            /// <summary>Gets or sets the words.</summary>
             public string Words { get; set; }
 
+            /// <summary>Gets or sets the portal ID.</summary>
             public int PortalId { get; set; }
 
+            /// <summary>Gets or sets the culture.</summary>
             public string Culture { get; set; }
         }
     }

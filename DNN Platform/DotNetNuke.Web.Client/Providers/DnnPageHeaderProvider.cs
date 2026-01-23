@@ -22,9 +22,10 @@ namespace DotNetNuke.Web.Client.Providers
         /// <summary>The default name of the provider.</summary>
         public const string DefaultName = "DnnPageHeaderProvider";
 
-        /// <summary>The name of the placeholder in which the controls will be rendered.</summary>
+        /// <summary>The name of the placeholder in which CSS will be rendered.</summary>
         public const string CssPlaceHolderName = "ClientDependencyHeadCss";
 
+        /// <summary>The name of the placeholder in which JS will be rendered.</summary>
         public const string JsPlaceHolderName = "ClientDependencyHeadJs";
 
         /// <inheritdoc/>

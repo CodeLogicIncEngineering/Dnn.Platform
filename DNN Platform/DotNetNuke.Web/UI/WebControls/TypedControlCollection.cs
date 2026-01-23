@@ -86,6 +86,8 @@ namespace DotNetNuke.Web.UI.WebControls
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
             => new TypedEnumerator(this.GetEnumerator());
 
+        /// <summary>Throws an <see cref="InvalidOperationException"/>.</summary>
+        /// <exception cref="InvalidOperationException">Always.</exception>
         protected virtual void ThrowOnInvalidControlType()
         {
             throw new InvalidOperationException("Not supported");

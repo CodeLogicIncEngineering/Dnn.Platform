@@ -12,19 +12,23 @@ namespace DotNetNuke.Web.UI.WebControls
     using DotNetNuke.Services.Localization;
     using DotNetNuke.Services.Personalization;
 
+    /// <summary>A language label control.</summary>
     public class DnnLanguageLabel : CompositeControl, ILocalizable
     {
         private Image flag;
 
         private Label label;
 
+        /// <summary>Initializes a new instance of the <see cref="DnnLanguageLabel"/> class.</summary>
         public DnnLanguageLabel()
         {
             this.Localize = true;
         }
 
+        /// <summary>Gets or sets the display type.</summary>
         public CultureDropDownTypes DisplayType { get; set; }
 
+        /// <summary>Gets or sets the language.</summary>
         public string Language
         {
             get

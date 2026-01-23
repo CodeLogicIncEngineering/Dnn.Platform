@@ -14,6 +14,7 @@ namespace DotNetNuke.Web.Common.Internal
     using DotNetNuke.Common;
     using DotNetNuke.Instrumentation;
 
+    /// <summary>Watches <c>bin</c> folder and root files and unloads the app domain proactively when they change.</summary>
     internal static class DotNetNukeShutdownOverload
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(DotNetNukeShutdownOverload));
@@ -24,6 +25,7 @@ namespace DotNetNuke.Web.Common.Internal
         private static FileSystemWatcher binOrRootWatcher;
         private static string binFolder = string.Empty;
 
+        /// <summary>Initializes the File Change Notification settings.</summary>
         internal static void InitializeFcnSettings()
         {
             // any error/message logged below should be informational only

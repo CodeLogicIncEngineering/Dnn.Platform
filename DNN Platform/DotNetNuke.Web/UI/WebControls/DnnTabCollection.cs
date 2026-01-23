@@ -6,6 +6,7 @@ namespace DotNetNuke.Web.UI.WebControls;
 using System;
 using System.Web.UI;
 
+/// <summary>A collection of <see cref="DnnTab"/> instances.</summary>
 public class DnnTabCollection : TypedControlCollection<DnnTab>
 {
     /// <summary>Initializes a new instance of the <see cref="DnnTabCollection"/> class.</summary>
