@@ -136,9 +136,9 @@ namespace DotNetNuke.UI.Skins.Controls
             // IMPORTANT:
             // We intentionally keep the legacy outer span wrapper so existing skins/CSS don't break.
             // This mimics the old asp:Label output wrapper and keeps schema breadcrumb attrs.
-            var breadcrumb = new StringBuilder(
-                "<span itemprop=\"breadcrumb\" itemscope itemtype=\"https://schema.org/breadcrumb\">" +
-                "<span itemscope itemtype=\"http://schema.org/BreadcrumbList\">");
+            var breadcrumb = new StringBuilder()
+                .Append("<span itemprop=\"breadcrumb\" itemscope itemtype=\"https://schema.org/breadcrumb\">")
+                .Append("<span itemscope itemtype=\"http://schema.org/BreadcrumbList\">");
 
             // Without checking if the current tab is the home tab, we would duplicate the root tab
             if (this.showRoot && this.PortalSettings.ActiveTab.TabID != this.PortalSettings.HomeTabId)
@@ -415,3 +415,4 @@ namespace DotNetNuke.UI.Skins.Controls
         }
     }
 }
+
