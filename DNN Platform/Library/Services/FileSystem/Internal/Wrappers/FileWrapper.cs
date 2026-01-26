@@ -6,6 +6,7 @@ namespace DotNetNuke.Services.FileSystem.Internal;
 
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 using DotNetNuke.ComponentModel;
@@ -126,6 +127,19 @@ public class FileWrapper : ComponentBase<IFile, FileWrapper>, IFile
     public async Task SetAttributesAsync(string path, FileAttributes fileAttributes)
     {
         await QuickIOFile.SetAttributesAsync(path, fileAttributes);
+    }
+
+    /// <inheritdoc />
+    public void WriteAllText(string path, string contents)
+    {
+        File.WriteAllText(path, contents);
+    }
+
+    /// <inheritdoc />
+    public async Task WriteAllTextAsync(string path, string contents)
+    {
+        using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
+        await streamWriter.WriteAsync(contents);
     }
 
     private static void EnsureFileFolderExists(string filePath)

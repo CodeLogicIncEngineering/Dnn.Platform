@@ -41,6 +41,7 @@ namespace DotNetNuke
     using DotNetNuke.Security.Permissions;
     using DotNetNuke.Security.Roles;
     using DotNetNuke.Services.FileSystem;
+    using DotNetNuke.Services.FileSystem.Internal;
     using DotNetNuke.Services.Installer;
     using DotNetNuke.Services.Installer.Packages;
     using DotNetNuke.Services.Journal;
@@ -130,6 +131,8 @@ namespace DotNetNuke
             services.AddTransient<IJournalDataService, JournalDataServiceImpl>();
             services.AddTransient<IFileContentTypeManager, FileContentTypeManager>();
             services.AddTransient<ISearchHelper, SearchHelperImpl>();
+            services.AddTransient<IFile, FileWrapper>();
+            services.AddTransient<IDirectory, DirectoryWrapper>();
 
             services.AddTransient<IDataContext>(serviceProvider =>
             {
