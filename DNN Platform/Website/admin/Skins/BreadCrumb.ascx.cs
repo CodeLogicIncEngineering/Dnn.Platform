@@ -21,15 +21,14 @@ namespace DotNetNuke.UI.Skins.Controls
     public partial class BreadCrumb : SkinObjectBase
     {
         private const string MyFileName = "BreadCrumb.ascx";
-        private const string UrlRegex = "(href|src)=(\\\"|'|)(.[^\\\"']*)(\\\"|'|)";
+        private const string HomeTabName = "Root";
+        private const string UrlRegex = """(href|src)=(\"|'|)(.[^\"']*)(\"|'|)""";
         private readonly INavigationManager navigationManager;
 
-        private string separator = "<img alt=\"breadcrumb separator\" src=\"" + Globals.ApplicationPath + "/images/breadcrumb.gif\">";
+        private string separator = $"""<img alt="breadcrumb separator" src="{Globals.ApplicationPath}/images/breadcrumb.gif">""";
         private string cssClass = "SkinObject";
         private int rootLevel;
         private bool showRoot;
-        private string homeUrl = string.Empty;
-        private string homeTabName = "Root";
 
         public BreadCrumb()
         {
@@ -137,28 +136,25 @@ namespace DotNetNuke.UI.Skins.Controls
             // We intentionally keep the legacy outer span wrapper so existing skins/CSS don't break.
             // This mimics the old asp:Label output wrapper and keeps schema breadcrumb attrs.
             var breadcrumb = new StringBuilder()
-                .Append("<span itemprop=\"breadcrumb\" itemscope itemtype=\"https://schema.org/breadcrumb\">")
-                .Append("<span itemscope itemtype=\"http://schema.org/BreadcrumbList\">");
+                .Append(
+                    """
+                    <span itemprop="breadcrumb" itemscope itemtype="https://schema.org/breadcrumb">
+                    <span itemscope itemtype="http://schema.org/BreadcrumbList">
+                    """);
 
             // Without checking if the current tab is the home tab, we would duplicate the root tab
             if (this.showRoot && this.PortalSettings.ActiveTab.TabID != this.PortalSettings.HomeTabId)
             {
                 this.ResolveHome(out var homeUrl, out var homeNameEncoded);
 
-                breadcrumb.Append("<span itemprop=\"itemListElement\" itemscope itemtype=\"http://schema.org/ListItem\">");
-                breadcrumb.AppendFormat(
-                    CultureInfo.InvariantCulture,
-                    "<a href=\"{0}\" class=\"{1}\" itemprop=\"item\"><span itemprop=\"name\">{2}</span></a>",
-                    homeUrl,
-                    this.cssClass,
-                    homeNameEncoded);
-                breadcrumb.AppendFormat(
-                    CultureInfo.InvariantCulture,
-                    "<meta itemprop=\"position\" content=\"{0}\" />",
-                    position++);
-                breadcrumb.Append("</span>");
-
-                breadcrumb.Append(this.separator);
+                breadcrumb.Append(
+                    $"""
+                     <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                         <a href="{homeUrl}" class="{this.cssClass}" itemprop="item"><span itemprop="name">{homeNameEncoded}</span></a>
+                         <meta itemprop="position" content="{position++}" />
+                     </span>
+                     {this.separator}
+                     """);
             }
 
             for (var i = this.rootLevel; i < crumbCount; ++i)
@@ -181,7 +177,7 @@ namespace DotNetNuke.UI.Skins.Controls
                     {
                         breadcrumb.AppendFormat(
                             CultureInfo.InvariantCulture,
-                            "<span class=\"{0}\">{1}</span>",
+                            """<span class="{0}">{1}</span>""",
                             this.cssClass,
                             tabNameEncoded);
                     }
@@ -189,25 +185,20 @@ namespace DotNetNuke.UI.Skins.Controls
                     {
                         breadcrumb.AppendFormat(
                             CultureInfo.InvariantCulture,
-                            "<span><span class=\"{0}\">{1}</span></span>",
+                            """<span><span class="{0}">{1}</span></span>""",
                             this.cssClass,
                             tabNameEncoded);
                     }
                 }
                 else
                 {
-                    breadcrumb.Append("<span itemprop=\"itemListElement\" itemscope itemtype=\"http://schema.org/ListItem\">");
-                    breadcrumb.AppendFormat(
-                        CultureInfo.InvariantCulture,
-                        "<a href=\"{0}\" class=\"{1}\" itemprop=\"item\"><span itemprop=\"name\">{2}</span></a>",
-                        tabUrl,
-                        this.cssClass,
-                        tabNameEncoded);
-                    breadcrumb.AppendFormat(
-                        CultureInfo.InvariantCulture,
-                        "<meta itemprop=\"position\" content=\"{0}\" />",
-                        position++);
-                    breadcrumb.Append("</span>");
+                    breadcrumb.Append(
+                        $"""
+                         <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                             <a href="{tabUrl}" class="{this.cssClass}" itemprop="item"><span itemprop="name">{tabNameEncoded}</span></a>
+                             <meta itemprop="position" content="{position++}" />
+                         </span>
+                         """);
                 }
             }
 
@@ -223,27 +214,23 @@ namespace DotNetNuke.UI.Skins.Controls
 
             // IMPORTANT:
             // List markup must start with <nav> (no legacy wrapper).
-            breadcrumb.AppendFormat(
-                CultureInfo.InvariantCulture,
-                "<nav class=\"dnnBreadcrumb\" aria-label=\"{0}\"><ol itemscope itemtype=\"https://schema.org/BreadcrumbList\">",
-                HttpUtility.HtmlEncode(this.GetAriaLabel()));
+            breadcrumb.Append(
+                $"""
+                 <nav class="dnnBreadcrumb" aria-label="{HttpUtility.HtmlEncode(this.GetAriaLabel())}">
+                    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+                 """);
 
             if (this.showRoot && this.PortalSettings.ActiveTab.TabID != this.PortalSettings.HomeTabId)
             {
                 this.ResolveHome(out var homeUrl, out var homeNameEncoded);
 
-                breadcrumb.Append("<li itemprop=\"itemListElement\" itemscope itemtype=\"https://schema.org/ListItem\">");
-                breadcrumb.AppendFormat(
-                    CultureInfo.InvariantCulture,
-                    "<a href=\"{0}\" class=\"{1}\" itemprop=\"item\"><span itemprop=\"name\">{2}</span></a>",
-                    homeUrl,
-                    this.cssClass,
-                    homeNameEncoded);
-                breadcrumb.AppendFormat(
-                    CultureInfo.InvariantCulture,
-                    "<meta itemprop=\"position\" content=\"{0}\" />",
-                    position++);
-                breadcrumb.Append("</li>");
+                breadcrumb.Append(
+                    $"""
+                     <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                         <a href="{homeUrl}" class="{this.cssClass}" itemprop="item"><span itemprop="name">{homeNameEncoded}</span></a>
+                         <meta itemprop="position" content="{position++}" />
+                     </li>
+                     """);
             }
 
             for (var i = this.rootLevel; i < crumbCount; ++i)
@@ -260,14 +247,14 @@ namespace DotNetNuke.UI.Skins.Controls
 
                 breadcrumb.AppendFormat(
                     CultureInfo.InvariantCulture,
-                    "<li itemprop=\"itemListElement\" itemscope itemtype=\"https://schema.org/ListItem\"{0}>",
+                    """<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"{0}>""",
                     liAriaCurrent);
 
                 if (tab.DisableLink)
                 {
                     breadcrumb.AppendFormat(
                         CultureInfo.InvariantCulture,
-                        "<span class=\"{0}\" itemprop=\"name\">{1}</span>",
+                        """<span class="{0}" itemprop="name">{1}</span>""",
                         this.cssClass,
                         tabNameEncoded);
                 }
@@ -275,7 +262,7 @@ namespace DotNetNuke.UI.Skins.Controls
                 {
                     breadcrumb.AppendFormat(
                         CultureInfo.InvariantCulture,
-                        "<a href=\"{0}\" class=\"{1}\" itemprop=\"item\"><span itemprop=\"name\">{2}</span></a>",
+                        """<a href="{0}" class="{1}" itemprop="item"><span itemprop="name">{2}</span></a>""",
                         tabUrl,
                         this.cssClass,
                         tabNameEncoded);
@@ -283,14 +270,12 @@ namespace DotNetNuke.UI.Skins.Controls
 
                 breadcrumb.AppendFormat(
                     CultureInfo.InvariantCulture,
-                    "<meta itemprop=\"position\" content=\"{0}\" />",
+                    """<meta itemprop="position" content="{0}" />""",
                     position++);
 
                 if (!isLastCrumb)
                 {
-                    breadcrumb.Append("<span aria-hidden=\"true\">");
-                    breadcrumb.Append(this.separator);
-                    breadcrumb.Append("</span>");
+                    breadcrumb.AppendFormat("""<span aria-hidden="true">{0}</span>""", this.separator);
                 }
 
                 breadcrumb.Append("</li>");
@@ -303,7 +288,7 @@ namespace DotNetNuke.UI.Skins.Controls
         private void ResolveHome(out string homeUrl, out string homeNameEncoded)
         {
             homeUrl = Globals.AddHTTP(this.CurrentPortalAlias.HttpAlias);
-            var homeName = this.homeTabName;
+            var homeName = HomeTabName;
 
             if (this.PortalSettings.HomeTabId != -1)
             {
@@ -359,7 +344,7 @@ namespace DotNetNuke.UI.Skins.Controls
         private string GetAriaLabel()
         {
             // resource key (example):
-            // BreadCrumbAriaLabel.Text = Breadcrumb
+            ////BreadCrumbAriaLabel.Text = Breadcrumb
             var localized = Localization.GetString("BreadCrumbAriaLabel.Text", Localization.GetResourceFile(this, MyFileName));
             return string.IsNullOrWhiteSpace(localized) ? "Breadcrumb" : localized;
         }
@@ -415,4 +400,3 @@ namespace DotNetNuke.UI.Skins.Controls
         }
     }
 }
-
