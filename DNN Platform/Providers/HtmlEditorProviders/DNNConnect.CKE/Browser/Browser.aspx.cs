@@ -1671,9 +1671,6 @@ public partial class Browser : PageBase
         this.FoldersTree.SelectedNodeChanged += this.FoldersTree_NodeClick;
 
         this.FilesList.ItemCommand += this.FilesList_ItemCommand;
-
-        this.ClientResourceLoader.DataBind();
-        this.ClientResourceLoader.PreRender += (_, _) => JavaScript.Register(this.hostSettings, this.hostSettingsService, this.appStatus, this.eventLogger, this.portalSettings, this.Page);
     }
 
     /// <summary>Load Favicon from Current Portal Home Directory.</summary>

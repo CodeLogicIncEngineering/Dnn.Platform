@@ -207,9 +207,6 @@ namespace DNNConnect.CKEditorProvider
         private void InitializeComponent()
         {
             this.curPortalSettings = this.GetPortalSettings();
-
-            this.ClientResourceLoader.DataBind();
-            this.ClientResourceLoader.PreRender += (sender, args) => JavaScript.Register(this.Page);
         }
 
         /// <summary>Load Favicon from Current Portal Home Directory.</summary>
