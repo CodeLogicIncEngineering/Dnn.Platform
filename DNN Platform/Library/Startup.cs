@@ -25,6 +25,7 @@ namespace DotNetNuke
     using DotNetNuke.Data.PetaPoco;
     using DotNetNuke.DependencyInjection;
     using DotNetNuke.Entities;
+    using DotNetNuke.Entities.Content.Workflow;
     using DotNetNuke.Entities.Controllers;
     using DotNetNuke.Entities.Host;
     using DotNetNuke.Entities.Modules;
@@ -142,6 +143,7 @@ namespace DotNetNuke
             services.AddTransient<IDirectory, DirectoryWrapper>();
             services.AddTransient<ILogController, LogController>();
             services.AddTransient<ITabPublishingController, TabPublishingController>();
+            services.AddTransient<IWorkflowSecurity, WorkflowSecurity>();
             if (CryptoConfig.AllowOnlyFipsAlgorithms)
             {
                 services.AddTransient<ICryptographyProvider, FipsCompilanceCryptographyProvider>();
