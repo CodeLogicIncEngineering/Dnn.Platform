@@ -85,7 +85,7 @@ namespace DotNetNuke.Entities.Content.Workflow
         /// <inheritdoc />
         protected override Func<IWorkflowSecurity> GetFactory()
         {
-            return Globals.DependencyProvider.GetRequiredService<WorkflowSecurity>;
+            return Globals.DependencyProvider.GetRequiredService<IWorkflowSecurity>;
         }
     }
 }
