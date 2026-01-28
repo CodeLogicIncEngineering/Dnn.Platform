@@ -10,16 +10,13 @@ namespace Dnn.PersonaBar.Pages.Services.Dto
     using Dnn.PersonaBar.Library.Helper;
 
     using DotNetNuke.Abstractions.Security.Permissions;
-    using DotNetNuke.Common;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Security.Permissions;
 
-    using Microsoft.Extensions.DependencyInjection;
+    using Newtonsoft.Json;
 
     public class PagePermissions : Permissions
     {
-        private readonly IPermissionDefinitionService permissionDefinitionService;
-
         /// <summary>Initializes a new instance of the <see cref="PagePermissions"/> class.</summary>
         /// <param name="needDefinitions">Whether to load the permission definitions.</param>
         [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IPermissionDefinitionService. Scheduled removal in v12.0.0.")]
@@ -32,19 +29,24 @@ namespace Dnn.PersonaBar.Pages.Services.Dto
         /// <param name="permissionDefinitionService">The permission definition service.</param>
         /// <param name="needDefinitions">Whether to load the permission definitions.</param>
         public PagePermissions(IPermissionDefinitionService permissionDefinitionService, bool needDefinitions)
-            : base(needDefinitions)
+            : base(permissionDefinitionService, needDefinitions)
         {
-            this.permissionDefinitionService = permissionDefinitionService ?? Globals.GetCurrentServiceProvider().GetRequiredService<IPermissionDefinitionService>();
             foreach (var role in PermissionProvider.Instance().ImplicitRolesForPages(PortalSettings.Current.PortalId))
             {
                 this.EnsureRole(role, true, true);
             }
         }
 
+        [JsonConstructor]
+        private PagePermissions()
+            : this(null, false)
+        {
+        }
+
         /// <inheritdoc />
         protected override void LoadPermissionDefinitions()
         {
-            foreach (var permission in this.permissionDefinitionService.GetDefinitionsByTab())
+            foreach (var permission in this.PermissionDefinitionService.GetDefinitionsByTab())
             {
                 this.PermissionDefinitions.Add(new Permission
                 {
