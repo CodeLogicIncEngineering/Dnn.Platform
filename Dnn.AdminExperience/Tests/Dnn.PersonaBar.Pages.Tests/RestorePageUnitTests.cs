@@ -11,6 +11,7 @@ namespace Dnn.PersonaBar.Pages.Tests
 
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Tabs;
+    using DotNetNuke.Services.Localization;
     using DotNetNuke.Tests.Utilities.Fakes;
 
     using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +45,8 @@ namespace Dnn.PersonaBar.Pages.Tests
             this.contentVerifierMock = new Mock<IContentVerifier>();
             this.portalControllerMock = new Mock<IPortalController>();
 
+            LocalizationProvider.SetTestableInstance(Mock.Of<ILocalizationProvider>());
+
             this.tabControllerMock.SetReturnsDefault(this.tab);
             this.contentVerifierMock.SetReturnsDefault(true);
             string message;
@@ -63,6 +66,7 @@ namespace Dnn.PersonaBar.Pages.Tests
         public void TearDown()
         {
             this.serviceProvider.Dispose();
+            LocalizationProvider.ClearInstance();
         }
 
         [Test]
