@@ -98,8 +98,8 @@ namespace Dnn.EditBar.UI.HttpModules
                     this.eventLogger = new EventLogController();
 #pragma warning restore CS0618 // Type or member is obsolete
                     this.hostSettings = new HostSettings(new HostController(this.eventLogger, new Lazy<IPortalController>(() => PortalController.Instance)));
-                    this.clientResourceController = new ClientResourceController(this.hostSettings);
                     this.appStatus = new ApplicationStatusInfo(new Application());
+                    this.clientResourceController = new ClientResourceController(this.hostSettings, this.appStatus);
 #pragma warning disable CS0618 // Type or member is obsolete
                     this.portalController = new PortalController(new BusinessControllerProvider(null), this.hostSettings, this.appStatus, this.eventLogger, CryptographyProvider.Instance() as ICryptographyProvider, new PermissionController(this.eventLogger));
 #pragma warning restore CS0618 // Type or member is obsolete
