@@ -27,7 +27,6 @@ namespace DotNetNuke.Security.Permissions
     /// <summary>The default <see cref="IPermissionDefinitionService"/> implementation.</summary>
     public partial class PermissionController : IPermissionDefinitionService
     {
-        private static readonly DataProvider Provider = DataProvider.Instance();
         private readonly IEventLogger eventLogger;
 
         /// <summary>Initializes a new instance of the <see cref="PermissionController"/> class.</summary>
@@ -43,6 +42,8 @@ namespace DotNetNuke.Security.Permissions
         {
             this.eventLogger = eventLogger ?? Globals.GetCurrentServiceProvider().GetRequiredService<IEventLogger>();
         }
+
+        private static DataProvider Provider => DataProvider.Instance();
 
         public static string BuildPermissions(IList permissions, string permissionKey)
         {
