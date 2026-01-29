@@ -95,4 +95,6 @@
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
 
+  <Import Project="Library.build" Condition="Exists('Library.build')" />
+
 </Project>
