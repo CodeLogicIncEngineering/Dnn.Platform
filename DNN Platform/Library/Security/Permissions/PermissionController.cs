@@ -23,7 +23,6 @@ namespace DotNetNuke.Security.Permissions
     using DotNetNuke.Security.Roles;
 
     using Microsoft.Extensions.DependencyInjection;
-    using Org.BouncyCastle.Tls.Crypto;
 
     /// <summary>The default <see cref="IPermissionDefinitionService"/> implementation.</summary>
     public partial class PermissionController : IPermissionDefinitionService
