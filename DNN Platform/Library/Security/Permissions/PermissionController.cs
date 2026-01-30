@@ -23,24 +23,29 @@ namespace DotNetNuke.Security.Permissions
     using DotNetNuke.Security.Roles;
 
     using Microsoft.Extensions.DependencyInjection;
+    using Org.BouncyCastle.Tls.Crypto;
 
     /// <summary>The default <see cref="IPermissionDefinitionService"/> implementation.</summary>
     public partial class PermissionController : IPermissionDefinitionService
     {
         private readonly IEventLogger eventLogger;
+        private readonly DataProvider dataProvider;
 
         /// <summary>Initializes a new instance of the <see cref="PermissionController"/> class.</summary>
         [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IEventLogger. Scheduled removal in v12.0.0.")]
         public PermissionController()
-            : this(null)
+            : this(null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="PermissionController"/> class.</summary>
         /// <param name="eventLogger">The event logger.</param>
-        public PermissionController(IEventLogger eventLogger)
+        /// <param name="dataProvider">The underlying data-provider to use.</param>
+        public PermissionController(IEventLogger eventLogger, DataProvider dataProvider)
         {
-            this.eventLogger = eventLogger ?? Globals.GetCurrentServiceProvider().GetRequiredService<IEventLogger>();
+            var serviceProvider = Globals.GetCurrentServiceProvider();
+            this.eventLogger = eventLogger ?? serviceProvider.GetRequiredService<IEventLogger>();
+            this.dataProvider = dataProvider ?? DataProvider.Instance();
         }
 
         private static DataProvider Provider => DataProvider.Instance();
@@ -122,7 +127,7 @@ namespace DotNetNuke.Security.Permissions
         public int AddPermission(IPermissionDefinitionInfo permission)
         {
             this.eventLogger.AddLog(permission, PortalController.Instance.GetCurrentSettings(), UserController.Instance.GetCurrentUserInfo().UserID, string.Empty, EventLogType.PERMISSION_CREATED);
-            var permissionId = Convert.ToInt32(Provider.AddPermission(
+            var permissionId = Convert.ToInt32(this.dataProvider.AddPermission(
                 permission.PermissionCode,
                 permission.ModuleDefId,
                 permission.PermissionKey,
@@ -143,7 +148,7 @@ namespace DotNetNuke.Security.Permissions
                 PortalController.Instance.GetCurrentSettings(),
                 UserController.Instance.GetCurrentUserInfo().UserID,
                 EventLogType.PERMISSION_DELETED);
-            Provider.DeletePermission(permissionID);
+            this.dataProvider.DeletePermission(permissionID);
             ClearCache();
         }
 
@@ -186,7 +191,7 @@ namespace DotNetNuke.Security.Permissions
         public void UpdatePermission(IPermissionDefinitionInfo permission)
         {
             this.eventLogger.AddLog(permission, PortalController.Instance.GetCurrentSettings(), UserController.Instance.GetCurrentUserInfo().UserID, string.Empty, EventLogType.PERMISSION_UPDATED);
-            Provider.UpdatePermission(
+            this.dataProvider.UpdatePermission(
                 permission.PermissionId,
                 permission.PermissionCode,
                 permission.ModuleDefId,
@@ -300,7 +305,7 @@ namespace DotNetNuke.Security.Permissions
                 DataCache.PermissionsCacheKey,
                 DataCache.PermissionsCacheTimeout,
                 DataCache.PermissionsCachePriority),
-                c => CBO.FillCollection<PermissionInfo>(Provider.ExecuteReader("GetPermissions")));
+                c => CBO.FillCollection<PermissionInfo>(DataProvider.Instance().ExecuteReader("GetPermissions")));
         }
 
         private static IEnumerable<PermissionInfo> GetPermissionsByFolderEnumerable()
