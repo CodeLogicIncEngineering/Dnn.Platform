@@ -273,7 +273,7 @@ namespace DotNetNuke.Web.Client.ResourceManager
             {
                 Logger.Error($"Cannot add resource {resource.ResolvedPath} to CRC id {this.controllerId} because rendering has already begun");
 
-                // throw new InvalidOperationException("Cannot add resources after rendering has begun.");
+                ////throw new InvalidOperationException("Cannot add resources after rendering has begun.");
             }
 
             resources.RemoveAll(l => string.Equals(l.ResolvedPath, resource.ResolvedPath, StringComparison.OrdinalIgnoreCase)); // remove any existing link with the same key (i.e. exactly the same resolved path)
