@@ -241,7 +241,12 @@ namespace DotNetNuke.Web.Client.ResourceManager
 
                     var ext = Path.GetExtension(resource.ResolvedPath);
                     var rtlResolvedPath = Path.ChangeExtension(resource.ResolvedPath, ".rtl" + ext);
-                    if (!File.Exists(this.appStatus.ApplicationMapPath + rtlResolvedPath))
+                    var cleanRtlResolvedPath = rtlResolvedPath.TrimStart('~').Replace("/", "\\");
+                    var physicalPath = Path.Combine(
+                        this.appStatus.ApplicationMapPath,
+                        cleanRtlResolvedPath.TrimStart('\\'));
+
+                    if (!File.Exists(physicalPath))
                     {
                         return resource;
                     }
