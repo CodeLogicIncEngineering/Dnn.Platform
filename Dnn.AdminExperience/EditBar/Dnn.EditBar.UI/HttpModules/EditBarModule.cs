@@ -20,6 +20,7 @@ namespace Dnn.EditBar.UI.HttpModules
     using DotNetNuke.Entities.Host;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Users;
+    using DotNetNuke.Framework;
     using DotNetNuke.Services.Log.EventLog;
     using DotNetNuke.UI.Skins.EventListeners;
 
@@ -123,8 +124,9 @@ namespace Dnn.EditBar.UI.HttpModules
                     var portalController = scope.ServiceProvider.GetRequiredService<IPortalController>();
                     var userController = scope.ServiceProvider.GetRequiredService<IUserController>();
                     var hostSettingsService = scope.ServiceProvider.GetRequiredService<IHostSettingsService>();
+                    var servicesFramework = scope.ServiceProvider.GetRequiredService<IServicesFramework>();
 
-                    e.Skin.Page.Form.Controls.Add(new ContentEditorManager(clientResourceController, appStatus, eventLogger, portalController, this.hostSettings, userController, hostSettingsService) { Skin = e.Skin, });
+                    e.Skin.Page.Form.Controls.Add(new ContentEditorManager(clientResourceController, appStatus, eventLogger, portalController, this.hostSettings, userController, hostSettingsService, servicesFramework) { Skin = e.Skin, });
                 }
             }
         }
