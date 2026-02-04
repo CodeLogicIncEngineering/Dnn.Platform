@@ -31,7 +31,8 @@
     <PackageVersion Include="Microsoft.AspNet.WebPages" Version="3.3.0" />
     <PackageVersion Include="Microsoft.AspNet.WebPages.WebData" Version="3.3.0" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
+    
+    <!-- NOTE: this version also needs to be managed in DotNetNuke.Internal.SourceGenerators.csproj -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.3" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
