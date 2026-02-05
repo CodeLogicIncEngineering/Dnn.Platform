@@ -29,10 +29,6 @@
     <PackageReference Include="Microsoft.AspNet.WebPages" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Web.Infrastructure" />
     <PackageReference Include="MimeKit" />
     <PackageReference Include="Newtonsoft.Json" />

@@ -42,7 +42,6 @@
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.4.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageVersion Include="Microsoft.SqlServer.SqlManagementObjects" Version="180.10.0" />
     <PackageVersion Include="Microsoft.Web.Administration" Version="11.1.0" />
@@ -64,5 +63,8 @@
     <PackageVersion Include="Verify.NUnit" Version="31.8.0" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.5.0" />
     <PackageVersion Include="WebFormsMvp" Version="1.4.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 </Project>
