@@ -2581,7 +2581,7 @@ __metadata:
     throttle-debounce: "npm:^5.0.2"
     typescript: "npm:^5.9.3"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -3573,6 +3573,15 @@ __metadata:
   dependencies:
     "@isaacs/balanced-match": "npm:^4.0.1"
   checksum: 10/cf3b7f206aff12128214a1df764ac8cdbc517c110db85249b945282407e3dfc5c6e66286383a7c9391a059fc8e6e6a8ca82262fc9d2590bd615376141fbebd2d
+  languageName: node
+  linkType: hard
+
+"@isaacs/brace-expansion@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@isaacs/brace-expansion@npm:5.0.1"
+  dependencies:
+    "@isaacs/balanced-match": "npm:^4.0.1"
+  checksum: 10/aec226065bc4285436a27379e08cc35bf94ef59f5098ac1c026495c9ba4ab33d851964082d3648d56d63eb90f2642867bd15a3e1b810b98beb1a8c14efce6a94
   languageName: node
   linkType: hard
 
@@ -7504,7 +7513,7 @@ __metadata:
     throttle-debounce: "npm:^5.0.2"
     typescript: "npm:^5.9.3"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -10984,7 +10993,7 @@ __metadata:
     react-hot-loader: "npm:4.13.1"
     style-loader: "npm:^4.0.0"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -11022,7 +11031,7 @@ __metadata:
     react-dom: "npm:^16.14.0"
     react-hot-loader: "npm:4.13.1"
     style-loader: "npm:^4.0.0"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
   languageName: unknown
@@ -11063,7 +11072,7 @@ __metadata:
     style-loader: "npm:^4.0.0"
     throttle-debounce: "npm:^5.0.2"
     utils: "npm:^0.3.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
   languageName: unknown
@@ -11533,6 +11542,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"enhanced-resolve@npm:^5.17.4":
+  version: 5.19.0
+  resolution: "enhanced-resolve@npm:5.19.0"
+  dependencies:
+    graceful-fs: "npm:^4.2.4"
+    tapable: "npm:^2.3.0"
+  checksum: 10/b537d52173bf1ba903c623f96a43ea3b51466ee2b606b2fcca30d73d453fd79c8683dccbb83523de27cd02763c906f11486e2591a4335e6afe49fa5ad6e67b83
+  languageName: node
+  linkType: hard
+
 "enquirer@npm:~2.3.6":
   version: 2.3.6
   resolution: "enquirer@npm:2.3.6"
@@ -11826,6 +11845,13 @@ __metadata:
   version: 1.7.0
   resolution: "es-module-lexer@npm:1.7.0"
   checksum: 10/b6f3e576a3fed4d82b0d0ad4bbf6b3a5ad694d2e7ce8c4a069560da3db6399381eaba703616a182b16dde50ce998af64e07dcf49f2ae48153b9e07be3f107087
+  languageName: node
+  linkType: hard
+
+"es-module-lexer@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "es-module-lexer@npm:2.0.0"
+  checksum: 10/b075855289b5f40ee496f3d7525c5c501d029c3da15c22298a0030d625bf36d1da0768b26278f7f4bada2a602459b505888e20b77c414fba5da5619b0e84dbd1
   languageName: node
   linkType: hard
 
@@ -12687,7 +12713,7 @@ __metadata:
     style-loader: "npm:4.0.0"
     throttle-debounce: "npm:5.0.2"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-analyzer: "npm:^4.10.2"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -12783,7 +12809,7 @@ __metadata:
     style-loader: "npm:^4.0.0"
     typescript: "npm:^5.9.3"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -13565,8 +13591,8 @@ __metadata:
   linkType: hard
 
 "glob@npm:^10.2.2, glob@npm:^10.3.10":
-  version: 10.4.5
-  resolution: "glob@npm:10.4.5"
+  version: 10.5.0
+  resolution: "glob@npm:10.5.0"
   dependencies:
     foreground-child: "npm:^3.1.0"
     jackspeak: "npm:^3.1.2"
@@ -13576,7 +13602,7 @@ __metadata:
     path-scurry: "npm:^1.11.1"
   bin:
     glob: dist/esm/bin.mjs
-  checksum: 10/698dfe11828b7efd0514cd11e573eaed26b2dff611f0400907281ce3eab0c1e56143ef9b35adc7c77ecc71fba74717b510c7c223d34ca8a98ec81777b293d4ac
+  checksum: 10/ab3bccfefcc0afaedbd1f480cd0c4a2c0e322eb3f0aa7ceaa31b3f00b825069f17cf0f1fc8b6f256795074b903f37c0ade37ddda6a176aa57f1c2bbfe7240653
   languageName: node
   linkType: hard
 
@@ -13597,13 +13623,13 @@ __metadata:
   linkType: hard
 
 "glob@npm:^13.0.0":
-  version: 13.0.0
-  resolution: "glob@npm:13.0.0"
+  version: 13.0.1
+  resolution: "glob@npm:13.0.1"
   dependencies:
-    minimatch: "npm:^10.1.1"
+    minimatch: "npm:^10.1.2"
     minipass: "npm:^7.1.2"
     path-scurry: "npm:^2.0.0"
-  checksum: 10/de390721d29ee1c9ea41e40ec2aa0de2cabafa68022e237dc4297665a5e4d650776f2573191984ea1640aba1bf0ea34eddef2d8cbfbfc2ad24b5fb0af41d8846
+  checksum: 10/465e8cc269ab88d7415a3906cdc0f4543a2ae54df99207204af5bc28a944396d8d893822f546a8056a78ec714e608ab4f3502532c4d6b9cc5e113adf0fe5109e
   languageName: node
   linkType: hard
 
@@ -16120,7 +16146,7 @@ __metadata:
     react-modal: "npm:3.16.3"
     style-loader: "npm:^4.0.0"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -16192,6 +16218,13 @@ __metadata:
   version: 4.3.0
   resolution: "loader-runner@npm:4.3.0"
   checksum: 10/555ae002869c1e8942a0efd29a99b50a0ce6c3296efea95caf48f00d7f6f7f659203ed6613688b6181aa81dc76de3e65ece43094c6dffef3127fe1a84d973cd3
+  languageName: node
+  linkType: hard
+
+"loader-runner@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "loader-runner@npm:4.3.1"
+  checksum: 10/d77127497c3f91fdba351e3e91156034e6e590e9f050b40df6c38ac16c54b5c903f7e2e141e09fefd046ee96b26fb50773c695ebc0aa205a4918683b124b04ba
   languageName: node
   linkType: hard
 
@@ -16802,6 +16835,15 @@ __metadata:
   dependencies:
     "@isaacs/brace-expansion": "npm:^5.0.0"
   checksum: 10/110f38921ea527022e90f7a5f43721838ac740d0a0c26881c03b57c261354fb9a0430e40b2c56dfcea2ef3c773768f27210d1106f1f2be19cde3eea93f26f45e
+  languageName: node
+  linkType: hard
+
+"minimatch@npm:^10.1.2":
+  version: 10.1.2
+  resolution: "minimatch@npm:10.1.2"
+  dependencies:
+    "@isaacs/brace-expansion": "npm:^5.0.1"
+  checksum: 10/6f0ef975463739207144e411bdd54f7205ce38770b162fa3bc4c9be4987a16cb20d0962a82f26c2372598cfba90faa97b327239d303b529b774f17681c163b46
   languageName: node
   linkType: hard
 
@@ -18201,7 +18243,7 @@ __metadata:
     uglifyjs-webpack-plugin: "npm:^2.2.0"
     url-loader: "npm:4.1.1"
     url-parse: "npm:^1.5.10"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -21729,7 +21771,7 @@ __metadata:
     typescript: "npm:^5.9.3"
     url-loader: "npm:4.1.1"
     utils: "npm:^0.3.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -21780,7 +21822,7 @@ __metadata:
     style-loader: "npm:^4.0.0"
     typescript: "npm:^5.9.3"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -21816,7 +21858,7 @@ __metadata:
     react-hot-loader: "npm:4.13.1"
     style-loader: "npm:^4.0.0"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -22747,7 +22789,7 @@ __metadata:
     style-loader: "npm:^4.0.0"
     typescript: "npm:^5.9.3"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -22793,7 +22835,7 @@ __metadata:
     style-loader: "npm:^4.0.0"
     typescript: "npm:^5.9.3"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -22826,6 +22868,28 @@ __metadata:
     uglify-js:
       optional: true
   checksum: 10/5b7290f7edb179b83cefb8827c12371ddddc088cf251cf58a1c738d82628331ae6604273b61fe991d77411d4bb6b7178c3826aa47edf01b4ee21f973d6c8b8fb
+  languageName: node
+  linkType: hard
+
+"terser-webpack-plugin@npm:^5.3.16":
+  version: 5.3.16
+  resolution: "terser-webpack-plugin@npm:5.3.16"
+  dependencies:
+    "@jridgewell/trace-mapping": "npm:^0.3.25"
+    jest-worker: "npm:^27.4.5"
+    schema-utils: "npm:^4.3.0"
+    serialize-javascript: "npm:^6.0.2"
+    terser: "npm:^5.31.1"
+  peerDependencies:
+    webpack: ^5.1.0
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    esbuild:
+      optional: true
+    uglify-js:
+      optional: true
+  checksum: 10/09dfbff602acfa114cdd174254b69a04adbc47856021ab351e37982202fd1ec85e0b62ffd5864c98beb8e96aef2f43da490b3448b4541db539c2cff6607394a6
   languageName: node
   linkType: hard
 
@@ -22892,7 +22956,7 @@ __metadata:
     react-hot-loader: "npm:4.13.1"
     style-loader: "npm:^4.0.0"
     url-loader: "npm:4.1.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -23823,7 +23887,7 @@ __metadata:
     throttle-debounce: "npm:^5.0.2"
     url-loader: "npm:4.1.1"
     utils: "npm:^0.3.1"
-    webpack: "npm:5.102.1"
+    webpack: "npm:5.104.1"
     webpack-bundle-size-analyzer: "npm:3.1.0"
     webpack-cli: "npm:6.0.1"
     webpack-dev-server: "npm:5.2.2"
@@ -24266,7 +24330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5, webpack@npm:5.102.1":
+"webpack@npm:5":
   version: 5.102.1
   resolution: "webpack@npm:5.102.1"
   dependencies:
@@ -24301,6 +24365,44 @@ __metadata:
   bin:
     webpack: bin/webpack.js
   checksum: 10/4ba737916c4b72812cdd1961ea82d0a6de8ac814134584b54d523a2c4b9e1d377490d63b2c74856e2b9146dbe6d09b05c8878439b0783c3e5195ca3e248b2131
+  languageName: node
+  linkType: hard
+
+"webpack@npm:5.104.1":
+  version: 5.104.1
+  resolution: "webpack@npm:5.104.1"
+  dependencies:
+    "@types/eslint-scope": "npm:^3.7.7"
+    "@types/estree": "npm:^1.0.8"
+    "@types/json-schema": "npm:^7.0.15"
+    "@webassemblyjs/ast": "npm:^1.14.1"
+    "@webassemblyjs/wasm-edit": "npm:^1.14.1"
+    "@webassemblyjs/wasm-parser": "npm:^1.14.1"
+    acorn: "npm:^8.15.0"
+    acorn-import-phases: "npm:^1.0.3"
+    browserslist: "npm:^4.28.1"
+    chrome-trace-event: "npm:^1.0.2"
+    enhanced-resolve: "npm:^5.17.4"
+    es-module-lexer: "npm:^2.0.0"
+    eslint-scope: "npm:5.1.1"
+    events: "npm:^3.2.0"
+    glob-to-regexp: "npm:^0.4.1"
+    graceful-fs: "npm:^4.2.11"
+    json-parse-even-better-errors: "npm:^2.3.1"
+    loader-runner: "npm:^4.3.1"
+    mime-types: "npm:^2.1.27"
+    neo-async: "npm:^2.6.2"
+    schema-utils: "npm:^4.3.3"
+    tapable: "npm:^2.3.0"
+    terser-webpack-plugin: "npm:^5.3.16"
+    watchpack: "npm:^2.4.4"
+    webpack-sources: "npm:^3.3.3"
+  peerDependenciesMeta:
+    webpack-cli:
+      optional: true
+  bin:
+    webpack: bin/webpack.js
+  checksum: 10/c22b58fdf41d993971516154cb621d13b7b61dd744b7e2c6be972e9afcc9942694a8aaa322c07fba46448c69d663023ff53d0aeeb00eb0b125d83ace5ca8fa3c
   languageName: node
   linkType: hard
 
