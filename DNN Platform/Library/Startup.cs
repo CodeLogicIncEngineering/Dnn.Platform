@@ -160,7 +160,7 @@ namespace DotNetNuke
                 var dataProvider = serviceProvider.GetRequiredService<DataProvider>();
                 var defaultConnectionStringName = dataProvider.Settings["connectionStringName"];
 
-                return new PetaPocoDataContext(defaultConnectionStringName, DataProvider.Instance().ObjectQualifier);
+                return new PetaPocoDataContext(defaultConnectionStringName, dataProvider.ObjectQualifier);
             });
 
             services.AddTransient<ModuleInjectionManager>();
