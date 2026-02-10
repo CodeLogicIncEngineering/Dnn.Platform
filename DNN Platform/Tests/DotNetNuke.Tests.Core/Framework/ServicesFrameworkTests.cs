@@ -6,7 +6,6 @@ namespace DotNetNuke.Tests.Core.Framework
     using System;
 
     using DotNetNuke.Abstractions.Application;
-    using DotNetNuke.Abstractions.ClientResources;
     using DotNetNuke.Abstractions.Logging;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Framework;
@@ -41,7 +40,6 @@ namespace DotNetNuke.Tests.Core.Framework
         public void RequestingAjaxAntiForgeryIsNoted()
         {
             var servicesFramework = new ServicesFrameworkImpl(
-                Mock.Of<IClientResourceController>(),
                 Mock.Of<IApplicationStatusInfo>(),
                 Mock.Of<IEventLogger>());
             servicesFramework.RequestAjaxAntiForgerySupport();
@@ -53,7 +51,6 @@ namespace DotNetNuke.Tests.Core.Framework
         public void NoAjaxAntiForgeryRequestMeansNotRequired()
         {
             var servicesFramework = new ServicesFrameworkImpl(
-                Mock.Of<IClientResourceController>(),
                 Mock.Of<IApplicationStatusInfo>(),
                 Mock.Of<IEventLogger>());
             Assert.That(servicesFramework.IsAjaxAntiForgerySupportRequired, Is.False);
