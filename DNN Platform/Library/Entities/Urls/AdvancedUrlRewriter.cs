@@ -2188,7 +2188,7 @@ namespace DotNetNuke.Entities.Urls
             // the application should always use the exact relative location of the resource it is requesting
             var strURL = request.Url.AbsolutePath;
             var strDoubleDecodeURL = server.UrlDecode(server.UrlDecode(request.Url.AbsolutePath)) ?? string.Empty;
-            if (UrlSlashesRegex.Match(strURL).Success || UrlSlashesRegex.Match(strDoubleDecodeURL).Success)
+            if (UrlSlashesRegex.IsMatch(strURL) || UrlSlashesRegex.IsMatch(strDoubleDecodeURL))
             {
                 throw new HttpException(404, "Not Found");
             }
