@@ -32,15 +32,9 @@ interface IPerformanceSettings {
   authCacheability: string;
   unauthCacheability: string;
   sslForCacheSynchronization: boolean;
-  clientResourcesManagementMode: string;
+  crmOverrideDefaultSettings: boolean;
   currentHostVersion: number;
-  hostEnableCompositeFiles: boolean;
-  hostMinifyCss: boolean;
-  hostMinifyJs: boolean;
   currentPortalVersion: number;
-  portalEnableCompositeFiles: boolean;
-  portalMinifyCss: boolean;
-  portalMinifyJs: boolean;
   cachingProviderOptions: ISelectOption[];
   pageStatePersistenceOptions: ISelectOption[];
   moduleCacheProviders: ISelectOption[];
@@ -64,7 +58,7 @@ interface IDispatchProps {
   onRetrievePerformanceSettings: () => void;
   onChangePerformanceSettingsValue: (key: string, value: any) => void;
   onSave: (settings: IPerformanceSettings) => void;
-  onIncrementVersion: (version: number, isGlobalSettings: boolean) => void;
+  onIncrementVersion: (isGlobalSettings: boolean) => void;
 }
 
 type IProps = IStateProps & IDispatchProps;
@@ -106,29 +100,13 @@ const Performance: React.FC<IProps> = ({
     onSave(performanceSettings);
   };
 
-  const confirmHandler = () => {
-    const isGlobalSettings =
-      performanceSettings.clientResourcesManagementMode === "h";
-    if (isGlobalSettings) {
-      onIncrementVersion(
-        performanceSettings.currentHostVersion,
-        isGlobalSettings
-      );
-    } else {
-      onIncrementVersion(
-        performanceSettings.currentPortalVersion,
-        isGlobalSettings
-      );
-    }
-  };
-
-  const handleIncrementVersion = () => {
+  const handleIncrementVersion = (isGlobalSettings: boolean) => {
     utils.confirm(
       localization.get("PerformanceTab_PortalVersionConfirmMessage"),
       localization.get("PerformanceTab_PortalVersionConfirmYes"),
       localization.get("PerformanceTab_PortalVersionConfirmNo"),
-      confirmHandler,
-      () => {}
+      () => onIncrementVersion(isGlobalSettings),
+      () => {},
     );
   };
 
@@ -146,43 +124,9 @@ const Performance: React.FC<IProps> = ({
     return null;
   }
 
-  const areGlobalSettings =
-    performanceSettings.clientResourcesManagementMode === "h";
-
-  let enableCompositeFiles: boolean;
-  let minifyCss: boolean;
-  let minifyJs: boolean;
-  let enableCompositeFilesKey: string;
-  let minifyCssKey: string;
-  let minifyJsKey: string;
-  let version: number;
-  let versionLocalizationKey: string;
-
-  if (areGlobalSettings) {
-    enableCompositeFiles = performanceSettings.hostEnableCompositeFiles;
-    minifyCss = performanceSettings.hostMinifyCss;
-    minifyJs = performanceSettings.hostMinifyJs;
-    enableCompositeFilesKey = "hostEnableCompositeFiles";
-    minifyCssKey = "hostMinifyCss";
-    minifyJsKey = "hostMinifyJs";
-    version = performanceSettings.currentHostVersion;
-    versionLocalizationKey = "PerformanceTab_CurrentHostVersion";
-  } else {
-    enableCompositeFiles = performanceSettings.portalEnableCompositeFiles;
-    minifyCss = performanceSettings.portalMinifyCss;
-    minifyJs = performanceSettings.portalMinifyJs;
-    enableCompositeFilesKey = "portalEnableCompositeFiles";
-    minifyCssKey = "portalMinifyCss";
-    minifyJsKey = "portalMinifyJs";
-    version = performanceSettings.currentPortalVersion;
-    versionLocalizationKey = "PerformanceTab_CurrentPortalVersion";
-  }
-
   return (
     <div className="dnn-servers-info-panel-big performanceSettingTab">
-      <WarningBlock
-        label={localization.get("PerformanceTab_AjaxWarning")}
-      />
+      <WarningBlock label={localization.get("PerformanceTab_AjaxWarning")} />
       <GridSystem>
         <div className="leftPane">
           <div className="tooltipAdjustment">
@@ -190,10 +134,10 @@ const Performance: React.FC<IProps> = ({
               <RadioButtonBlock
                 options={performanceSettings.pageStatePersistenceOptions}
                 label={localization.get(
-                  "PerformanceTab_PageStatePersistenceMode"
+                  "PerformanceTab_PageStatePersistenceMode",
                 )}
                 tooltip={localization.get(
-                  "PerformanceTab_PageStatePersistenceMode.Help"
+                  "PerformanceTab_PageStatePersistenceMode.Help",
                 )}
                 onChange={(e: any) => onChangeField("pageStatePersistence", e)}
                 value={performanceSettings.pageStatePersistence}
@@ -202,7 +146,7 @@ const Performance: React.FC<IProps> = ({
             {performanceSettings.cacheSettingOptions && (
               <DropdownBlock
                 tooltip={localization.get(
-                  "PerformanceTab_CachingProvider.Help"
+                  "PerformanceTab_CachingProvider.Help",
                 )}
                 label={localization.get("PerformanceTab_CachingProvider")}
                 options={performanceSettings.cachingProviderOptions}
@@ -213,7 +157,7 @@ const Performance: React.FC<IProps> = ({
             {performanceSettings.moduleCacheProviders && (
               <DropdownBlock
                 tooltip={localization.get(
-                  "PerformanceTab_ModuleCacheProviders.Help"
+                  "PerformanceTab_ModuleCacheProviders.Help",
                 )}
                 label={localization.get("PerformanceTab_ModuleCacheProviders")}
                 options={performanceSettings.moduleCacheProviders}
@@ -224,7 +168,7 @@ const Performance: React.FC<IProps> = ({
             {performanceSettings.pageCacheProviders && (
               <DropdownBlock
                 tooltip={localization.get(
-                  "PerformanceTab_PageCacheProviders.Help"
+                  "PerformanceTab_PageCacheProviders.Help",
                 )}
                 label={localization.get("PerformanceTab_PageCacheProviders")}
                 options={performanceSettings.pageCacheProviders}
@@ -246,9 +190,7 @@ const Performance: React.FC<IProps> = ({
           )}
           {performanceSettings.authCacheabilityOptions && (
             <DropdownBlock
-              tooltip={localization.get(
-                "PerformanceTab_AuthCacheability.Help"
-              )}
+              tooltip={localization.get("PerformanceTab_AuthCacheability.Help")}
               label={localization.get("PerformanceTab_AuthCacheability")}
               options={performanceSettings.authCacheabilityOptions}
               value={performanceSettings.authCacheability}
@@ -258,7 +200,7 @@ const Performance: React.FC<IProps> = ({
           {performanceSettings.unauthCacheabilityOptions && (
             <DropdownBlock
               tooltip={localization.get(
-                "PerformanceTab_UnauthCacheability.Help"
+                "PerformanceTab_UnauthCacheability.Help",
               )}
               label={localization.get("PerformanceTab_UnauthCacheability")}
               options={performanceSettings.unauthCacheabilityOptions}
@@ -268,12 +210,12 @@ const Performance: React.FC<IProps> = ({
           )}
           <SwitchBlock
             label={localization.get(
-              "PerformanceTab_SslForCacheSyncrhonization"
+              "PerformanceTab_SslForCacheSyncrhonization",
             )}
             onText={localization.get("SwitchOn")}
             offText={localization.get("SwitchOff")}
             tooltip={localization.get(
-              "PerformanceTab_SslForCacheSyncrhonization.Help"
+              "PerformanceTab_SslForCacheSyncrhonization.Help",
             )}
             value={performanceSettings.sslForCacheSynchronization}
             onChange={(e: any) =>
@@ -289,37 +231,72 @@ const Performance: React.FC<IProps> = ({
         <Label
           className="header-title"
           label={localization.get(
-            "PerformanceTab_ClientResourceManagementTitle"
+            "PerformanceTab_ClientResourceManagementTitle",
           )}
         />
+        <InputGroup>
+          <Label
+            className="title lowerCase"
+            label={localization.get(
+              "PerformanceTab_ClientResourceManagementInfo",
+            )}
+            style={{ width: "auto", marginBottom: "10px", marginTop: "10px" }}
+          />
+        </InputGroup>
       </GridCell>
       <GridSystem>
         <div className="leftPane">
-          <InputGroup>
-            <Label
-              className="title lowerCase"
-              label={localization.get(
-                "PerformanceTab_ClientResourceManagementInfo"
-              )}
-              style={{ width: "auto" }}
-            />
-          </InputGroup>
           <div className="currentHostVersion">
             <InfoBlock
-              label={localization.get(versionLocalizationKey)}
-              text={version}
+              label={localization.get("PerformanceTab_CurrentHostVersion")}
+              text={performanceSettings.currentHostVersion}
             />
           </div>
           <Button
             type="secondary"
             style={{ marginBottom: "40px" }}
             disable={incrementingVersion}
-            onClick={handleIncrementVersion}
+            onClick={() => handleIncrementVersion(true)}
           >
             {localization.get("PerformanceTab_IncrementVersion")}
           </Button>
         </div>
-        <div className="rightPane"></div>
+        <div className="rightPane">
+          <SwitchBlock
+            label={localization.get(
+              "PerformanceTab_CrmOverrideDefaultSettings",
+            )}
+            onText={localization.get("SwitchOn")}
+            offText={localization.get("SwitchOff")}
+            tooltip={localization.get(
+              "PerformanceTab_CrmOverrideDefaultSettings.Help",
+            )}
+            value={performanceSettings.crmOverrideDefaultSettings}
+            onChange={(e: any) =>
+              onChangeField("crmOverrideDefaultSettings", e)
+            }
+          />
+          {performanceSettings.crmOverrideDefaultSettings && (
+            <>
+              <div className="currentHostVersion">
+                <InfoBlock
+                  label={localization.get(
+                    "PerformanceTab_CurrentPortalVersion",
+                  )}
+                  text={performanceSettings.currentPortalVersion}
+                />
+              </div>
+              <Button
+                type="secondary"
+                style={{ marginBottom: "40px" }}
+                disable={incrementingVersion}
+                onClick={() => handleIncrementVersion(false)}
+              >
+                {localization.get("PerformanceTab_IncrementVersion")}
+              </Button>
+            </>
+          )}
+        </div>
       </GridSystem>
       <div className="clear" />
       <div className="buttons-panel">
@@ -351,7 +328,7 @@ const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
       onSave: PerformanceTabActions.save,
       onIncrementVersion: PerformanceTabActions.incrementVersion,
     },
-    dispatch
+    dispatch,
   ),
 });
 
