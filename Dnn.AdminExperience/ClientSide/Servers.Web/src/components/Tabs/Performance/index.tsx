@@ -143,6 +143,23 @@ const Performance: React.FC<IProps> = ({
                 value={performanceSettings.pageStatePersistence}
               />
             )}
+          </div>
+        </div>
+        <div className="rightPane">
+          {performanceSettings.cacheSettingOptions && (
+            <DropdownBlock
+              tooltip={localization.get("PerformanceTab_CacheSetting.Help")}
+              label={localization.get("PerformanceTab_CacheSetting")}
+              options={performanceSettings.cacheSettingOptions}
+              value={performanceSettings.cacheSetting}
+              onSelect={(e: any) => onChangeField("cacheSetting", e)}
+            />
+          )}
+        </div>
+      </GridSystem>
+      <GridSystem>
+        <div className="leftPane">
+          <div className="tooltipAdjustment">
             {performanceSettings.cacheSettingOptions && (
               <DropdownBlock
                 tooltip={localization.get(
@@ -154,6 +171,23 @@ const Performance: React.FC<IProps> = ({
                 onSelect={(e: any) => onChangeField("cachingProvider", e)}
               />
             )}
+          </div>
+        </div>
+        <div className="rightPane">
+          {performanceSettings.authCacheabilityOptions && (
+            <DropdownBlock
+              tooltip={localization.get("PerformanceTab_AuthCacheability.Help")}
+              label={localization.get("PerformanceTab_AuthCacheability")}
+              options={performanceSettings.authCacheabilityOptions}
+              value={performanceSettings.authCacheability}
+              onSelect={(e: any) => onChangeField("authCacheability", e)}
+            />
+          )}
+        </div>
+      </GridSystem>
+      <GridSystem>
+        <div className="leftPane">
+          <div className="tooltipAdjustment">
             {performanceSettings.moduleCacheProviders && (
               <DropdownBlock
                 tooltip={localization.get(
@@ -165,6 +199,25 @@ const Performance: React.FC<IProps> = ({
                 onSelect={(e: any) => onChangeField("moduleCacheProvider", e)}
               />
             )}
+          </div>
+        </div>
+        <div className="rightPane">
+          {performanceSettings.unauthCacheabilityOptions && (
+            <DropdownBlock
+              tooltip={localization.get(
+                "PerformanceTab_UnauthCacheability.Help",
+              )}
+              label={localization.get("PerformanceTab_UnauthCacheability")}
+              options={performanceSettings.unauthCacheabilityOptions}
+              value={performanceSettings.unauthCacheability}
+              onSelect={(e: any) => onChangeField("unauthCacheability", e)}
+            />
+          )}
+        </div>
+      </GridSystem>
+      <GridSystem>
+        <div className="leftPane">
+          <div className="tooltipAdjustment">
             {performanceSettings.pageCacheProviders && (
               <DropdownBlock
                 tooltip={localization.get(
@@ -179,35 +232,6 @@ const Performance: React.FC<IProps> = ({
           </div>
         </div>
         <div className="rightPane">
-          {performanceSettings.cacheSettingOptions && (
-            <DropdownBlock
-              tooltip={localization.get("PerformanceTab_CacheSetting.Help")}
-              label={localization.get("PerformanceTab_CacheSetting")}
-              options={performanceSettings.cacheSettingOptions}
-              value={performanceSettings.cacheSetting}
-              onSelect={(e: any) => onChangeField("cacheSetting", e)}
-            />
-          )}
-          {performanceSettings.authCacheabilityOptions && (
-            <DropdownBlock
-              tooltip={localization.get("PerformanceTab_AuthCacheability.Help")}
-              label={localization.get("PerformanceTab_AuthCacheability")}
-              options={performanceSettings.authCacheabilityOptions}
-              value={performanceSettings.authCacheability}
-              onSelect={(e: any) => onChangeField("authCacheability", e)}
-            />
-          )}
-          {performanceSettings.unauthCacheabilityOptions && (
-            <DropdownBlock
-              tooltip={localization.get(
-                "PerformanceTab_UnauthCacheability.Help",
-              )}
-              label={localization.get("PerformanceTab_UnauthCacheability")}
-              options={performanceSettings.unauthCacheabilityOptions}
-              value={performanceSettings.unauthCacheability}
-              onSelect={(e: any) => onChangeField("unauthCacheability", e)}
-            />
-          )}
           <SwitchBlock
             label={localization.get(
               "PerformanceTab_SslForCacheSyncrhonization",
@@ -246,6 +270,7 @@ const Performance: React.FC<IProps> = ({
       </GridCell>
       <GridSystem>
         <div className="leftPane">
+          <InputGroup style={{ minHeight: "36px" }}>&nbsp;</InputGroup>
           <div className="currentHostVersion">
             <InfoBlock
               label={localization.get("PerformanceTab_CurrentHostVersion")}
