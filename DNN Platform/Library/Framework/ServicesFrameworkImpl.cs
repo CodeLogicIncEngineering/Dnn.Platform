@@ -31,17 +31,16 @@ namespace DotNetNuke.Framework
         private readonly IEventLogger eventLogger;
 
         /// <summary>Initializes a new instance of the <see cref="ServicesFrameworkImpl"/> class.</summary>
-        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IClientResourceController. Scheduled removal in v12.0.0.")]
+        [Obsolete("Deprecated in DotNetNuke 10.2.2. Please use overload with IApplicationStatusInfo and IEventLogger. Scheduled removal in v12.0.0.")]
         public ServicesFrameworkImpl()
-            : this(null, null, null)
+            : this(null, null)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="ServicesFrameworkImpl"/> class.</summary>
-        /// <param name="clientResourceController">The client resource controller.</param>
         /// <param name="appStatus">The application status.</param>
         /// <param name="eventLogger">The event logger.</param>
-        public ServicesFrameworkImpl(IClientResourceController clientResourceController, IApplicationStatusInfo appStatus, IEventLogger eventLogger)
+        public ServicesFrameworkImpl(IApplicationStatusInfo appStatus, IEventLogger eventLogger)
         {
             var servicesProvider = Globals.GetCurrentServiceProvider();
             this.appStatus = appStatus ?? servicesProvider.GetRequiredService<IApplicationStatusInfo>();
