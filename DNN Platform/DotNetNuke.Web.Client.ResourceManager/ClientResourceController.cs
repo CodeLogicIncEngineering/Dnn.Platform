@@ -35,7 +35,7 @@ namespace DotNetNuke.Web.Client.ResourceManager
         /// <summary>Initializes a new instance of the <see cref="ClientResourceController"/> class.</summary>
         /// <param name="hostSettings">The host settings.</param>
         /// <param name="appStatus">The application status.</param>
-        [Obsolete("Deprecated in DotNetNuke 10.2.3. Use overload with IApplicationStatusInfo. Scheduled removal in v12.0.0.")]
+        [Obsolete("Deprecated in DotNetNuke 10.2.3. Use overload with IClientResourceSettings. Scheduled removal in v12.0.0.")]
         public ClientResourceController(IHostSettings hostSettings, IApplicationStatusInfo appStatus)
             : this(hostSettings, appStatus, null)
         {
