@@ -30,6 +30,11 @@ namespace DotNetNuke.Framework
         {
             get
             {
+                if (PortalSettings.Current == null)
+                {
+                    return false;
+                }
+
                 var portalId = PortalSettings.Current.PortalId;
                 return bool.Parse(PortalController.GetPortalSetting(this.portalController, DotNetNuke.Web.Client.ClientResourceSettings.OverrideDefaultSettingsKey, portalId, "False"));
             }
@@ -43,6 +48,11 @@ namespace DotNetNuke.Framework
         {
             get
             {
+                if (PortalSettings.Current == null)
+                {
+                    return 1;
+                }
+
                 var portalId = PortalSettings.Current.PortalId;
                 var settingValue = PortalController.GetPortalSetting(this.portalController, DotNetNuke.Web.Client.ClientResourceSettings.VersionKey, portalId, "0");
                 if (int.TryParse(settingValue, out var version))
