@@ -270,7 +270,6 @@ const Performance: React.FC<IProps> = ({
       </GridCell>
       <GridSystem>
         <div className="leftPane">
-          <InputGroup style={{ minHeight: "36px" }}>&nbsp;</InputGroup>
           <div className="currentHostVersion">
             <InfoBlock
               label={localization.get("PerformanceTab_CurrentHostVersion")}
@@ -280,7 +279,7 @@ const Performance: React.FC<IProps> = ({
           <Button
             type="secondary"
             style={{ marginBottom: "40px" }}
-            disable={incrementingVersion}
+            disabled={incrementingVersion}
             onClick={() => handleIncrementVersion(true)}
           >
             {localization.get("PerformanceTab_IncrementVersion")}
@@ -301,26 +300,20 @@ const Performance: React.FC<IProps> = ({
               onChangeField("crmOverrideDefaultSettings", e)
             }
           />
-          {performanceSettings.crmOverrideDefaultSettings && (
-            <>
-              <div className="currentHostVersion">
-                <InfoBlock
-                  label={localization.get(
-                    "PerformanceTab_CurrentPortalVersion",
-                  )}
-                  text={performanceSettings.currentPortalVersion}
-                />
-              </div>
-              <Button
-                type="secondary"
-                style={{ marginBottom: "40px" }}
-                disable={incrementingVersion}
-                onClick={() => handleIncrementVersion(false)}
-              >
-                {localization.get("PerformanceTab_IncrementVersion")}
-              </Button>
-            </>
-          )}
+          <div className="currentHostVersion">
+            <InfoBlock
+              label={localization.get("PerformanceTab_CurrentPortalVersion")}
+              text={performanceSettings.currentPortalVersion}
+            />
+          </div>
+          <Button
+            type="secondary"
+            style={{ marginBottom: "40px" }}
+            disabled={!performanceSettings.crmOverrideDefaultSettings || incrementingVersion}
+            onClick={() => handleIncrementVersion(false)}
+          >
+            {localization.get("PerformanceTab_IncrementVersion")}
+          </Button>
         </div>
       </GridSystem>
       <div className="clear" />
