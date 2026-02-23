@@ -20,7 +20,7 @@ export class DnnRmItemsListview {
 
   /** Fires when a file is double-clicked and emits the file ID into the event.detail */
   @Event() dnnRmFileDoubleClicked: EventEmitter<string>;
-  
+
   private contextMenu: HTMLDnnContextMenuElement;
 
   private getLocalDateString(dateString: string) {
@@ -83,7 +83,7 @@ export class DnnRmItemsListview {
                   onClick={() => selectionUtilities.toggleItemSelected(item)}
                   onContextMenu={e => {
                     e.preventDefault();
-                    this.contextMenu.open(e as PointerEvent);
+                    this.contextMenu.open(e as PointerEvent).catch(console.error);
                   }}
                   onDblClick={() => this.handleDoubleClick(item)}
                 >
@@ -104,7 +104,7 @@ export class DnnRmItemsListview {
                     ref={el => this.contextMenu = el}
                     closeOnClick
                   >
-                    {item.isFolder 
+                    {item.isFolder
                     ?
                       <dnn-rm-folder-context-menu item={item} />
                     :

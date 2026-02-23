@@ -15,14 +15,14 @@ export class DnnRmFolderListItem {
 
   /** If true, this node will be expanded on load. */
   @Prop({mutable: true}) expanded = false;
-  
+
   /** The ID of the parent folder. */
   @Prop() parentFolderId!: number;
 
   /** Indicates if this item is the currently selected one.*/
   @Prop() selectedFolder: FolderTreeItem;
-  
-  
+
+
   @Listen("dnnRmFolderDoubleClicked", {target: "document"})
   handleFolderDoubleClicked(e: CustomEvent<number>) {
     if (e.detail == Number.parseInt(this.folder.data.key)) {
@@ -31,23 +31,23 @@ export class DnnRmFolderListItem {
       this.expanded = true;
     }
   }
-  
+
   @State() item: Item;
-  
+
   @Element() el!: HTMLDnnRmFolderListItemElement;
-  
+
   /** Fires when a folder is clicked. */
   @Event() dnnRmFolderListItemClicked: EventEmitter<FolderTreeItem>;
-  
+
   private itemsClient: ItemsClient;
   private internalServicesClient: InternalServicesClient;
   private itemContextMenu: HTMLDnnContextMenuElement;
-  
+
   constructor(){
     this.itemsClient = new ItemsClient(state.moduleId);
     this.internalServicesClient = new InternalServicesClient(state.moduleId);
   }
-  
+
   async componentWillLoad() {
     try {
       this.item = await this.itemsClient.getFolderItem(Number.parseInt(this.folder.data.key));
@@ -56,7 +56,7 @@ export class DnnRmFolderListItem {
       console.error(error);
     }
   }
-  
+
   private async handleUserExpanded() {
     const children = Array.from(this.el.shadowRoot.querySelectorAll('dnn-rm-folder-list-item'));
     children.forEach(element => {
@@ -77,7 +77,7 @@ export class DnnRmFolderListItem {
             },
           };
         }),
-      }; 
+      };
     } catch (error) {
       alert(error);
     }
@@ -103,7 +103,7 @@ export class DnnRmFolderListItem {
             onClick={() => this.dnnRmFolderListItemClicked.emit(this.folder)}
             onContextMenu={e => {
               e.preventDefault();
-              this.itemContextMenu.open(e as PointerEvent);
+              this.itemContextMenu.open(e as PointerEvent).catch(console.error);
             }}
           >
             {this.item.iconUrl != null && this.item.iconUrl.length > 0

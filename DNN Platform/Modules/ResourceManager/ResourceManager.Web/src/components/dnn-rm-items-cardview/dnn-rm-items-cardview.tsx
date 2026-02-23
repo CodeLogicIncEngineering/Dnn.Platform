@@ -19,7 +19,7 @@ export class DnnRmItemsCardview {
 
   /** Fires when a file is double-clicked and emits the file ID into the event.detail */
   @Event() dnnRmFileDoubleClicked: EventEmitter<string>;
-  
+
   private contextMenu: HTMLDnnContextMenuElement;
 
   private handleDoubleClick(item: Item): void {
@@ -42,7 +42,7 @@ export class DnnRmItemsCardview {
                 onDblClick={() => this.handleDoubleClick(item)}
                 onContextMenu={e => {
                   e.preventDefault();
-                  this.contextMenu.open(e as PointerEvent);
+                  this.contextMenu.open(e as PointerEvent).catch(console.error);
                 }}
               >
                   <div class={selectionUtilities.isItemSelected(item) ? "radio selected" : "radio"}>

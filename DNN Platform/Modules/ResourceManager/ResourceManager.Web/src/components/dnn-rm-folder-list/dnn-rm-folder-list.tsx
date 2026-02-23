@@ -21,7 +21,7 @@ export class DnnRmFolderList {
   @State() rootItem: Item;
 
   @Element() el!: HTMLDnnRmFolderListElement;
-  
+
   private internalServicesClient: InternalServicesClient;
   private itemsClient: ItemsClient;
   private rootItemContextMenu: HTMLDnnContextMenuElement;
@@ -44,7 +44,7 @@ export class DnnRmFolderList {
         0,
         state.pageSize,
         state.sortField,
-        state.sortOrder);  
+        state.sortOrder);
         this.rootItem = await this.itemsClient.getFolderItem(state.settings.HomeFolderId)
     } catch (error) {
       alert(error);
@@ -85,7 +85,7 @@ export class DnnRmFolderList {
           onClick={() => this.handleRootClicked()}
           onContextMenu={e => {
             e.preventDefault();
-            this.rootItemContextMenu.open(e as PointerEvent);
+            this.rootItemContextMenu.open(e as PointerEvent).catch(console.error);
           }}
         >
           <strong>{state.settings.HomeFolderName}</strong>
