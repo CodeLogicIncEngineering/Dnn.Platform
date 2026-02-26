@@ -597,9 +597,12 @@ jobs:
           echo "Skipping CodeLogic analyze: CODELOGIC_AGENT_UUID or CODELOGIC_AGENT_PASSWORD not set"
           exit 0
         fi
-        # Run as the workspace owner so LibGit2Sharp can open /scan (it rejects paths not owned by current user)
+        # Run as the workspace owner so LibGit2Sharp can open /scan (it rejects paths not owned by current user).
+        # Set HOME to a writable path so the container can create .local/share/CodeLogic/netCape/agent.json
+        # (otherwise empty HOME yields //.local and "Permission denied" / "No such file or directory").
         docker run --pull always --rm \
           --user "$(id -u):$(id -g)" \
+          --env HOME=/tmp \
           --env CODELOGIC_HOST="${CODELOGIC_HOST}" \
           --env AGENT_UUID="${{ secrets.CODELOGIC_AGENT_UUID }}" \
           --env AGENT_PASSWORD="${{ secrets.CODELOGIC_AGENT_PASSWORD }}" \
