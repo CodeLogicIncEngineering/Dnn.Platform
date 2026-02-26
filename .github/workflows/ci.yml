@@ -1,0 +1,611 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+env:
+  DOTNET_SDK_VERSION: '10.0.100'
+  YARN_CACHE_FOLDER: .yarn/cache
+
+jobs:
+  build:
+    runs-on: windows-latest
+    outputs:
+      build_status: ${{ steps.build-status.outputs.build_status || (job.status == 'failure' && 'FAILURE' || 'SUCCESS') }}
+      test_failed: ${{ steps.build-status.outputs.test_failed || 'false' }}
+      failed_test_count: ${{ steps.build-status.outputs.failed_test_count || '0' }}
+      job_result: ${{ job.status }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Required for GitVersion
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+    - name: Set PowerShell Execution Policy
+      shell: pwsh
+      run: |
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+
+    - name: Create Yarn Cache Folder
+      shell: pwsh
+      run: |
+        if (-not (Test-Path $env:YARN_CACHE_FOLDER)) {
+          New-Item -ItemType Directory -Path $env:YARN_CACHE_FOLDER -Force
+        }
+
+    - name: Cache Yarn packages
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.YARN_CACHE_FOLDER }}
+        key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          yarn-${{ runner.os }}-
+
+    - name: Run DNN Update Versions
+      shell: pwsh
+      run: |
+        .\build.ps1 --target=BuildServerSetVersion --verbosity=Minimal
+
+    - name: Start Sql LocalDb Service
+      run: sqllocaldb start mssqllocaldb
+      continue-on-error: true
+
+    - name: Update Alpha/Beta/Stable flag
+      shell: pwsh
+      run: |
+        $path = '.\DNN Platform\Library\Properties\AssemblyInfo.cs'
+        $pattern3 = '\[assembly: AssemblyStatus'
+        $releaseMode = 'Beta'  # Default to Beta, can be parameterized if needed
+        (Get-Content $path) | ForEach-Object{
+          if($_ -match $pattern3){
+            "[assembly: AssemblyStatus(ReleaseMode.$releaseMode)]"
+          } else {
+            $_
+          }
+        } | Set-Content $path
+
+    - name: Run DNN Build via Cake
+      shell: pwsh
+      run: |
+        .\build.ps1 --target=BuildAll --verbosity=Minimal
+
+    - name: Run Unit Tests via Cake
+      shell: pwsh
+      run: |
+        .\build.ps1 --target=UnitTests --verbosity=Minimal
+      continue-on-error: true
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: '**/TestResults/*.trx'
+        retention-days: 7
+        if-no-files-found: ignore
+
+    - name: Create Test Summary
+      shell: pwsh
+      if: always()
+      run: |
+        $trxFiles = Get-ChildItem -Path . -Filter *.trx -Recurse -ErrorAction SilentlyContinue
+        if ($trxFiles) {
+          $summary = "## Test Results Summary`n`n"
+          foreach ($file in $trxFiles) {
+            [xml]$trx = Get-Content $file.FullName
+            $ns = New-Object System.Xml.XmlNamespaceManager($trx.NameTable)
+            $ns.AddNamespace("ns", "http://microsoft.com/schemas/VisualStudio/TeamTest/2010")
+            
+            $counters = $trx.SelectSingleNode("//ns:Counters", $ns)
+            $total = if ($counters) { [int]$counters.GetAttribute("total") } else { 0 }
+            $passed = if ($counters) { [int]$counters.GetAttribute("passed") } else { 0 }
+            $failed = if ($counters) { [int]$counters.GetAttribute("failed") } else { 0 }
+            $executed = if ($counters) { [int]$counters.GetAttribute("executed") } else { 0 }
+            $skipped = $total - $executed
+            
+            $summary += "### $($file.Name)`n"
+            $summary += "- **Total:** $total`n"
+            $summary += "- **Passed:** $passed`n"
+            $summary += "- **Failed:** $failed`n"
+            $summary += "- **Skipped:** $skipped`n`n"
+            
+            if ($failed -gt 0) {
+              $summary += "#### Failed Tests:`n"
+              $failedTests = $trx.SelectNodes("//ns:UnitTestResult[@outcome='Failed']", $ns)
+              foreach ($test in $failedTests) {
+                $testName = $test.GetAttribute("testName")
+                $summary += "- $testName`n"
+              }
+              $summary += "`n"
+            }
+          }
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+        }
+      continue-on-error: true
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: artifacts
+        path: Artifacts/
+        retention-days: 7
+
+    - name: Set build status output
+      shell: pwsh
+      if: always() && (startsWith(github.ref, 'refs/heads/renovate/') || startsWith(github.head_ref, 'renovate/'))
+      id: build-status
+      run: |
+        $buildStatus = "SUCCESS"
+        $testFailed = $false
+        $failedTestCount = 0
+        
+        # Check if tests failed by parsing TRX files
+        $trxFiles = Get-ChildItem -Path . -Filter *.trx -Recurse -ErrorAction SilentlyContinue
+        if ($trxFiles) {
+          foreach ($file in $trxFiles) {
+            try {
+              [xml]$trx = Get-Content $file.FullName -ErrorAction Stop
+              $ns = New-Object System.Xml.XmlNamespaceManager($trx.NameTable)
+              $ns.AddNamespace("ns", "http://microsoft.com/schemas/VisualStudio/TeamTest/2010")
+              $counters = $trx.SelectSingleNode("//ns:Counters", $ns)
+              if ($counters) {
+                $failed = [int]$counters.GetAttribute("failed")
+                if ($failed -gt 0) {
+                  $testFailed = $true
+                  $failedTestCount += $failed
+                  $buildStatus = "FAILURE"
+                }
+              }
+            } catch {
+              Write-Host "Warning: Could not parse TRX file $($file.FullName): $_"
+            }
+          }
+        }
+        
+        # Check if job failed
+        if ("${{ job.status }}" -eq "failure") {
+          $buildStatus = "FAILURE"
+        }
+        
+        Write-Host "build_status=$buildStatus" >> $env:GITHUB_OUTPUT
+        Write-Host "test_failed=$testFailed" >> $env:GITHUB_OUTPUT
+        Write-Host "failed_test_count=$failedTestCount" >> $env:GITHUB_OUTPUT
+
+  send-codelogic:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always() && (startsWith(github.ref, 'refs/heads/renovate/') || startsWith(github.head_ref, 'renovate/'))
+    
+    steps:
+    - name: Install required tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y curl
+        # Install GitHub CLI for downloading logs
+        type -p curl >/dev/null || (apt-get update && apt-get install curl -y)
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt-get update \
+          && sudo apt-get install gh -y
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.head_ref || github.ref }}
+
+    - name: Setup git branch for script detection
+      run: |
+        # Extract branch name from github.ref (handles both push and PR)
+        if [ -n "${{ github.head_ref }}" ]; then
+          BRANCH_NAME="${{ github.head_ref }}"
+        else
+          # For push events, extract from refs/heads/branch-name
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+        fi
+        
+        echo "Target branch: $BRANCH_NAME"
+        
+        # Ensure we're on the actual branch (not detached HEAD) so script can detect it
+        if [ -n "$BRANCH_NAME" ]; then
+          # Fetch the branch
+          git fetch origin "$BRANCH_NAME" 2>/dev/null || true
+          # Checkout the branch
+          git checkout "$BRANCH_NAME" 2>/dev/null || git checkout -b "$BRANCH_NAME" 2>/dev/null || true
+        fi
+        
+        # Verify current branch
+        echo "Current branch: $(git branch --show-current || git rev-parse --abbrev-ref HEAD)"
+        git status --short || true
+
+    - name: Determine build status
+      id: status
+      run: |
+        # Get build status from previous job outputs or job result
+        BUILD_STATUS="${{ needs.build.outputs.build_status }}"
+        TEST_FAILED="${{ needs.build.outputs.test_failed }}"
+        FAILED_COUNT="${{ needs.build.outputs.failed_test_count }}"
+        JOB_RESULT="${{ needs.build.result }}"
+        
+        # If outputs not set or empty, determine from job result
+        if [ -z "$BUILD_STATUS" ] || [ "$BUILD_STATUS" = "" ]; then
+          if [ "$JOB_RESULT" = "failure" ] || [ "$JOB_RESULT" = "cancelled" ]; then
+            BUILD_STATUS="FAILURE"
+          else
+            BUILD_STATUS="SUCCESS"
+          fi
+        fi
+        
+        # Default values if not set
+        if [ -z "$TEST_FAILED" ] || [ "$TEST_FAILED" = "" ]; then
+          TEST_FAILED="false"
+        fi
+        
+        if [ -z "$FAILED_COUNT" ] || [ "$FAILED_COUNT" = "" ]; then
+          FAILED_COUNT="0"
+        fi
+        
+        echo "build_status=$BUILD_STATUS" >> $GITHUB_OUTPUT
+        echo "test_failed=$TEST_FAILED" >> $GITHUB_OUTPUT
+        echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+        echo "Job result: $JOB_RESULT"
+        echo "Build status: $BUILD_STATUS"
+
+    - name: Install required tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq curl
+
+    - name: Get actual branch name
+      id: branch
+      run: |
+        # For pull requests, use head_ref; for pushes, extract from ref
+        if [ -n "${{ github.head_ref }}" ]; then
+          BRANCH_NAME="${{ github.head_ref }}"
+        else
+          # Extract branch name from ref (remove refs/heads/ or refs/pull/...)
+          BRANCH_NAME="${{ github.ref_name }}"
+        fi
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+        echo "Branch name: $BRANCH_NAME"
+
+    - name: Download build logs from GitHub Actions
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        echo "Using GitHub CLI to download logs..."
+        echo "Run ID: ${{ github.run_id }}"
+        
+        # Get the build job ID
+        BUILD_JOB_ID=$(gh run view ${{ github.run_id }} --json jobs --jq '.jobs[] | select(.name == "build") | .databaseId' | head -n1)
+        echo "Build job ID: $BUILD_JOB_ID"
+        
+        if [ -z "$BUILD_JOB_ID" ] || [ "$BUILD_JOB_ID" = "null" ]; then
+          echo "Error: Build job not found"
+          echo "Build job not found" > /tmp/build.log
+        else
+          # Wait for the build job to be completed (check job status, not run status)
+          MAX_RETRIES=10
+          RETRY_DELAY=3
+          RETRY_COUNT=0
+          
+          echo "Waiting for build job to complete..."
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            JOB_STATUS=$(gh api "/repos/${{ github.repository }}/actions/jobs/$BUILD_JOB_ID" --jq '.status' 2>/dev/null || echo "unknown")
+            echo "Build job status: $JOB_STATUS (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)"
+            
+            if [ "$JOB_STATUS" = "completed" ]; then
+              echo "Build job completed, attempting to download logs..."
+              break
+            fi
+            
+            if [ $RETRY_COUNT -lt $((MAX_RETRIES - 1)) ]; then
+              sleep $RETRY_DELAY
+            fi
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+          done
+          
+          # Now download logs using the job-specific API endpoint
+          # This should work even if the overall run is still in progress
+          MAX_RETRIES=15
+          RETRY_DELAY=3
+          LOG_DOWNLOADED=false
+          RETRY_COUNT=0
+          
+          echo "Downloading logs from build job..."
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$LOG_DOWNLOADED" = "false" ]; do
+            echo "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES to download logs..."
+            
+            set +e
+            # Get logs for the specific build job using the job ID
+            # The API returns plain text logs directly
+            rm -f /tmp/job_logs.txt /tmp/api_error.txt
+            curl -sSfL -H "Authorization: token $GH_TOKEN" \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 -L \
+                 "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$BUILD_JOB_ID/logs" \
+                 -o /tmp/job_logs.txt 2>/tmp/api_error.txt
+            API_EXIT_CODE=$?
+            
+            if [ $API_EXIT_CODE -eq 0 ] && [ -f /tmp/job_logs.txt ] && [ -s /tmp/job_logs.txt ]; then
+              # The API returns plain text logs directly
+              cp /tmp/job_logs.txt /tmp/build.log
+              rm -f /tmp/job_logs.txt /tmp/api_error.txt
+              EXIT_CODE=0
+            else
+              # Show API error for debugging
+              if [ $RETRY_COUNT -lt 3 ]; then
+                echo "API call failed (exit code: $API_EXIT_CODE)"
+                if [ -f /tmp/api_error.txt ]; then
+                  echo "API error output:"
+                  cat /tmp/api_error.txt
+                fi
+              fi
+              rm -f /tmp/job_logs.txt /tmp/api_error.txt
+              EXIT_CODE=1
+            fi
+            set -e
+            
+            if [ $EXIT_CODE -eq 0 ] && [ -s /tmp/build.log ]; then
+              # Check if we got actual logs or an error message
+              FIRST_LINE=$(head -n1 /tmp/build.log 2>/dev/null || echo "")
+              if [ -n "$FIRST_LINE" ] && ! echo "$FIRST_LINE" | grep -q "still in progress" && ! echo "$FIRST_LINE" | grep -q "not found"; then
+                LOG_SIZE=$(wc -c < /tmp/build.log)
+                echo "Successfully downloaded $LOG_SIZE bytes of logs"
+                LOG_DOWNLOADED=true
+              else
+                echo "Logs still processing: ${FIRST_LINE:0:100}"
+                rm -f /tmp/build.log
+              fi
+            else
+              # Show error for debugging on first few attempts
+              if [ $RETRY_COUNT -lt 3 ] && [ -s /tmp/build.log ]; then
+                echo "Log download failed (exit code: $EXIT_CODE)"
+                echo "Error output (first 3 lines):"
+                head -3 /tmp/build.log || true
+              elif [ $RETRY_COUNT -ge 3 ]; then
+                echo "Log download failed (exit code: $EXIT_CODE), retrying..."
+              fi
+              rm -f /tmp/build.log
+            fi
+            
+            # If not successful and more retries available, wait before retrying
+            if [ "$LOG_DOWNLOADED" = "false" ] && [ $RETRY_COUNT -lt $((MAX_RETRIES - 1)) ]; then
+              echo "Waiting ${RETRY_DELAY}s before retry..."
+              sleep $RETRY_DELAY
+            fi
+            
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+          done
+          
+          # If still no logs, create a fallback message
+          if [ "$LOG_DOWNLOADED" = "false" ] || [ ! -s /tmp/build.log ]; then
+            echo "Warning: Could not download complete logs after $MAX_RETRIES attempts"
+            echo "Build logs were not available or still processing." > /tmp/build.log
+            echo "" >> /tmp/build.log
+            echo "Build Status: ${{ steps.status.outputs.build_status }}" >> /tmp/build.log
+            echo "Job Result: ${{ needs.build.result }}" >> /tmp/build.log
+            echo "Run ID: ${{ github.run_id }}" >> /tmp/build.log
+            echo "Job ID: $BUILD_JOB_ID" >> /tmp/build.log
+            echo "" >> /tmp/build.log
+            echo "Note: Logs may still be processing. Check GitHub Actions UI for full logs." >> /tmp/build.log
+          fi
+        fi
+        
+        # Suppress noisy / less important lines before sending to CodeLogic
+        if [ -f /tmp/build.log ] && [ -s /tmp/build.log ]; then
+          BEFORE_FILTER=$(wc -l < /tmp/build.log 2>/dev/null || echo "0")
+          # Remove StyleCop SA1600 documentation warnings (very noisy, low signal)
+          grep -v '##\[warning\].*warning SA1600:' /tmp/build.log > /tmp/build.log.tmp 2>/dev/null || cp /tmp/build.log /tmp/build.log.tmp
+          mv /tmp/build.log.tmp /tmp/build.log
+          # Remove NuGet per-package "Adding/Added package X to folder" lines (keep Restored project lines)
+          grep -v 'Adding package .* to folder' /tmp/build.log | grep -v 'Added package .* to folder' > /tmp/build.log.tmp 2>/dev/null || cp /tmp/build.log /tmp/build.log.tmp
+          mv /tmp/build.log.tmp /tmp/build.log
+          # Collapse git "Updating files: N%" progress to reduce noise (keep only 100% line)
+          grep -v -E 'Updating files: +[0-9]{1,2}%' /tmp/build.log > /tmp/build.log.tmp 2>/dev/null || cp /tmp/build.log /tmp/build.log.tmp
+          mv /tmp/build.log.tmp /tmp/build.log
+          AFTER_FILTER=$(wc -l < /tmp/build.log 2>/dev/null || echo "0")
+          echo "Log filter: $BEFORE_FILTER lines -> $AFTER_FILTER lines (noise suppressed)"
+        fi
+        
+        # Add summary information at the end
+        echo "" >> /tmp/build.log
+        echo "=== Build Summary ===" >> /tmp/build.log
+        echo "Status: ${{ steps.status.outputs.build_status }}" >> /tmp/build.log
+        echo "Branch: ${{ github.head_ref || github.ref_name }}" >> /tmp/build.log
+        echo "Commit: ${{ github.sha }}" >> /tmp/build.log
+        if [ "${{ steps.status.outputs.test_failed }}" = "true" ]; then
+          echo "Tests Failed: ${{ steps.status.outputs.failed_count }} test(s)" >> /tmp/build.log
+        fi
+        
+        # Exclude BuildNpmPackages step output from logs sent to CodeLogic
+        if [ -f /tmp/build.log ] && [ -s /tmp/build.log ]; then
+          if grep -q "##CODELOGIC_EXCLUDE_START##" /tmp/build.log 2>/dev/null; then
+            sed '/##CODELOGIC_EXCLUDE_START##/,/##CODELOGIC_EXCLUDE_END##/d' /tmp/build.log > /tmp/build.log.filtered
+            mv /tmp/build.log.filtered /tmp/build.log
+            echo "BuildNpmPackages block excluded from log"
+          fi
+        fi
+        
+        # Clean the log file: remove all characters that are not [:print:] or [:space:]
+        # This matches the validation in send_build_info.sh which uses: grep -q '[^[:print:][:space:]]'
+        # IMPORTANT: Do this AFTER adding summary to ensure everything is cleaned
+        if [ -f /tmp/build.log ] && [ -s /tmp/build.log ]; then
+          echo "Cleaning log file (removing non-printable/non-space characters)..."
+          ORIGINAL_SIZE=$(wc -c < /tmp/build.log 2>/dev/null || echo "0")
+          
+          # Check what non-printable characters exist before cleaning
+          if grep -q '[^[:print:][:space:]]' /tmp/build.log 2>/dev/null; then
+            echo "Found non-printable characters, cleaning..."
+          fi
+          
+          # Use multiple cleaning passes to ensure all non-printable characters are removed
+          # Method 1: Remove UTF-8 BOM explicitly
+          sed -i '1s/^\xEF\xBB\xBF//' /tmp/build.log 2>/dev/null || true
+          
+          # Method 2: Remove ANSI escape sequences
+          sed -i 's/\x1B\[[0-9;]*[a-zA-Z]//g' /tmp/build.log 2>/dev/null || true
+          
+          # Method 3: Use tr to keep only printable and space characters (most reliable)
+          tr -cd '[:print:][:space:]' < /tmp/build.log > /tmp/build.log.clean 2>/dev/null || cp /tmp/build.log /tmp/build.log.clean
+          
+          # Method 4: Remove any remaining control characters by explicit byte ranges
+          # Remove: 0x00-0x08, 0x0B-0x0C, 0x0E-0x1F, 0x7F (keep: 0x09=tab, 0x0A=newline, 0x0D=carriage return)
+          sed -i 's/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]//g' /tmp/build.log.clean 2>/dev/null || true
+          
+          # Method 5: Remove null bytes explicitly
+          sed -i 's/\x00//g' /tmp/build.log.clean 2>/dev/null || true
+          
+          # Method 6: Clean UTF-8 encoding (remove invalid sequences)
+          if command -v iconv >/dev/null 2>&1; then
+            iconv -f UTF-8 -t UTF-8 -c /tmp/build.log.clean > /tmp/build.log.clean2 2>/dev/null
+            if [ -f /tmp/build.log.clean2 ] && [ -s /tmp/build.log.clean2 ]; then
+              mv /tmp/build.log.clean2 /tmp/build.log.clean
+            fi
+          fi
+          
+          # Replace original with cleaned version
+          mv /tmp/build.log.clean /tmp/build.log
+          
+          # Final verification using the EXACT same check the script uses
+          # Set locale to C to ensure consistent character class behavior
+          export LC_ALL=C
+          if grep -q '[^[:print:][:space:]]' /tmp/build.log 2>/dev/null; then
+            echo "WARNING: File still contains non-printable characters after cleaning"
+            echo "Trying one more aggressive pass..."
+            # One more pass with tr
+            tr -cd '[:print:][:space:]' < /tmp/build.log > /tmp/build.log.final 2>/dev/null
+            mv /tmp/build.log.final /tmp/build.log
+          else
+            echo "Verification passed: file contains only printable/space characters"
+          fi
+          unset LC_ALL
+          
+          FINAL_SIZE=$(wc -c < /tmp/build.log 2>/dev/null || echo "0")
+          echo "Log file cleaned: $ORIGINAL_SIZE bytes -> $FINAL_SIZE bytes"
+        fi
+        
+        # Show log preview for debugging
+        LOG_SIZE=$(wc -c < /tmp/build.log 2>/dev/null || echo "0")
+        echo "Final log file size: $LOG_SIZE bytes"
+        if [ $LOG_SIZE -gt 0 ] && [ $LOG_SIZE -lt 5000 ]; then
+          echo "Log preview (first 20 lines):"
+          head -20 /tmp/build.log || true
+        fi
+
+    - name: Send Build Info to CodeLogic
+      run: |
+        AGENT_UUID="${{ secrets.CODELOGIC_AGENT_UUID }}"
+        AGENT_PASSWORD="${{ secrets.CODELOGIC_AGENT_PASSWORD }}"
+        SERVER_URL="https://dnn.app.codelogic.com"
+        DOCKER_IMAGE="dnn.app.codelogic.com/codelogic_dotnet:latest"
+        
+        if [ -z "$AGENT_UUID" ] || [ -z "$AGENT_PASSWORD" ]; then
+          echo "Error: Required CodeLogic secrets not set"
+          echo "Required: CODELOGIC_AGENT_UUID, CODELOGIC_AGENT_PASSWORD"
+          exit 1
+        fi
+        
+        echo "Sending build info to CodeLogic..."
+        echo "Build Status: ${{ steps.status.outputs.build_status }}"
+        echo "Docker Image: $DOCKER_IMAGE"
+        
+        # Ensure git is properly configured in the workspace
+        cd "${{ github.workspace }}"
+        git config --global --add safe.directory "${{ github.workspace }}" || true
+        
+        docker run --rm \
+          -v "${{ github.workspace }}:/scan" \
+          -v "/tmp:/log_file_path" \
+          -e AGENT_UUID="$AGENT_UUID" \
+          -e AGENT_PASSWORD="$AGENT_PASSWORD" \
+          -e CODELOGIC_HOST="$SERVER_URL" \
+          "$DOCKER_IMAGE" send_build_info \
+          --job-name="${{ github.workflow }}" \
+          --build-number="${{ github.run_number }}" \
+          --build-status="${{ steps.status.outputs.build_status }}" \
+          --pipeline-system="GitHub Actions" \
+          --log-file="build.log" \
+          --path="/scan"
+
+  codelogic-analyze:
+    name: CodeLogic Analyze
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: artifacts
+
+    - name: Prepare built artifacts for scan
+      run: |
+        # CodeLogic scans compiled .NET assemblies (DLLs). The Install zip contains the built website
+        # including bin/*.dll. We unzip it and point the scan at the bin folder (the actual binaries).
+        set -e
+        # Artifact may be at workspace root or under Artifacts/ (path: Artifacts/) or artifacts/ (artifact name)
+        INSTALL_ZIP=$(find . -maxdepth 3 -name 'DNN_Platform_*_Install.zip' 2>/dev/null | head -n1)
+        if [ -z "$INSTALL_ZIP" ]; then
+          INSTALL_ZIP=$(find . -maxdepth 3 -name '*_Install.zip' 2>/dev/null | head -n1)
+        fi
+        if [ -z "$INSTALL_ZIP" ]; then
+          echo "No Install zip found. Artifact contents:"
+          find . -maxdepth 3 -type f -name '*.zip' 2>/dev/null || true
+          ls -laR 2>/dev/null | head -80 || true
+          echo "Falling back to scanning workspace"
+          echo "CODELOGIC_SCAN_PATH=/scan" >> $GITHUB_ENV
+        else
+          echo "Found Install package: $INSTALL_ZIP"
+          mkdir -p install-root
+          unzip -q -o "$INSTALL_ZIP" -d install-root
+          # Scan the bin folder (compiled .NET assemblies); fall back to full install if no bin
+          if [ -d "install-root/bin" ] && [ -n "$(ls -A install-root/bin 2>/dev/null)" ]; then
+            echo "CODELOGIC_SCAN_PATH=/scan/install-root/bin" >> $GITHUB_ENV
+            echo "Scan path set to install-root/bin (compiled assemblies)"
+          else
+            echo "CODELOGIC_SCAN_PATH=/scan/install-root" >> $GITHUB_ENV
+            echo "Scan path set to install-root (bin not found or empty)"
+          fi
+        fi
+
+    - name: CodeLogic Analyze
+      env:
+        CODELOGIC_HOST: https://dnn.app.codelogic.com
+        CODELOGIC_IMAGE: dnn.app.codelogic.com/codelogic_dotnet:latest
+      run: |
+        if [ -z "${{ secrets.CODELOGIC_AGENT_UUID }}" ] || [ -z "${{ secrets.CODELOGIC_AGENT_PASSWORD }}" ]; then
+          echo "Skipping CodeLogic analyze: CODELOGIC_AGENT_UUID or CODELOGIC_AGENT_PASSWORD not set"
+          exit 0
+        fi
+        docker run --pull always --rm \
+          --env CODELOGIC_HOST="${CODELOGIC_HOST}" \
+          --env AGENT_UUID="${{ secrets.CODELOGIC_AGENT_UUID }}" \
+          --env AGENT_PASSWORD="${{ secrets.CODELOGIC_AGENT_PASSWORD }}" \
+          --volume "${{ github.workspace }}:/scan" \
+          "${CODELOGIC_IMAGE}" analyze \
+          --application "dnn-app" \
+          --path "${CODELOGIC_SCAN_PATH}" \
+          --scan-space-name "dnn-ss" \
+          --rescan \
+          --expunge-scan-sessions
+      continue-on-error: true
