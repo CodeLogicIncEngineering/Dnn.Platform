@@ -13,6 +13,7 @@ When contributing to DNN, you'd typically go through steps 2 and 3 at least and 
 ## Build/Develop Prerequisites
 
 - Visual Studio 2022 (or .NET SDK 6.x) or later
+  - **Required:** Install the **ASP.NET and web development** workload (provides `Microsoft.WebApplication.targets`). Without it, `.\build.ps1` will fail with MSB4226.
 - Node.js 18.x or later
   - This project uses [Yarn](https://yarnpkg.com/), enable its local usage by running `corepack enable`
 

@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information
 namespace DotNetNuke.Build.Tasks
@@ -50,10 +50,27 @@ namespace DotNetNuke.Build.Tasks
 
         private static MSBuildSettings CreateMsBuildSettings(Context context, FilePath binLogPath)
         {
-            return new MSBuildSettings().SetConfiguration(context.BuildConfiguration)
+            var settings = new MSBuildSettings()
+                .SetConfiguration(context.BuildConfiguration)
                 .SetMaxCpuCount(0)
-                .EnableBinaryLogger(binLogPath.FullPath)
                 .SetNoConsoleLogger(context.IsRunningInCI);
+
+            // Use Visual Studio MSBuild when available (required for SDK-style projects and WebApplication targets).
+            var msBuildPath = context.GetMsBuildPath();
+
+            if (!string.IsNullOrEmpty(msBuildPath))
+            {
+                settings.ToolPath = msBuildPath;
+
+                // VS MSBuild supports binary logger.
+                settings.EnableBinaryLogger(binLogPath.FullPath);
+            }
+            else if (context.IsRunningInCI)
+            {
+                settings.EnableBinaryLogger(binLogPath.FullPath);
+            }
+
+            return settings;
         }
 
         private static void ReportIssuesToAzurePipelines(Context context, FilePath cleanLog, FilePath buildLog)
