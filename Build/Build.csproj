@@ -27,8 +27,8 @@
     <PackageReference Include="Cake.XdtTransform" />
     <PackageReference Include="Dnn.CakeUtils" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" VersionOverride="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" VersionOverride="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="10.0.3" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" VersionOverride="8.15.0" />
     <PackageReference Include="Microsoft.Identity.Client" VersionOverride="4.81.0" />
     <PackageReference Include="Newtonsoft.Json" />

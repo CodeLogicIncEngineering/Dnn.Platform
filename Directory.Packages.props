@@ -33,10 +33,10 @@
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
     
     <!-- NOTE: this version also needs to be managed in DotNetNuke.Internal.SourceGenerators.csproj -->
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.4" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="5.0.0" />
     <PackageVersion Include="Microsoft.Identity.Client" Version="4.68.0" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.4.0" />
@@ -56,7 +56,7 @@
     <PackageVersion Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageVersion Include="QuickIO.NET" Version="2.6.2" />
     <PackageVersion Include="SharpZipLib" Version="1.4.2" />
-    <PackageVersion Include="System.Collections.Immutable" Version="9.0.2" />
+    <PackageVersion Include="System.Collections.Immutable" Version="9.0.13" />
     <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
     <PackageVersion Include="TestStack.Dossier" Version="4.0.0" />
     <PackageVersion Include="Verify.NUnit" Version="31.13.2" />
